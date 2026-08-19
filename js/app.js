@@ -459,22 +459,27 @@ function bindModals() {
   if (btnCloseAyuda) btnCloseAyuda.addEventListener('click', () => modalAyuda.classList.remove('show'));
   if (btnCloseAyudaOk) btnCloseAyudaOk.addEventListener('click', () => modalAyuda.classList.remove('show'));
 
-  // Word Report Modal
+  // Word Report Action
   const btnOpenReportModal = document.getElementById('btnOpenReportModal');
   const modalReport = document.getElementById('modalReport');
   const btnCloseReport = document.getElementById('btnCloseReport');
   const btnDownloadWord = document.getElementById('btnDownloadWord');
 
-  if (btnOpenReportModal && modalReport) {
+  if (btnOpenReportModal) {
     btnOpenReportModal.addEventListener('click', () => {
-      document.getElementById('meta_obra').value = state.metadata.obra;
-      document.getElementById('meta_cliente').value = state.metadata.cliente;
-      document.getElementById('meta_ref').value = state.metadata.refAnclaje;
-      document.getElementById('meta_autor').value = state.metadata.autor;
-      modalReport.classList.add('show');
+      executeWordReportDownload(btnOpenReportModal);
     });
   }
-  if (btnCloseReport) btnCloseReport.addEventListener('click', () => modalReport.classList.remove('show'));
+
+  if (btnDownloadWord) {
+    btnDownloadWord.addEventListener('click', () => {
+      executeWordReportDownload(btnDownloadWord);
+    });
+  }
+
+  if (btnCloseReport && modalReport) {
+    btnCloseReport.addEventListener('click', () => modalReport.classList.remove('show'));
+  }
 
   // Hypothesis Save Modal
   const modalHyp = document.getElementById('modalHypothesis');
@@ -506,43 +511,56 @@ function bindModals() {
       if (modalDelete) modalDelete.classList.remove('show');
     }
   });
+}
 
-  if (btnDownloadWord) {
-    btnDownloadWord.addEventListener('click', async () => {
-      state.metadata.obra = document.getElementById('meta_obra').value || 'Obra';
-      state.metadata.cliente = document.getElementById('meta_cliente').value || 'Cliente';
-      state.metadata.refAnclaje = document.getElementById('meta_ref').value || 'Ref';
-      state.metadata.autor = document.getElementById('meta_autor').value || '';
+async function executeWordReportDownload(triggerBtn = null) {
+  let origHtml = '';
+  if (triggerBtn) {
+    triggerBtn.disabled = true;
+    origHtml = triggerBtn.innerHTML;
+    triggerBtn.innerHTML = '<span class="spinner" style="width:13px;height:13px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;display:inline-block;animation:spin 0.6s linear infinite;margin-right:4px;"></span> <span>Generando...</span>';
+  }
 
-      btnDownloadWord.disabled = true;
-      btnDownloadWord.innerHTML = '<span class="spinner"></span> Generando Informe...';
+  showToast('Generando plantilla Word oficial cumplimentada...');
 
-      try {
-        const templateBuf = getTemplateBuffer(state.tipoCono, state.afectadoHueco);
-        const docxBlob = await generateDocx(currentCalcResult, state.metadata, templateBuf);
+  try {
+    const meta = {
+      obra: document.getElementById('meta_obra')?.value || state.metadata.obra || 'Obra',
+      cliente: document.getElementById('meta_cliente')?.value || state.metadata.cliente || 'Cliente',
+      refAnclaje: document.getElementById('meta_ref')?.value || state.metadata.refAnclaje || 'Ref Anclaje',
+      autor: document.getElementById('meta_autor')?.value || state.metadata.autor || 'Dpto. Técnico',
+      fecha: new Date().toLocaleDateString('es-ES')
+    };
 
-        // Trigger browser download
-        const blob = new Blob([docxBlob], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const filename = `Informe_${state.tipoCono}_${state.metadata.obra.replace(/[^a-zA-Z0-9]/g, '_')}.docx`;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+    const templateBuf = getTemplateBuffer(state.tipoCono, state.afectadoHueco);
+    const docxBlob = await generateDocx(currentCalcResult, meta, templateBuf);
 
-        modalReport.classList.remove('show');
-        showToast('¡Informe Word generado y descargado con éxito!');
-      } catch (err) {
-        console.error('Error al generar informe:', err);
-        alert('Error al generar el informe Word: ' + err.message);
-      } finally {
-        btnDownloadWord.disabled = false;
-        btnDownloadWord.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg> Descargar Informe Word (.docx)';
-      }
-    });
+    // Trigger browser download
+    const blob = new Blob([docxBlob], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const huecoSuffix = state.afectadoHueco ? 'con_hueco' : 'sin_hueco';
+    const obraSanitized = (meta.obra || 'Obra').replace(/[^a-zA-Z0-9]/g, '_');
+    const filename = `Informe_${state.tipoCono}_${huecoSuffix}_${obraSanitized}.docx`;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    const modalReport = document.getElementById('modalReport');
+    if (modalReport) modalReport.classList.remove('show');
+
+    showToast(`✅ Plantilla Word "${filename}" descargada con éxito`);
+  } catch (err) {
+    console.error('Error al generar informe:', err);
+    alert('Error al generar el informe Word: ' + err.message);
+  } finally {
+    if (triggerBtn) {
+      triggerBtn.disabled = false;
+      triggerBtn.innerHTML = origHtml;
+    }
   }
 }
 
