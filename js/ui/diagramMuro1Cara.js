@@ -3,7 +3,7 @@
  * Divide la visualización en 3 esquemas coordinados:
  * 1. Columna Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache), con cota H a la derecha.
  * 2. Columna Derecha - Superior: Detalle Anclaje (Sección a 45º) con el suelo en el centro vertical y Badges Interactivos para ca1, ca2 y hef.
- * 3. Columna Derecha - Inferior: Planta Anclajes (Vista en Planta de los Anclajes y Riostras) con cotas y Badges Interactivos para ca3 y ca4.
+ * 3. Columna Derecha - Inferior: Planta Anclajes (Vista en Planta de los Anclajes) con cotas y Badges Interactivos para ca3 y ca4.
  */
 
 import { globalUnits } from '../engine/units.js';
@@ -129,7 +129,7 @@ export class DiagramMuro1Cara {
     const secW = 340;
     const secH = 250;
 
-    const secGroundY = 125; // Centro vertical exacto
+    const secGroundY = 125;
     const secAnchorStartX = 215;
     const secAnchorStartY = secGroundY;
 
@@ -158,19 +158,18 @@ export class DiagramMuro1Cara {
     const hefBadgeY = (secAnchorStartY + secAnchorEndY) / 2 + 8;
 
     // ==========================================
-    // 3. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 3 (PLANTA ANCLAJES)
+    // 3. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 3 (PLANTA ANCLAJES LIMPIA)
     // ==========================================
     const planW = 340;
     const planH = 240;
 
-    const planWallY = 75;
-    const planJointX = 285;
-
+    const planWallY = 85;
     const group1X = 80;
     const group2X = 225;
+    const planRightEdgeX = 310;
 
-    const planDimY = 24;
-    const ca3BadgeX = (group2X + planJointX) / 2;
+    const planDimY = 28;
+    const ca3BadgeX = (group2X + planRightEdgeX) / 2;
     const ca3BadgeY = planDimY + 12;
 
     const ca4BadgeX = (group1X + group2X) / 2;
@@ -355,7 +354,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- BLOQUE 3: DETALLE EN PLANTA (VISTA SUPERIOR ANCLAJES Y RIOSTRAS) -->
+          <!-- BLOQUE 3: DETALLE EN PLANTA (VISTA SUPERIOR LIMPIA) -->
           <div style="display: flex; flex-direction: column; width: 100%;">
             <div style="display: flex; justify-content: center; margin-bottom: 0.4rem;">
               <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; padding: 0.3rem 0.85rem; font-size: 0.80rem; font-weight: 700; color: #bae6fd; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
@@ -394,25 +393,22 @@ export class DiagramMuro1Cara {
                 <!-- Línea de Cara del Muro -->
                 <line x1="0" y1="${planWallY}" x2="${planW}" y2="${planWallY}" stroke="#94a3b8" stroke-width="1.5" />
 
-                <!-- Eje de Junta / Borde lateral derecho (ca3) -->
-                <line x1="${planJointX}" y1="15" x2="${planJointX}" y2="${planH - 10}" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6,4" />
-
                 <!-- ================= ESCUADRA IZQUIERDA (GRUPO 1) ================= -->
                 <!-- Canales UPN Rojos Base -->
-                <rect x="${group1X - 16}" y="115" width="10" height="115" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="${group1X + 6}" y="115" width="10" height="115" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group1X - 16}" y="110" width="10" height="120" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group1X + 6}" y="110" width="10" height="120" fill="#c8102e" stroke="#990b22" stroke-width="1" />
                 
                 <!-- Placas Reparto Acero / Madera -->
                 <rect x="${group1X - 32}" y="138" width="64" height="28" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
 
                 <!-- Barras Dywidag Izquierda -->
-                <rect x="${group1X - 22}" y="45" width="4" height="145" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
-                <rect x="${group1X - 22}" y="45" width="4" height="145" fill="url(#threadPattern)" />
-                <circle cx="${group1X - 20}" cy="42" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
+                <rect x="${group1X - 22}" y="55" width="4" height="140" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
+                <rect x="${group1X - 22}" y="55" width="4" height="140" fill="url(#threadPattern)" />
+                <circle cx="${group1X - 20}" cy="52" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
 
-                <rect x="${group1X + 18}" y="45" width="4" height="145" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
-                <rect x="${group1X + 18}" y="45" width="4" height="145" fill="url(#threadPattern)" />
-                <circle cx="${group1X + 20}" cy="42" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
+                <rect x="${group1X + 18}" y="55" width="4" height="140" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
+                <rect x="${group1X + 18}" y="55" width="4" height="140" fill="url(#threadPattern)" />
+                <circle cx="${group1X + 20}" cy="52" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
 
                 <!-- Tuercas hexagonales amarillas -->
                 <polygon points="${group1X - 24},148 ${group1X - 16},144 ${group1X - 16},156 ${group1X - 24},160" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
@@ -420,40 +416,36 @@ export class DiagramMuro1Cara {
 
                 <!-- ================= ESCUADRA DERECHA (GRUPO 2) ================= -->
                 <!-- Canales UPN Rojos Base -->
-                <rect x="${group2X - 16}" y="115" width="10" height="115" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="${group2X + 6}" y="115" width="10" height="115" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group2X - 16}" y="110" width="10" height="120" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group2X + 6}" y="110" width="10" height="120" fill="#c8102e" stroke="#990b22" stroke-width="1" />
 
                 <!-- Placas Reparto Acero / Madera -->
                 <rect x="${group2X - 32}" y="138" width="64" height="28" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
 
                 <!-- Barras Dywidag Derecha -->
-                <rect x="${group2X - 22}" y="45" width="4" height="145" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
-                <rect x="${group2X - 22}" y="45" width="4" height="145" fill="url(#threadPattern)" />
-                <circle cx="${group2X - 20}" cy="42" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
+                <rect x="${group2X - 22}" y="55" width="4" height="140" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
+                <rect x="${group2X - 22}" y="55" width="4" height="140" fill="url(#threadPattern)" />
+                <circle cx="${group2X - 20}" cy="52" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
 
-                <rect x="${group2X + 18}" y="45" width="4" height="145" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
-                <rect x="${group2X + 18}" y="45" width="4" height="145" fill="url(#threadPattern)" />
-                <circle cx="${group2X + 20}" cy="42" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
+                <rect x="${group2X + 18}" y="55" width="4" height="140" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
+                <rect x="${group2X + 18}" y="55" width="4" height="140" fill="url(#threadPattern)" />
+                <circle cx="${group2X + 20}" cy="52" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
 
                 <!-- Tuercas hexagonales amarillas -->
                 <polygon points="${group2X - 24},148 ${group2X - 16},144 ${group2X - 16},156 ${group2X - 24},160" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
                 <polygon points="${group2X + 16},148 ${group2X + 24},144 ${group2X + 24},156 ${group2X + 16},160" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
 
-                <!-- ================= BARRA RIOSTRA TRANSVERSAL ================= -->
-                <rect x="25" y="123" width="280" height="10" rx="2" fill="#6b7280" stroke="#4b5563" stroke-width="1" />
-                <text x="165" y="131" fill="#f3f4f6" font-size="7.5" font-weight="800" font-family="monospace" text-anchor="middle">BARRA RIOSTRA ${AnchoBatache.toFixed(2)}m</text>
-
                 <!-- ================= COTAS EN PLANTA (ca3 y ca4) ================= -->
                 <!-- Líneas de extensión vertical hacia arriba -->
-                <line x1="${group1X}" y1="42" x2="${group1X}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${group2X}" y1="42" x2="${group2X}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${planJointX}" y1="15" x2="${planJointX}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${group1X}" y1="52" x2="${group1X}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${group2X}" y1="52" x2="${group2X}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${planRightEdgeX}" y1="52" x2="${planRightEdgeX}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
 
-                <!-- Línea de cota ca3 (Distancia al borde derecho) -->
-                <line x1="${group2X + 2}" y1="${planDimY}" x2="${planJointX - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
+                <!-- Línea de cota ca3 -->
+                <line x1="${group2X + 2}" y1="${planDimY}" x2="${planRightEdgeX - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
                 <text x="${ca3BadgeX}" y="${planDimY - 8}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
 
-                <!-- Línea de cota ca4 (Distancia entre ejes / lateral izquierdo) -->
+                <!-- Línea de cota ca4 -->
                 <line x1="${group1X + 2}" y1="${planDimY}" x2="${group2X - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
                 <text x="${ca4BadgeX}" y="${planDimY - 8}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca4 ≤ 1.5 hef</text>
               </svg>
