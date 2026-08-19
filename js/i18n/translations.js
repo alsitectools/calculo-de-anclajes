@@ -156,7 +156,8 @@ export const translations = {
     "m1c_col_bar_type": "Tipus Barra",
     "m1c_col_nrd_ser": "NRd,ser (ELS)",
     "m1c_col_utilization": "Aprofitament",
-    "m1c_col_status": "Estat"
+    "m1c_col_status": "Estat",
+    "m1c_chart_title": "Diagrama de Demanda vs Capacitat d'Ancoratge (ELU)"
   },
   "en": {
     "back_to_portal": "Back to portal",
@@ -300,7 +301,8 @@ export const translations = {
     "m1c_col_bar_type": "Tie Rod Type",
     "m1c_col_nrd_ser": "NRd,ser (SLS)",
     "m1c_col_utilization": "Utilization",
-    "m1c_col_status": "Status"
+    "m1c_col_status": "Status",
+    "m1c_chart_title": "45º Anchor Demand vs Capacity Diagram (ULS)"
   },
   "es": {
     "back_to_portal": "Back to portal",
@@ -444,7 +446,8 @@ export const translations = {
     "m1c_col_bar_type": "Tipo Barra",
     "m1c_col_nrd_ser": "NRd,ser (ELS)",
     "m1c_col_utilization": "Aprovechamiento",
-    "m1c_col_status": "Estado"
+    "m1c_col_status": "Estado",
+    "m1c_chart_title": "Diagrama de Demanda vs Capacidad de Anclaje (ELU)"
   },
   "fr": {
     "back_to_portal": "Back to portal",
@@ -588,7 +591,8 @@ export const translations = {
     "m1c_col_bar_type": "Type de Barre",
     "m1c_col_nrd_ser": "NRd,ser (ELS)",
     "m1c_col_utilization": "Taux de Travail",
-    "m1c_col_status": "État"
+    "m1c_col_status": "État",
+    "m1c_chart_title": "Diagramme Demande vs Capacité d'Ancrage (ELU)"
   },
   "it": {
     "back_to_portal": "Back to portal",
@@ -732,7 +736,8 @@ export const translations = {
     "m1c_col_bar_type": "Tipo Tirante",
     "m1c_col_nrd_ser": "NRd,ser (SLE)",
     "m1c_col_utilization": "Sfruttamento",
-    "m1c_col_status": "Stato"
+    "m1c_col_status": "Stato",
+    "m1c_chart_title": "Diagramma di Domanda vs Capacità dell'Ancoraggio (SLU)"
   },
   "pl": {
     "back_to_portal": "Back to portal",
@@ -876,7 +881,8 @@ export const translations = {
     "m1c_col_bar_type": "Typ Ściągu",
     "m1c_col_nrd_ser": "NRd,ser (SGN)",
     "m1c_col_utilization": "Wytężenie",
-    "m1c_col_status": "Stan"
+    "m1c_col_status": "Stan",
+    "m1c_chart_title": "Wykres Zapotrzebowania vs Nośności Kotew (SGN)"
   },
   "ro": {
     "back_to_portal": "Back to portal",
@@ -1020,6 +1026,7 @@ export const translations = {
     "m1c_col_bar_type": "Tip Tirant",
     "m1c_col_nrd_ser": "NRd,ser (SLS)",
     "m1c_col_utilization": "Grad de Utilizare",
-    "m1c_col_status": "Stare"
+    "m1c_col_status": "Stare",
+    "m1c_chart_title": "Diagramă Solicitare vs Capacitate Ancore (ULS)"
   }
 };

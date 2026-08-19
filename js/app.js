@@ -3,6 +3,7 @@ import { calculateMuro1Cara, VIGA_PROFILES, TIE_BAR_TYPES } from './engine/muro1
 import { DiagramView } from './ui/diagramView.js';
 import { DiagramMuro1Cara } from './ui/diagramMuro1Cara.js';
 import { InteractionChart } from './ui/interactionChart.js';
+import { Muro1CaraChart } from './ui/muro1caraChart.js';
 import { generateDocx } from './report/docxGenerator.js';
 import { getTemplateBuffer } from './report/embeddedTemplates.js';
 import { initI18n, setLanguage, getCurrentLanguage, getLanguageInfo, t, applyTranslations } from './i18n/i18n.js';
@@ -34,6 +35,7 @@ const DEFAULT_M1C_STATE = {
 
 let m1cState = { ...DEFAULT_M1C_STATE };
 let diagramM1C = null;
+let m1cChart = null;
 let currentM1CResult = null;
 
 // Default State (Always in SI Units internally: mm, kN, MPa)
@@ -80,7 +82,6 @@ const DEFAULT_HYPOTHESIS_DATA = {
 
 let diagramView = null;
 let interactionChart = null;
-let interactionChartM1C = null;
 let currentCalcResult = null;
 
 // Hypotheses Store
@@ -743,9 +744,6 @@ function bindUserProfileMenu() {
         if (interactionChart && currentCalcResult) {
           interactionChart.draw(currentCalcResult);
         }
-        if (interactionChartM1C && currentM1CResult) {
-          interactionChartM1C.draw(currentM1CResult);
-        }
       });
     }
 
@@ -1136,9 +1134,9 @@ function initMuro1CaraUI() {
     });
   }
 
-  const chartCanvasM1C = document.getElementById('interactionCanvasM1C');
-  if (chartCanvasM1C) {
-    interactionChartM1C = new InteractionChart(chartCanvasM1C);
+  const canvas = document.getElementById('m1cInteractionCanvas');
+  if (canvas) {
+    m1cChart = new Muro1CaraChart(canvas);
   }
 
   bindMuro1CaraInputs();
@@ -1281,16 +1279,16 @@ function updateM1CCalculation() {
     diagramM1C.updateValues(m1cState);
   }
 
-  // 1. Interaction Chart M1C
-  if (interactionChartM1C) {
-    interactionChartM1C.draw(res);
+  // 1. Draw M1C Canvas Chart
+  if (m1cChart) {
+    m1cChart.draw({ inputs: m1cState, res });
   }
 
-  // 2. Overall Status Verdict Box (Matching Trepante)
-  const globalCard = document.getElementById('m1c_globalVerdictCard');
-  const vPill = document.getElementById('m1c_verdictPill');
-  const vPercent = document.getElementById('m1c_verdictUtilPct');
-  const vFormula = document.getElementById('m1c_verdictFormulaText');
+  // 2. Overall Status Verdict Card (Glowing card matching Trepante)
+  const globalCard = document.getElementById('m1cGlobalVerdictCard');
+  const verdictPill = document.getElementById('m1cVerdictPill');
+  const utilVal = document.getElementById('m1cVerdictUtilPct');
+  const formulaText = document.getElementById('m1cVerdictFormulaText');
 
   const util = res.hormigon.concrete_ULS_util;
   const isOk = res.hormigon.concrete_ULS_OK && res.hormigon.concrete_SLS_OK;
@@ -1299,19 +1297,20 @@ function updateM1CCalculation() {
     globalCard.className = `global-verdict-card ${isOk ? 'verdict-ok' : 'verdict-ko'}`;
   }
 
-  if (vPill) {
-    vPill.textContent = isOk ? t('verdict_ok') : t('verdict_ko');
+  if (verdictPill) {
+    verdictPill.textContent = isOk ? t('verdict_ok') : t('verdict_ko');
   }
 
-  if (vPercent) {
-    vPercent.textContent = `${util.toFixed(2)}%`;
+  if (utilVal) {
+    utilVal.textContent = `${util.toFixed(1)}%`;
   }
 
-  if (vFormula) {
+  if (formulaText) {
     const nedStr = globalUnits.formatForce(res.demanda.Ned_anclaje);
     const nbcStr = globalUnits.formatForce(res.hormigon.Nbc_Rd);
+    const ratioStr = (res.demanda.Ned_anclaje / (res.hormigon.Nbc_Rd || 1)).toFixed(3);
     const sym = isOk ? '≤' : '>';
-    vFormula.textContent = `(Ned / Nbc,Rd) = (${nedStr} / ${nbcStr}) = ${(util / 100).toFixed(3)} ${sym} 1.0 (Aprovechamiento ${util.toFixed(1)}% ${isOk ? '≤ 100%' : '> 100%'})`;
+    formulaText.textContent = `Ned / Nbc,Rd = ${nedStr} / ${nbcStr} = ${ratioStr} ${sym} 1.0 (Aprovechamiento ${util.toFixed(1)}% ${sym} 100%)`;
   }
 
   // 2. Concrete Breakout Card

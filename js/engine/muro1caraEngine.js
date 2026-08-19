@@ -219,25 +219,6 @@ export function calculateMuro1Cara(params) {
     };
   }
 
-  // 6. Curva de Interacción Axil - Cortante (M1C a 45º)
-  const Fx_d = Fx_anclaje * gamma_q; // kN
-  const operX = Fx_d; // Cortante horizontal actuante en batache / anclaje
-  const operY = Fx_d; // Axil vertical actuante -> resultante = sqrt(2)*Fx_d = Ned_anclaje
-  const NRd = Nbc_Rd; // Capacidad a tracción cono hormigón
-  const VRd = Nbc_Rd; // Capacidad a cortante cono hormigón
-
-  const numPoints = 50;
-  const puntos = [];
-  for (let i = 0; i <= numPoints; i++) {
-    const vx = (i / numPoints) * VRd;
-    const ratioV = VRd > 0 ? vx / VRd : 0;
-    const ny = NRd * Math.pow(Math.max(0, 1 - Math.pow(ratioV, 1.5)), 1 / 1.5);
-    puntos.push({ x: vx, y: ny });
-  }
-
-  const globalStatus = concrete_ULS_OK ? 'OK' : 'NO OK';
-  const formulaText = `Ned = ${Ned_anclaje.toFixed(1)} kN ${concrete_ULS_OK ? '≤' : '>'} Nbc,Rd = ${Nbc_Rd.toFixed(1)} kN (Aprovechamiento ${concrete_ULS_util.toFixed(1)}% ${concrete_ULS_OK ? '≤ 100%' : '> 100%'})`;
-
   return {
     inputs: {
       H,
@@ -290,19 +271,6 @@ export function calculateMuro1Cara(params) {
     },
     vigas: vigasResults,
     barras: barrasResults,
-    globalOk: concrete_ULS_OK && concrete_SLS_OK,
-    curva: {
-      puntos,
-      puntoOperacion: { x: operX, y: operY },
-      exponente: 1.5
-    },
-    traccion: { NRd },
-    cortante: { VRd },
-    global: {
-      status: concrete_ULS_OK ? 'OK' : 'KO',
-      displayStatus: globalStatus,
-      ratioPorcentaje: concrete_ULS_util,
-      formulaText
-    }
+    globalOk: concrete_ULS_OK && concrete_SLS_OK
   };
 }

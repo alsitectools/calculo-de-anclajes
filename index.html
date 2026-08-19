@@ -776,22 +776,22 @@
       <!-- RIGHT COLUMN: RESULTS & VERIFICATIONS -->
       <div class="results-column results-dashboard">
 
-        <!-- Paso 3: Diagrama de Interacción Axil - Cortante (Ned - Ved) -->
+        <!-- Paso 3: Diagrama de Demanda vs Capacidad M1C (Gráfico Canvas) -->
         <section class="card chart-card">
           <div class="card-header">
             <div class="card-title">
               <span class="step-num">3</span>
-              <span data-i18n="chart_card_title">Diagrama de Interacción Axil - Cortante (Nsd - Vsd)</span>
+              <span data-i18n="m1c_chart_title">Diagrama de Demanda vs Capacidad de Anclaje (ELU)</span>
             </div>
           </div>
 
           <div class="chart-wrapper">
-            <canvas id="interactionCanvasM1C"></canvas>
+            <canvas id="m1cInteractionCanvas"></canvas>
           </div>
         </section>
 
         <!-- Paso 4: Verificación de Resistencia Global M1C -->
-        <section class="card" style="margin-top: 1.5rem;">
+        <section class="card results-summary-card">
           <div class="card-header">
             <div class="card-title">
               <span class="step-num">4</span>
@@ -799,22 +799,22 @@
             </div>
           </div>
 
-          <!-- Global Verdict Box matching Trepante design -->
-          <div id="m1c_globalVerdictCard" class="global-verdict-card verdict-ko">
+          <!-- Global Verdict Box (Same glowing card design as Trepante) -->
+          <div id="m1cGlobalVerdictCard" class="global-verdict-card verdict-ko">
             <div class="verdict-badge-main">
               <div>
                 <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;" data-i18n="interaction_label">Interacción</div>
-                <div id="m1c_verdictPill" class="verdict-pill">NO OK</div>
+                <div id="m1cVerdictPill" class="verdict-pill">FALLO</div>
               </div>
             </div>
 
             <div class="verdict-utilization">
               <div class="util-label" data-i18n="resistance_verification">Verificación de Resistencia</div>
-              <div id="m1c_verdictUtilPct" class="util-val">121.4%</div>
+              <div id="m1cVerdictUtilPct" class="util-val">121.4%</div>
             </div>
 
-            <div id="m1c_verdictFormulaText" class="verdict-formula" style="width: 100%;">
-              Ned = 225.4 kN &gt; Nbc,Rd = 185.7 kN (Aprovechamiento 121.4% &gt; 100%)
+            <div id="m1cVerdictFormulaText" class="verdict-formula" style="width: 100%;">
+              Ned / Nbc,Rd = 225.4 kN / 185.7 kN = 1.214 ≤ 1.0
             </div>
           </div>
 
