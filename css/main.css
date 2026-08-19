@@ -98,11 +98,11 @@ body {
   z-index: 10;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1380px) {
   .alsina-nav-center {
     position: static;
     transform: none;
-    margin: 0.25rem 0;
+    margin: 0;
   }
 }
 

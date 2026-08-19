@@ -24,16 +24,12 @@ export class DiagramView {
   }
 
   updateValues(values) {
-    let changed = false;
     for (const [key, val] of Object.entries(values)) {
-      if (this.values[key] !== undefined && this.values[key] !== val) {
+      if (this.values[key] !== undefined) {
         this.values[key] = val;
-        changed = true;
       }
     }
-    if (changed) {
-      this.updateGeometry();
-    }
+    this.updateGeometry();
   }
 
   render() {

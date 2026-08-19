@@ -11,7 +11,6 @@ export class InteractionChart {
     this.ctx = this.canvas.getContext('2d');
     this.setupHighDPI();
     window.addEventListener('resize', () => {
-      this.setupHighDPI();
       if (this.lastData) this.draw(this.lastData);
     });
   }
@@ -19,16 +18,21 @@ export class InteractionChart {
   setupHighDPI() {
     const rect = this.canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    this.width = rect.width || 500;
-    this.height = rect.height || 320;
+    const computedW = rect.width > 0 ? rect.width : (this.canvas.parentElement?.clientWidth || 500);
+    const computedH = rect.height > 0 ? rect.height : (this.canvas.parentElement?.clientHeight || 320);
 
-    this.canvas.width = this.width * dpr;
-    this.canvas.height = this.height * dpr;
-    this.ctx.scale(dpr, dpr);
+    this.width = computedW;
+    this.height = computedH;
+
+    this.canvas.width = Math.round(computedW * dpr);
+    this.canvas.height = Math.round(computedH * dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
   draw(data) {
+    if (!data) return;
     this.lastData = data;
+    this.setupHighDPI();
     const { curva, traccion, cortante, global, inputs } = data;
     const { puntos, puntoOperacion } = curva;
     

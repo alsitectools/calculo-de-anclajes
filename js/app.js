@@ -279,7 +279,6 @@ function initUI() {
   bindModals();
   bindHypothesisControls();
   bindUserProfileMenu();
-  applyUnitsToUI();
 }
 
 function applyUnitsToUI() {
@@ -358,6 +357,20 @@ function applyUnitsToUI() {
   // 5. Sync inputs and diagram
   syncInputsFromState();
   syncDiagramFromState();
+}
+
+function updateUnitsUI() {
+  const lblSpan = document.getElementById('lblUnitSystem');
+  const badgeSpan = document.getElementById('badgeUnitSystem');
+  const isImp = globalUnits.isImperial();
+  if (lblSpan) {
+    const key = isImp ? 'switch_metric' : 'switch_imperial';
+    lblSpan.setAttribute('data-i18n', key);
+    lblSpan.textContent = t(key);
+  }
+  if (badgeSpan) {
+    badgeSpan.textContent = isImp ? 'in/lb' : 'mm/kN';
+  }
 }
 
 function bindInputs() {
