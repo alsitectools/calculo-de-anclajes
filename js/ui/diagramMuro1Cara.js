@@ -3,7 +3,7 @@
  * Divide la visualización en 3 esquemas coordinados:
  * 1. Columna Izquierda: Vista General del Muro (con altura perfectamente alineada con la base de Planta Anclajes).
  * 2. Columna Derecha - Superior: Detalle Anclaje (Sección a 45º) con el suelo en el centro vertical y Badges Interactivos para ca1, ca2 y hef.
- * 3. Columna Derecha - Inferior: Planta Anclajes (Vista en Planta) con encofrado rojo, anclajes amarillos y blancos homogéneos, y cotas/inputs interactivos ca3 y ca4 en la parte superior sin solapes.
+ * 3. Columna Derecha - Inferior: Planta Anclajes con encofrado rojo, anclajes amarillos y blancos, y cota ca3 desde el eje central entre anclajes hasta el eje del anclaje, y ca4 entre grupos de anclajes.
  */
 
 import { globalUnits } from '../engine/units.js';
@@ -164,15 +164,22 @@ export class DiagramMuro1Cara {
     const planH = 240;
 
     const planWallY = 100;
-    const group1X = 80;
-    const group2X = 225;
-    const planRightEdgeX = 305;
+    const group1Center = 80;
+    const group2Center = 230;
+
+    const rod1L = group1Center - 18; // 62
+    const rod1R = group1Center + 18; // 98
+    const rod2L = group2Center - 18; // 212
+    const rod2R = group2Center + 18; // 248
 
     const planDimY = 16;
-    const ca3BadgeX = (group2X + planRightEdgeX) / 2;
+    
+    // Cota ca3: desde el eje central entre anclajes (230) hasta el anclaje derecho (248)
+    const ca3BadgeX = (group2Center + rod2R) / 2 + 25;
     const ca3BadgeY = 32;
 
-    const ca4BadgeX = (group1X + group2X) / 2;
+    // Cota ca4: entre el anclaje derecho del grupo 1 y el anclaje izquierdo del grupo 2
+    const ca4BadgeX = (rod1R + rod2L) / 2;
     const ca4BadgeY = 32;
 
     const plateY = 62;
@@ -357,7 +364,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- BLOQUE 3: DETALLE EN PLANTA (VISTA SUPERIOR HOMOGÉNEA CON ENCOFRADO Y ANCLAJES DORADOS/BLANCOS) -->
+          <!-- BLOQUE 3: DETALLE EN PLANTA (VISTA SUPERIOR HOMOGÉNEA) -->
           <div style="display: flex; flex-direction: column; width: 100%;">
             <div style="display: flex; justify-content: center; margin-bottom: 0.4rem; height: 28px; align-items: center;">
               <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; padding: 0.3rem 0.85rem; font-size: 0.80rem; font-weight: 700; color: #bae6fd; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
@@ -389,55 +396,59 @@ export class DiagramMuro1Cara {
                 <polygon points="0,0 ${planW},0 ${planW},${planH} 0,${planH}" fill="url(#concreteGradM1C_Plan)" stroke="none" />
                 <polygon points="0,0 ${planW},0 ${planW},${planH} 0,${planH}" fill="url(#diagHatchM1C_Plan)" />
 
+                <!-- Eje Central del Grupo Derecho (Dashed Axis Line) -->
+                <line x1="${group2Center}" y1="12" x2="${group2Center}" y2="225" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="8,4,2,4" opacity="0.85" />
+
                 <!-- ================= ANCLAJES (BARRAS AMARILLAS Y PLACAS BLANCAS) ================= -->
                 <!-- Grupo 1 Izquierda: 2 barras de anclaje amarillas con placa blanca -->
                 <!-- Barra 1.1 -->
-                <line x1="68" y1="${plateY}" x2="68" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
-                <line x1="58" y1="${plateY}" x2="78" y2="${plateY}" stroke="#f8fafc" stroke-width="4.5" stroke-linecap="round" />
+                <line x1="${rod1L}" y1="${plateY}" x2="${rod1L}" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
+                <line x1="${rod1L - 10}" y1="${plateY}" x2="${rod1L + 10}" y2="${plateY}" stroke="#f8fafc" stroke-width="4.5" stroke-linecap="round" />
                 
                 <!-- Barra 1.2 -->
-                <line x1="92" y1="${plateY}" x2="92" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
-                <line x1="82" y1="${plateY}" x2="102" y2="${plateY}" stroke="#f8fafc" stroke-width="4.5" stroke-linecap="round" />
+                <line x1="${rod1R}" y1="${plateY}" x2="${rod1R}" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
+                <line x1="${rod1R - 10}" y1="${plateY}" x2="${rod1R + 10}" y2="${plateY}" stroke="#f8fafc" stroke-width="4.5" stroke-linecap="round" />
 
                 <!-- Grupo 2 Derecha: 2 barras de anclaje amarillas con placa blanca -->
                 <!-- Barra 2.1 -->
-                <line x1="213" y1="${plateY}" x2="213" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
-                <line x1="203" y1="${plateY}" x2="223" y2="${plateY}" stroke="#f8fafc" stroke-width="4.5" stroke-linecap="round" />
+                <line x1="${rod2L}" y1="${plateY}" x2="${rod2L}" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
+                <line x1="${rod2L - 10}" y1="${plateY}" x2="${rod2L + 10}" y2="${plateY}" stroke="#f8fafc" stroke-width="4.5" stroke-linecap="round" />
 
                 <!-- Barra 2.2 -->
-                <line x1="237" y1="${plateY}" x2="237" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
-                <line x1="227" y1="${plateY}" x2="247" y2="${plateY}" stroke="#f8fafc" stroke-width="4.5" stroke-linecap="round" />
+                <line x1="${rod2R}" y1="${plateY}" x2="${rod2R}" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
+                <line x1="${rod2R - 10}" y1="${plateY}" x2="${rod2R + 10}" y2="${plateY}" stroke="#f8fafc" stroke-width="4.5" stroke-linecap="round" />
 
                 <!-- ================= ENCOFRADO HORIZONTAL ROJO CON BORDE BLANCO ================= -->
                 <rect x="0" y="${planWallY}" width="${planW}" height="14" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1.2" />
 
                 <!-- ================= ESCUADRA BASE (UPN ROJOS Y PLACAS REPARTO) ================= -->
                 <!-- Grupo 1 -->
-                <rect x="70" y="114" width="8" height="110" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="82" y="114" width="8" height="110" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="52" y="142" width="56" height="26" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
-                <polygon points="64,150 72,146 72,158 64,162" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
-                <polygon points="88,150 96,146 96,158 88,162" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <rect x="${group1Center - 10}" y="114" width="8" height="110" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group1Center + 2}" y="114" width="8" height="110" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group1Center - 28}" y="142" width="56" height="26" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
+                <polygon points="${rod1L - 4},150 ${rod1L + 4},146 ${rod1L + 4},158 ${rod1L - 4},162" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <polygon points="${rod1R - 4},150 ${rod1R + 4},146 ${rod1R + 4},158 ${rod1R - 4},162" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
 
                 <!-- Grupo 2 -->
-                <rect x="215" y="114" width="8" height="110" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="227" y="114" width="8" height="110" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="197" y="142" width="56" height="26" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
-                <polygon points="209,150 217,146 217,158 209,162" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
-                <polygon points="233,150 241,146 241,158 233,162" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <rect x="${group2Center - 10}" y="114" width="8" height="110" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group2Center + 2}" y="114" width="8" height="110" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group2Center - 28}" y="142" width="56" height="26" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
+                <polygon points="${rod2L - 4},150 ${rod2L + 4},146 ${rod2L + 4},158 ${rod2L - 4},162" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <polygon points="${rod2R - 4},150 ${rod2R + 4},146 ${rod2R + 4},158 ${rod2R - 4},162" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
 
                 <!-- ================= COTAS EN PLANTA (ca3 y ca4) ================= -->
                 <!-- Líneas de extensión vertical hacia arriba -->
-                <line x1="${group1X}" y1="58" x2="${group1X}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${group2X}" y1="58" x2="${group2X}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${planRightEdgeX}" y1="58" x2="${planRightEdgeX}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${rod1R}" y1="58" x2="${rod1R}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${rod2L}" y1="58" x2="${rod2L}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${group2Center}" y1="12" x2="${group2Center}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
+                <line x1="${rod2R}" y1="58" x2="${rod2R}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
 
-                <!-- Línea de cota ca3 -->
-                <line x1="${group2X + 2}" y1="${planDimY}" x2="${planRightEdgeX - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
-                <text x="${ca3BadgeX}" y="${planDimY - 6}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
+                <!-- Línea de cota ca3 (Desde el eje central entre anclajes 230 hasta el anclaje derecho 248) -->
+                <line x1="${group2Center + 2}" y1="${planDimY}" x2="${rod2R - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
+                <text x="${(group2Center + rod2R) / 2}" y="${planDimY - 6}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
 
-                <!-- Línea de cota ca4 -->
-                <line x1="${group1X + 2}" y1="${planDimY}" x2="${group2X - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
+                <!-- Línea de cota ca4 (Entre el anclaje rod1R y rod2L) -->
+                <line x1="${rod1R + 2}" y1="${planDimY}" x2="${rod2L - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
                 <text x="${ca4BadgeX}" y="${planDimY - 6}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca4 ≤ 1.5 hef</text>
               </svg>
 
