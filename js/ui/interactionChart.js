@@ -55,8 +55,14 @@ export class InteractionChart {
     const scaleX = val => padLeft + (val / maxScale) * plotW;
     const scaleY = val => padTop + plotH - (val / maxScale) * plotH;
 
-    // 1. Draw Grid & Axes
-    ctx.strokeStyle = '#1e293b';
+    // 1. Draw Grid & Axes with Theme awareness
+    const isLight = document.body.classList.contains('light-theme');
+    const gridColor = isLight ? '#e2e8f0' : '#1e293b';
+    const axisColor = isLight ? '#cbd5e1' : '#475569';
+    const labelColor = isLight ? '#64748b' : '#64748b';
+    const titleColor = isLight ? '#334155' : '#94a3b8';
+
+    ctx.strokeStyle = gridColor;
     ctx.lineWidth = 1;
 
     const step = maxScale <= 60 ? 10 : (maxScale <= 120 ? 20 : 50);
@@ -76,7 +82,7 @@ export class InteractionChart {
       ctx.stroke();
 
       // Axis labels
-      ctx.fillStyle = '#64748b';
+      ctx.fillStyle = labelColor;
       ctx.font = '10px "JetBrains Mono", monospace';
       ctx.textAlign = 'center';
       ctx.fillText(v.toString(), x, padTop + plotH + 16);
@@ -86,7 +92,7 @@ export class InteractionChart {
     }
 
     // Main Axes
-    ctx.strokeStyle = '#475569';
+    ctx.strokeStyle = axisColor;
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(padLeft, padTop);
@@ -95,7 +101,7 @@ export class InteractionChart {
     ctx.stroke();
 
     // Axis Titles
-    ctx.fillStyle = '#94a3b8';
+    ctx.fillStyle = titleColor;
     ctx.font = '700 11px Outfit, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('VRd - Cortante (kN)', padLeft + plotW / 2, h - 8);

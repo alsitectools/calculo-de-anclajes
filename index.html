@@ -86,39 +86,85 @@
             <svg class="alsina-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"></path></svg>
           </button>
 
-          <!-- User Dropdown Menu -->
+          <!-- User Dropdown Menu Matching Portal Design -->
           <div id="userProfileDropdown" class="alsina-user-dropdown" style="display: none;">
-            <div class="user-dropdown-header">
-              <div class="user-dropdown-avatar">AP</div>
-              <div class="user-dropdown-info">
-                <strong>Alejandro Pardo</strong>
-                <span>admin@alsina.com</span>
+            
+            <!-- 1. Language Row -->
+            <div class="user-menu-row" id="rowLanguageSelect">
+              <div class="user-menu-left">
+                <svg class="user-menu-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 8l6 6"></path>
+                  <path d="M4 14h8"></path>
+                  <path d="M2 5h12"></path>
+                  <path d="M7 2h1"></path>
+                  <path d="M22 22l-5-10-5 10"></path>
+                  <path d="M14 18h6"></path>
+                </svg>
+                <span id="currentLanguageLabel" class="user-menu-text">Español</span>
+              </div>
+              <svg class="user-menu-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"></path></svg>
+            </div>
+
+            <!-- Language Submenu -->
+            <div id="languageSubmenu" class="language-submenu" style="display: none;">
+              <div class="lang-opt" data-lang="es">🇪🇸 Español</div>
+              <div class="lang-opt" data-lang="en">🇬🇧 English</div>
+              <div class="lang-opt" data-lang="fr">🇫🇷 Français</div>
+              <div class="lang-opt" data-lang="de">🇩🇪 Deutsch</div>
+              <div class="lang-opt" data-lang="it">🇮🇹 Italiano</div>
+              <div class="lang-opt" data-lang="pt">🇵🇹 Português</div>
+              <div class="lang-opt" data-lang="ca">🏴󠁥󠁳󠁣󠁴󠁿 Català</div>
+            </div>
+
+            <!-- 2. Unit System Toggle -->
+            <div class="user-menu-row" id="rowToggleUnits">
+              <div class="user-menu-left">
+                <svg class="user-menu-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"></path>
+                  <path d="M2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"></path>
+                  <path d="M7 21h10"></path>
+                  <path d="M12 3v18"></path>
+                  <path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path>
+                </svg>
+                <span id="lblUnitSystem" class="user-menu-text" data-i18n="switch_imperial">Cambiar a Imperial (in/lb)</span>
+              </div>
+              <span id="badgeUnitSystem" class="unit-badge">mm/kN</span>
+            </div>
+
+            <!-- 3. Dark Mode Toggle Switch -->
+            <div class="user-menu-row" id="rowToggleDarkMode">
+              <div class="user-menu-left">
+                <svg class="user-menu-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2"></path>
+                  <path d="M12 20v2"></path>
+                  <path d="M4.93 4.93l1.41 1.41"></path>
+                  <path d="M17.66 17.66l1.41 1.41"></path>
+                  <path d="M2 12h2"></path>
+                  <path d="M20 12h2"></path>
+                  <path d="M6.34 17.66l-1.41 1.41"></path>
+                  <path d="M19.07 4.93l-1.41 1.41"></path>
+                </svg>
+                <span class="user-menu-text" data-i18n="dark_mode">Modo oscuro</span>
+              </div>
+              <label class="theme-switch" for="chkDarkMode">
+                <input type="checkbox" id="chkDarkMode" checked />
+                <span class="theme-slider"></span>
+              </label>
+            </div>
+
+            <!-- 4. Logout Row -->
+            <div class="user-menu-row user-menu-logout" id="btnLogoutProfile">
+              <div class="user-menu-left">
+                <svg class="user-menu-icon logout-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span class="logout-text" data-i18n="logout">logout</span>
               </div>
             </div>
-            <div class="user-dropdown-body">
-              <div class="user-dropdown-item">
-                <span class="item-label">Departamento</span>
-                <span class="item-value">Ingeniería y Encofrados</span>
-              </div>
-              <div class="user-dropdown-item">
-                <span class="item-label">Rol</span>
-                <span class="item-value">Ingeniero Estructural Senior</span>
-              </div>
-              <div class="user-dropdown-item">
-                <span class="item-label">Módulo</span>
-                <span class="item-value">Anclajes de Trepantes v1.0</span>
-              </div>
-            </div>
-            <div class="user-dropdown-footer">
-              <a href="http://localhost:5173/" class="btn-portal-link">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-                Portal Alsina
-              </a>
-              <button id="btnLogoutProfile" class="btn-logout">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                Cerrar Sesión
-              </button>
-            </div>
+
           </div>
         </div>
 
@@ -137,7 +183,7 @@
         <div class="card-header">
           <div class="card-title">
             <span class="step-num">1</span>
-            Definición de Cargas y Geometría de Hormigón
+            <span data-i18n="step1_title">Definición de Cargas y Geometría de Hormigón</span>
           </div>
         </div>
 
@@ -149,7 +195,7 @@
         <!-- Input Grid (Synchronized with Diagram) -->
         <div class="diagram-inputs-grid">
           <div class="input-badge">
-            <label for="inp_Nsk">Axil Nsk (Tracción)</label>
+            <label for="inp_Nsk" data-i18n="axial_load">Axil Nsk (Tracción)</label>
             <div class="input-group">
               <input type="number" id="inp_Nsk" min="0" max="1000" step="1" value="30">
               <span class="unit">kN</span>
@@ -157,7 +203,7 @@
           </div>
 
           <div class="input-badge">
-            <label for="inp_Vsk">Cortante Vsk</label>
+            <label for="inp_Vsk" data-i18n="shear_load">Cortante Vsk</label>
             <div class="input-group">
               <input type="number" id="inp_Vsk" min="0" max="1000" step="1" value="30">
               <span class="unit">kN</span>
@@ -165,7 +211,7 @@
           </div>
 
           <div class="input-badge">
-            <label for="inp_cal">Borde Izq (Ca,l)</label>
+            <label for="inp_cal" data-i18n="edge_left">Borde Izq (Ca,l)</label>
             <div class="input-group">
               <input type="number" id="inp_cal" min="50" max="5000" step="10" value="500">
               <span class="unit">mm</span>
@@ -173,7 +219,7 @@
           </div>
 
           <div class="input-badge">
-            <label for="inp_car">Borde Der (Ca,r)</label>
+            <label for="inp_car" data-i18n="edge_right">Borde Der (Ca,r)</label>
             <div class="input-group">
               <input type="number" id="inp_car" min="50" max="5000" step="10" value="500">
               <span class="unit">mm</span>
@@ -181,7 +227,7 @@
           </div>
 
           <div class="input-badge">
-            <label for="inp_cau">Borde Sup (Ca,u)</label>
+            <label for="inp_cau" data-i18n="edge_upper">Borde Sup (Ca,u)</label>
             <div class="input-group">
               <input type="number" id="inp_cau" min="50" max="5000" step="10" value="500">
               <span class="unit">mm</span>
@@ -189,7 +235,7 @@
           </div>
 
           <div class="input-badge">
-            <label for="inp_cad">Borde Inf (Ca,d)</label>
+            <label for="inp_cad" data-i18n="edge_lower">Borde Inf (Ca,d)</label>
             <div class="input-group">
               <input type="number" id="inp_cad" min="50" max="5000" step="10" value="500">
               <span class="unit">mm</span>
@@ -197,7 +243,7 @@
           </div>
 
           <div class="input-badge">
-            <label for="inp_ha">Espesor Muro (ha)</label>
+            <label for="inp_ha" data-i18n="wall_thickness">Espesor Muro (ha)</label>
             <div class="input-group">
               <input type="number" id="inp_ha" min="100" max="5000" step="10" value="400">
               <span class="unit">mm</span>
@@ -210,7 +256,7 @@
           <label class="hueco-checkbox-label">
             <input type="checkbox" id="chk_hueco" style="display:none;">
             <span class="custom-checkbox"></span>
-            <span style="font-weight: 600; font-size: 0.95rem;">Afectado por hueco inferior</span>
+            <span style="font-weight: 600; font-size: 0.95rem;" data-i18n="void_affect_title">Afectado por hueco inferior</span>
           </label>
           <button id="btnHelpVoid" class="btn-help-icon" title="Ver explicación gráfica de afectación por huecos">?</button>
         </div>
@@ -221,7 +267,7 @@
         <div class="card-header">
           <div class="card-title">
             <span class="step-num">2</span>
-            Definición del Tipo de Anclaje
+            <span data-i18n="step2_title">Definición del Tipo de Anclaje</span>
           </div>
         </div>
 
@@ -343,7 +389,7 @@
                 <img src="assets/images/tornillo_axial.jpg" alt="Tornillo axial">
               </div>
               <div class="mode-info">
-                <div class="mode-title">Tornillo axial</div>
+                <div class="mode-title" data-i18n="mode_screw_axial">Tornillo axial</div>
                 <span class="mode-status-badge badge-ok">OK</span>
               </div>
             </div>
@@ -352,7 +398,7 @@
                 <div class="mode-progress-bar-fill" style="width: 10%; background-color: #10b981;"></div>
               </div>
               <div class="mode-pct-text">
-                <span>Aprovechamiento</span>
+                <span data-i18n="max_utilization">Aprovechamiento</span>
                 <span class="mode-pct-val">10%</span>
               </div>
             </div>
@@ -365,7 +411,7 @@
                 <img src="assets/images/barra_dw_axial.jpg" alt="Barra DW axial">
               </div>
               <div class="mode-info">
-                <div class="mode-title">Barra DW axial</div>
+                <div class="mode-title" data-i18n="mode_dw">Barra DW axial</div>
                 <span class="mode-status-badge badge-ok">OK</span>
               </div>
             </div>
@@ -374,7 +420,7 @@
                 <div class="mode-progress-bar-fill" style="width: 12%; background-color: #10b981;"></div>
               </div>
               <div class="mode-pct-text">
-                <span>Aprovechamiento</span>
+                <span data-i18n="max_utilization">Aprovechamiento</span>
                 <span class="mode-pct-val">12%</span>
               </div>
             </div>
@@ -387,7 +433,7 @@
                 <img src="assets/images/cono_hormigon_axial.jpg" alt="Cono hormigón axial">
               </div>
               <div class="mode-info">
-                <div class="mode-title">Cono hormigón axial</div>
+                <div class="mode-title" data-i18n="mode_cone_axial">Cono hormigón axial</div>
                 <span class="mode-status-badge badge-ok">OK</span>
               </div>
             </div>
@@ -396,7 +442,7 @@
                 <div class="mode-progress-bar-fill" style="width: 29%; background-color: #10b981;"></div>
               </div>
               <div class="mode-pct-text">
-                <span>Aprovechamiento</span>
+                <span data-i18n="max_utilization">Aprovechamiento</span>
                 <span class="mode-pct-val">29%</span>
               </div>
             </div>
@@ -409,7 +455,7 @@
                 <img src="assets/images/cono_hormigon_cortante.jpg" alt="Cono hormigón cortante">
               </div>
               <div class="mode-info">
-                <div class="mode-title">Cono hormigón cortante</div>
+                <div class="mode-title" data-i18n="mode_concrete_shear">Cono hormigón cortante</div>
                 <span class="mode-status-badge badge-ok">OK</span>
               </div>
             </div>
@@ -418,7 +464,7 @@
                 <div class="mode-progress-bar-fill" style="width: 0%; background-color: #10b981;"></div>
               </div>
               <div class="mode-pct-text">
-                <span>Aprovechamiento</span>
+                <span data-i18n="max_utilization">Aprovechamiento</span>
                 <span class="mode-pct-val">0%</span>
               </div>
             </div>
@@ -431,7 +477,7 @@
                 <img src="assets/images/cabeceo_cortante.jpg" alt="Cabeceo cortante">
               </div>
               <div class="mode-info">
-                <div class="mode-title">Cabeceo cortante</div>
+                <div class="mode-title" data-i18n="mode_pryout">Cabeceo cortante</div>
                 <span class="mode-status-badge badge-ok">OK</span>
               </div>
             </div>
@@ -440,7 +486,7 @@
                 <div class="mode-progress-bar-fill" style="width: 31%; background-color: #10b981;"></div>
               </div>
               <div class="mode-pct-text">
-                <span>Aprovechamiento</span>
+                <span data-i18n="max_utilization">Aprovechamiento</span>
                 <span class="mode-pct-val">31%</span>
               </div>
             </div>
@@ -453,7 +499,7 @@
                 <img src="assets/images/cono_metalico_cortante.jpg" alt="Cono metálico cortante">
               </div>
               <div class="mode-info">
-                <div class="mode-title">Cono metálico cortante</div>
+                <div class="mode-title" data-i18n="mode_cone_shear">Cono metálico cortante</div>
                 <span class="mode-status-badge badge-ok">OK</span>
               </div>
             </div>
@@ -462,7 +508,7 @@
                 <div class="mode-progress-bar-fill" style="width: 11%; background-color: #10b981;"></div>
               </div>
               <div class="mode-pct-text">
-                <span>Aprovechamiento</span>
+                <span data-i18n="max_utilization">Aprovechamiento</span>
                 <span class="mode-pct-val">11%</span>
               </div>
             </div>

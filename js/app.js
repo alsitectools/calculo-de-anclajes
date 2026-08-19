@@ -230,11 +230,11 @@ function confirmDeleteHypothesis() {
 }
 
 function initUI() {
-  // Initialize Diagram
-  const diagContainer = document.getElementById('diagramViewContainer');
-  if (diagContainer) {
-    diagramView = new DiagramView(diagContainer, (key, val) => {
-      state[key] = val;
+  // Initialize Diagram View
+  const diagramContainer = document.getElementById('diagramViewContainer');
+  if (diagramContainer) {
+    diagramView = new DiagramView(diagramContainer, (key, value) => {
+      state[key] = value;
       syncInputsFromState();
       updateCalculation();
     });
@@ -251,6 +251,7 @@ function initUI() {
   bindAnchorTypeSelection();
   bindModals();
   bindHypothesisControls();
+  bindUserProfileMenu();
 }
 
 function bindInputs() {
@@ -416,33 +417,115 @@ function bindHypothesisControls() {
   if (btnCloseDeleteModal && modalDelete) {
     btnCloseDeleteModal.addEventListener('click', () => modalDelete.classList.remove('show'));
   }
+}
 
-  // User Profile Dropdown
+function bindUserProfileMenu() {
   const btnUserProfile = document.getElementById('btnUserProfile');
   const userProfileDropdown = document.getElementById('userProfileDropdown');
+  const rowLanguageSelect = document.getElementById('rowLanguageSelect');
+  const languageSubmenu = document.getElementById('languageSubmenu');
+  const rowToggleUnits = document.getElementById('rowToggleUnits');
+  const rowToggleDarkMode = document.getElementById('rowToggleDarkMode');
+  const chkDarkMode = document.getElementById('chkDarkMode');
+  const btnLogout = document.getElementById('btnLogoutProfile');
+
   if (btnUserProfile && userProfileDropdown) {
     btnUserProfile.addEventListener('click', (e) => {
       e.stopPropagation();
       const isVisible = userProfileDropdown.style.display === 'block';
       userProfileDropdown.style.display = isVisible ? 'none' : 'block';
       btnUserProfile.classList.toggle('active', !isVisible);
+      if (languageSubmenu) languageSubmenu.style.display = 'none';
+      if (rowLanguageSelect) rowLanguageSelect.classList.remove('active');
     });
 
+    // Language Row toggle
+    if (rowLanguageSelect && languageSubmenu) {
+      rowLanguageSelect.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = languageSubmenu.style.display === 'block';
+        languageSubmenu.style.display = isOpen ? 'none' : 'block';
+        rowLanguageSelect.classList.toggle('active', !isOpen);
+      });
+    }
+
+    // Language options select
+    document.querySelectorAll('.lang-opt').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const lang = opt.getAttribute('data-lang');
+        if (lang) {
+          setLanguage(lang);
+          document.querySelectorAll('.lang-opt').forEach(o => o.classList.toggle('selected', o.getAttribute('data-lang') === lang));
+          languageSubmenu.style.display = 'none';
+          rowLanguageSelect.classList.remove('active');
+          updateUnitsUI();
+          updateCalculation();
+          showToast(`Idioma: ${getLanguageInfo(lang).nativeName}`);
+        }
+      });
+    });
+
+    // Units toggle row
+    if (rowToggleUnits) {
+      rowToggleUnits.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isImperial = !isImperial;
+        localStorage.setItem(UNITS_STORAGE_KEY, isImperial ? 'imperial' : 'metric');
+        updateUnitsUI();
+        showToast(isImperial ? 'Sistema Imperial (in/lb) activado' : 'Sistema Métrico (mm/kN) activado');
+      });
+    }
+
+    // Dark Mode toggle switch
+    if (chkDarkMode) {
+      chkDarkMode.addEventListener('change', (e) => {
+        e.stopPropagation();
+        const isDark = chkDarkMode.checked;
+        if (isDark) {
+          document.body.classList.remove('light-theme');
+          localStorage.setItem(THEME_STORAGE_KEY, 'dark');
+        } else {
+          document.body.classList.add('light-theme');
+          localStorage.setItem(THEME_STORAGE_KEY, 'light');
+        }
+        if (interactionChart && currentCalcResult) {
+          interactionChart.draw(currentCalcResult);
+        }
+      });
+    }
+
+    if (rowToggleDarkMode && chkDarkMode) {
+      rowToggleDarkMode.addEventListener('click', (e) => {
+        if (e.target !== chkDarkMode) {
+          chkDarkMode.checked = !chkDarkMode.checked;
+          chkDarkMode.dispatchEvent(new Event('change'));
+        }
+      });
+    }
+
+    // Logout
+    if (btnLogout) {
+      btnLogout.addEventListener('click', (e) => {
+        e.stopPropagation();
+        userProfileDropdown.style.display = 'none';
+        btnUserProfile.classList.remove('active');
+        showToast(t('toast_session_closed'));
+        setTimeout(() => {
+          window.location.href = 'http://localhost:5173/';
+        }, 800);
+      });
+    }
+
+    // Outside click closes menu
     document.addEventListener('click', (e) => {
       if (!userProfileDropdown.contains(e.target) && !btnUserProfile.contains(e.target)) {
         userProfileDropdown.style.display = 'none';
         btnUserProfile.classList.remove('active');
+        if (languageSubmenu) languageSubmenu.style.display = 'none';
+        if (rowLanguageSelect) rowLanguageSelect.classList.remove('active');
       }
     });
-
-    const btnLogout = document.getElementById('btnLogoutProfile');
-    if (btnLogout) {
-      btnLogout.addEventListener('click', () => {
-        userProfileDropdown.style.display = 'none';
-        btnUserProfile.classList.remove('active');
-        showToast('Sesión cerrada correctamente');
-      });
-    }
   }
 }
 
