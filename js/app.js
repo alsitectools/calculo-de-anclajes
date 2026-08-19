@@ -210,7 +210,7 @@ function confirmSaveHypothesis() {
   saveHypothesesToStorage();
   renderHypothesisSelector();
   if (modal) modal.classList.remove('show');
-  showToast(`✅ Hipótesis "${name}" guardada con éxito`);
+  showToast(t('toast_hyp_saved').replace('{name}', name));
 }
 
 function openDeleteHypothesisModal() {
@@ -221,9 +221,9 @@ function openDeleteHypothesisModal() {
 
   if (txtPrompt) {
     if (hypotheses.length <= 1) {
-      txtPrompt.innerHTML = `Esta es la <strong>única hipótesis existente</strong>. ¿Deseas resetear todos sus parámetros a los valores por defecto?`;
+      txtPrompt.innerHTML = t('del_prompt_single');
     } else {
-      txtPrompt.innerHTML = `¿Estás seguro de que deseas eliminar permanentemente la hipótesis <strong>"${name}"</strong>?`;
+      txtPrompt.innerHTML = t('del_prompt_confirm').replace('{name}', name);
     }
   }
 
@@ -243,14 +243,14 @@ function confirmDeleteHypothesis() {
     currentHypothesisId = hypotheses[0].id;
     saveHypothesesToStorage();
     selectHypothesis(currentHypothesisId);
-    showToast('Hipótesis reseteada a valores por defecto');
+    showToast(t('toast_hyp_reset'));
   } else {
     // Delete current hypothesis and switch to another
     hypotheses = hypotheses.filter(h => h.id !== currentHypothesisId);
     currentHypothesisId = hypotheses[0].id;
     saveHypothesesToStorage();
     selectHypothesis(currentHypothesisId);
-    showToast('🗑️ Hipótesis eliminada');
+    showToast(t('toast_hyp_deleted'));
   }
 
   if (modal) modal.classList.remove('show');
@@ -579,6 +579,10 @@ function bindUserProfileMenu() {
       btnUserProfile.classList.toggle('active', !isVisible);
       if (languageSubmenu) languageSubmenu.style.display = 'none';
       if (rowLanguageSelect) rowLanguageSelect.classList.remove('active');
+
+      // Sync active language highlight
+      const activeLang = getCurrentLanguage();
+      document.querySelectorAll('.lang-opt').forEach(o => o.classList.toggle('selected', o.getAttribute('data-lang') === activeLang));
     });
 
     // Language Row toggle
@@ -603,7 +607,7 @@ function bindUserProfileMenu() {
           rowLanguageSelect.classList.remove('active');
           updateUnitsUI();
           updateCalculation();
-          showToast(`Idioma: ${getLanguageInfo(lang).nativeName}`);
+          showToast(t('toast_lang_changed'));
         }
       });
     });
@@ -617,7 +621,7 @@ function bindUserProfileMenu() {
         localStorage.setItem(UNITS_STORAGE_KEY, isImperial ? 'imperial' : 'metric');
         applyUnitsToUI();
         updateCalculation();
-        showToast(isImperial ? 'Cambiado a Sistema Imperial (in / kips / psi)' : 'Cambiado a Sistema Métrico (mm / kN / MPa)');
+        showToast(isImperial ? t('toast_unit_imperial') : t('toast_unit_metric'));
       });
     }
 
@@ -748,7 +752,7 @@ async function executeWordReportDownload(triggerBtn = null) {
     triggerBtn.innerHTML = '<span class="spinner" style="width:13px;height:13px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;display:inline-block;animation:spin 0.6s linear infinite;margin-right:4px;"></span> <span>Generando...</span>';
   }
 
-  showToast('Generando plantilla Word oficial cumplimentada...');
+  showToast(t('toast_word_generating'));
 
   try {
     const meta = {
@@ -779,7 +783,7 @@ async function executeWordReportDownload(triggerBtn = null) {
     const modalReport = document.getElementById('modalReport');
     if (modalReport) modalReport.classList.remove('show');
 
-    showToast(`✅ Plantilla Word "${filename}" descargada con éxito`);
+    showToast(t('toast_word_downloaded').replace('{filename}', filename));
   } catch (err) {
     console.error('Error al generar informe:', err);
     alert('Error al generar el informe Word: ' + err.message);
@@ -878,7 +882,9 @@ function updateCalculation() {
   if (warnThickness) {
     if (state.longitud > state.ha) {
       warnThickness.style.display = 'flex';
-      warnThickness.textContent = `⚠️ La longitud de anclaje (${globalUnits.formatLength(state.longitud)}) no puede ser superior al espesor del muro (${globalUnits.formatLength(state.ha)}).`;
+      warnThickness.textContent = t('warn_thickness_msg')
+        .replace('{L}', globalUnits.formatLength(state.longitud))
+        .replace('{ha}', globalUnits.formatLength(state.ha));
     } else {
       warnThickness.style.display = 'none';
     }
@@ -895,7 +901,7 @@ function updateCalculation() {
     verdictCard.className = `global-verdict-card ${isOK ? 'verdict-ok' : 'verdict-ko'}`;
   }
   if (verdictPill) {
-    verdictPill.textContent = isOK ? 'OK' : 'NO OK';
+    verdictPill.textContent = isOK ? t('verdict_ok') : t('verdict_ko');
   }
   if (verdictPct) {
     verdictPct.textContent = `${res.global.utilizacionResistencia.toFixed(2)}%`;
@@ -935,8 +941,9 @@ function updateModeCard(elementId, modeData) {
   const valText = card.querySelector('.mode-pct-val');
 
   if (badge) {
-    badge.textContent = modeData.status;
-    badge.className = `mode-status-badge ${modeData.status === 'OK' ? 'badge-ok' : 'badge-ko'}`;
+    const isOK = modeData.status === 'OK';
+    badge.textContent = isOK ? t('verdict_ok') : t('verdict_ko');
+    badge.className = `mode-status-badge ${isOK ? 'badge-ok' : 'badge-ko'}`;
   }
 
   if (valText) {

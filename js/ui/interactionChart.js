@@ -1,8 +1,9 @@
 import { globalUnits } from '../engine/units.js';
+import { t } from '../i18n/i18n.js';
 
 /**
  * Renderizador Canvas de Alta Resolución para el Diagrama de Interacción Axil-Cortante
- * Soporte bidireccional para Sistema Métrico (kN) e Imperial (kips).
+ * Soporte bidireccional para Sistema Métrico (kN) e Imperial (kips) y traducción dinámica.
  */
 
 export class InteractionChart {
@@ -119,17 +120,17 @@ export class InteractionChart {
     ctx.lineTo(padLeft + plotW, padTop + plotH);
     ctx.stroke();
 
-    // Axis Titles
+    // Axis Titles (Localized)
     ctx.fillStyle = titleColor;
     ctx.font = '700 11px Outfit, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`VRd - Cortante (${forceUnit})`, padLeft + plotW / 2, h - 8);
+    ctx.fillText(`${t('chart_v_axis')} (${forceUnit})`, padLeft + plotW / 2, h - 8);
 
     ctx.save();
     ctx.translate(16, padTop + plotH / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
-    ctx.fillText(`NRd - Axil de Tracción (${forceUnit})`, 0, 0);
+    ctx.fillText(`${t('chart_n_axis')} (${forceUnit})`, 0, 0);
     ctx.restore();
 
     // 2. Draw Theoretical Curve & Shaded Safety Region
@@ -214,12 +215,12 @@ export class InteractionChart {
     ctx.arc(opX, opY, 2.5, 0, Math.PI * 2);
     ctx.fill();
 
-    // 5. Demand Point Callout Label
+    // 5. Demand Point Callout Label (Localized)
     ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
     ctx.font = '700 11px Outfit, sans-serif';
     ctx.textAlign = 'left';
     const labelX = Math.min(opX + 10, w - 160);
     const labelY = Math.max(opY - 10, padTop + 20);
-    ctx.fillText(`Demanda: (${operX.toFixed(1)}, ${operY.toFixed(1)}) ${forceUnit}`, labelX, labelY);
+    ctx.fillText(`${t('chart_demand')}: (${operX.toFixed(1)}, ${operY.toFixed(1)}) ${forceUnit}`, labelX, labelY);
   }
 }
