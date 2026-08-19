@@ -110,12 +110,12 @@ export class DiagramMuro1Cara {
           <!-- Triangular + Rectangular Pressure Polygon -->
           <polygon points="${wallX - 90},${groundY} ${wallX - 90},${wallTop + 70} ${wallX},${wallTop} ${wallX},${groundY}" fill="url(#pressureGradM1C)" stroke="#38bdf8" stroke-width="1.5" />
           
-          <!-- Pressure force arrows -->
-          <line x1="${wallX - 110}" y1="${groundY - 35}" x2="${wallX - 5}" y2="${groundY - 35}" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrowM1C)" />
-          <line x1="${wallX - 110}" y1="${groundY - 110}" x2="${wallX - 5}" y2="${groundY - 110}" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrowM1C)" />
-          <line x1="${wallX - 80}" y1="${groundY - 180}" x2="${wallX - 5}" y2="${groundY - 180}" stroke="#38bdf8" stroke-width="1.5" marker-end="url(#arrowM1C)" />
+          <!-- Pressure force arrows (strictly contained within the blue contour) -->
+          <line x1="${wallX - 90}" y1="${groundY - 35}" x2="${wallX - 3}" y2="${groundY - 35}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />
+          <line x1="${wallX - 90}" y1="${groundY - 100}" x2="${wallX - 3}" y2="${groundY - 100}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />
+          <line x1="${wallX - 45}" y1="${wallTop + 35}" x2="${wallX - 3}" y2="${wallTop + 35}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />
 
-          <text x="${wallX - 100}" y="${groundY - 120}" fill="#38bdf8" font-size="11" font-weight="800" font-family="monospace">Pmax ${PresionMax} kN/m²</text>
+          <text x="${wallX - 45}" y="${groundY - 110}" fill="#e0f2fe" font-size="10" font-weight="800" font-family="monospace" text-anchor="middle">Pmax ${PresionMax} kN/m²</text>
 
           <!-- 5. Barra Tirante Anclaje a 45º -->
           <line x1="${anchorStartX}" y1="${anchorStartY}" x2="${anchorEndX}" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" />
