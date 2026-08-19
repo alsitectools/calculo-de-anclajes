@@ -3,10 +3,16 @@ import { DiagramView } from './ui/diagramView.js';
 import { InteractionChart } from './ui/interactionChart.js';
 import { generateDocx } from './report/docxGenerator.js';
 import { getTemplateBuffer } from './report/embeddedTemplates.js';
+import { initI18n, setLanguage, getCurrentLanguage, getLanguageInfo, t, applyTranslations } from './i18n/i18n.js';
+import { globalUnits, UNIT_SYSTEMS } from './engine/units.js';
 
 const STORAGE_KEY = 'alsina_anchor_hypotheses_v1';
+const THEME_STORAGE_KEY = 'alsina_anchor_theme_v1';
+const UNITS_STORAGE_KEY = 'alsina_anchor_units_v1';
 
-// Default State
+let isImperial = false;
+
+// Default State (Always in SI Units internally: mm, kN, MPa)
 const state = {
   tipoCono: 'T1C',
   longitud: 400,
@@ -61,15 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
   initThemeAndUnits();
   loadHypothesesFromStorage();
   initUI();
+  applyUnitsToUI();
   renderHypothesisSelector();
   updateCalculation();
 });
 
 function initThemeAndUnits() {
-  // Theme initialization (Default is Dark Mode)
+  // Theme: default is dark
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
   const chkDarkMode = document.getElementById('chkDarkMode');
-  
   if (savedTheme === 'light') {
     document.body.classList.add('light-theme');
     if (chkDarkMode) chkDarkMode.checked = false;
@@ -78,88 +84,10 @@ function initThemeAndUnits() {
     if (chkDarkMode) chkDarkMode.checked = true;
   }
 
-  // Units initialization
+  // Units
   const savedUnits = localStorage.getItem(UNITS_STORAGE_KEY);
   isImperial = savedUnits === 'imperial';
-  updateUnitsUI();
-}
-
-function updateUnitsUI() {
-  const lblUnitSystem = document.getElementById('lblUnitSystem');
-  const badgeUnitSystem = document.getElementById('badgeUnitSystem');
-  
-  if (lblUnitSystem) {
-    lblUnitSystem.textContent = isImperial ? t('switch_metric') : t('switch_imperial');
-  }
-  if (badgeUnitSystem) {
-    badgeUnitSystem.textContent = isImperial ? 'in/lb' : 'mm/kN';
-  }
-
-  // Update input unit labels in main card
-  const uLen = isImperial ? 'in' : 'mm';
-  const uForce = isImperial ? 'kips' : 'kN';
-  const uStress = isImperial ? 'psi (lb/in²)' : 'MPa (N/mm²)';
-
-  const unitNsk = document.querySelector('label[for="inp_Nsk"] ~ .input-group .unit');
-  if (unitNsk) unitNsk.textContent = uForce;
-  const unitVsk = document.querySelector('label[for="inp_Vsk"] ~ .input-group .unit');
-  if (unitVsk) unitVsk.textContent = uForce;
-
-  const unitCal = document.querySelector('label[for="inp_cal"] ~ .input-group .unit');
-  if (unitCal) unitCal.textContent = uLen;
-  const unitCar = document.querySelector('label[for="inp_car"] ~ .input-group .unit');
-  if (unitCar) unitCar.textContent = uLen;
-  const unitCau = document.querySelector('label[for="inp_cau"] ~ .input-group .unit');
-  if (unitCau) unitCau.textContent = uLen;
-  const unitCad = document.querySelector('label[for="inp_cad"] ~ .input-group .unit');
-  if (unitCad) unitCad.textContent = uLen;
-  const unitHa = document.querySelector('label[for="inp_ha"] ~ .input-group .unit');
-  if (unitHa) unitHa.textContent = uLen;
-
-  const unitFck = document.querySelector('label[for="inp_fck"] ~ .input-group .unit');
-  if (unitFck) unitFck.textContent = uStress;
-
-  // Update anchor length dropdown
-  const selLength = document.getElementById('sel_anchor_length');
-  if (selLength) {
-    const anchor = ANCHOR_TYPES[state.tipoCono];
-    selLength.innerHTML = '';
-    anchor.longitudesValidas.forEach(len => {
-      const opt = document.createElement('option');
-      opt.value = len;
-      if (isImperial) {
-        opt.textContent = `L = ${(len / 25.4).toFixed(1)} in (${len} mm)`;
-      } else {
-        opt.textContent = `L = ${len} mm`;
-      }
-      if (len === state.longitud) opt.selected = true;
-      selLength.appendChild(opt);
-    });
-    selLength.value = state.longitud;
-  }
-
-  // Update slider min/max
-  const sliderFck = document.getElementById('slider_fck');
-  if (sliderFck) {
-    if (isImperial) {
-      sliderFck.min = 1160;
-      sliderFck.max = 4350;
-      sliderFck.step = 50;
-      sliderFck.value = Math.round(state.fck * 145.0377);
-    } else {
-      sliderFck.min = 8;
-      sliderFck.max = 30;
-      sliderFck.step = 1;
-      sliderFck.value = state.fck;
-    }
-  }
-
-  if (diagramView && typeof diagramView.setUnitSystem === 'function') {
-    diagramView.setUnitSystem(isImperial ? 'imperial' : 'metric');
-  }
-
-  syncInputsFromState();
-  updateCalculation();
+  globalUnits.setSystem(isImperial ? UNIT_SYSTEMS.IMPERIAL : UNIT_SYSTEMS.METRIC);
 }
 
 function loadHypothesesFromStorage() {
@@ -351,50 +279,132 @@ function initUI() {
   bindModals();
   bindHypothesisControls();
   bindUserProfileMenu();
+  applyUnitsToUI();
+}
+
+function applyUnitsToUI() {
+  const isImp = globalUnits.isImperial();
+  const labels = globalUnits.getUnitLabels();
+
+  // 1. Update unit badges in inputs grid
+  const unitMap = {
+    'inp_Nsk': labels.force,
+    'inp_Vsk': labels.force,
+    'inp_cal': labels.length,
+    'inp_car': labels.length,
+    'inp_cau': labels.length,
+    'inp_cad': labels.length,
+    'inp_ha': labels.length,
+    'inp_fck': labels.stress
+  };
+
+  Object.entries(unitMap).forEach(([id, unitText]) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const parent = el.closest('.input-badge') || el.parentElement;
+      const unitSpan = parent?.querySelector('.unit');
+      if (unitSpan) unitSpan.textContent = unitText;
+    }
+  });
+
+  // 2. Update step, min and max
+  const inpNsk = document.getElementById('inp_Nsk');
+  const inpVsk = document.getElementById('inp_Vsk');
+  if (inpNsk) { inpNsk.step = labels.forceStep; inpNsk.max = isImp ? '225' : '1000'; }
+  if (inpVsk) { inpVsk.step = labels.forceStep; inpVsk.max = isImp ? '225' : '1000'; }
+
+  ['inp_cal', 'inp_car', 'inp_cau', 'inp_cad', 'inp_ha'].forEach(id => {
+    const inp = document.getElementById(id);
+    if (inp) {
+      inp.step = labels.lengthStep;
+      inp.min = isImp ? '2' : (id === 'inp_ha' ? '100' : '50');
+      inp.max = isImp ? '200' : '5000';
+    }
+  });
+
+  const inpFck = document.getElementById('inp_fck');
+  const sliderFck = document.getElementById('slider_fck');
+  if (inpFck) {
+    inpFck.min = labels.fckMin;
+    inpFck.max = labels.fckMax;
+    inpFck.step = labels.fckStep;
+  }
+  if (sliderFck) {
+    sliderFck.min = labels.fckMin;
+    sliderFck.max = labels.fckMax;
+    sliderFck.step = labels.fckStep;
+  }
+
+  // 3. Update length options in dropdown
+  const selLength = document.getElementById('sel_anchor_length');
+  if (selLength) {
+    const anchor = ANCHOR_TYPES[state.tipoCono];
+    selLength.innerHTML = '';
+    anchor.longitudesValidas.forEach(len => {
+      const opt = document.createElement('option');
+      opt.value = len;
+      opt.textContent = isImp 
+        ? `L = ${globalUnits.toDisplayLength(len)} in (${len} mm)`
+        : `L = ${len} mm`;
+      if (len === state.longitud) opt.selected = true;
+      selLength.appendChild(opt);
+    });
+    selLength.value = state.longitud;
+  }
+
+  // 4. Update profile menu button text and badge
+  updateUnitsUI();
+
+  // 5. Sync inputs and diagram
+  syncInputsFromState();
+  syncDiagramFromState();
 }
 
 function bindInputs() {
-  // Numeric Inputs in main grid
-  const boundKeys = ['Nsk', 'Vsk', 'cal', 'car', 'cau', 'cad', 'ha', 'fck'];
-  boundKeys.forEach(k => {
+  // Numeric Inputs in main grid (Lengths)
+  ['cal', 'car', 'cau', 'cad', 'ha'].forEach(k => {
     const el = document.getElementById(`inp_${k}`);
     if (el) {
       el.addEventListener('input', () => {
-        let val = parseFloat(el.value) || 0;
-        if (isImperial) {
-          if (['cal', 'car', 'cau', 'cad', 'ha'].includes(k)) {
-            state[k] = val * 25.4;
-          } else if (['Nsk', 'Vsk'].includes(k)) {
-            state[k] = val * 4.4482216;
-          } else if (k === 'fck') {
-            state.fck = val / 145.0377;
-          }
-        } else {
-          state[k] = val;
-        }
-
-        if (k === 'fck') {
-          const slider = document.getElementById('slider_fck');
-          if (slider) slider.value = isImperial ? Math.round(state.fck * 145.0377) : state.fck;
-        }
+        const raw = parseFloat(el.value) || 0;
+        state[k] = globalUnits.fromDisplayLength(raw);
         syncDiagramFromState();
         updateCalculation();
       });
     }
   });
 
-  // Fck Slider
+  // Numeric Inputs in main grid (Forces)
+  ['Nsk', 'Vsk'].forEach(k => {
+    const el = document.getElementById(`inp_${k}`);
+    if (el) {
+      el.addEventListener('input', () => {
+        const raw = parseFloat(el.value) || 0;
+        state[k] = globalUnits.fromDisplayForce(raw);
+        syncDiagramFromState();
+        updateCalculation();
+      });
+    }
+  });
+
+  // Fck input & slider
+  const inpFck = document.getElementById('inp_fck');
   const fckSlider = document.getElementById('slider_fck');
+
+  if (inpFck) {
+    inpFck.addEventListener('input', () => {
+      const raw = parseFloat(inpFck.value) || 0;
+      state.fck = globalUnits.fromDisplayStress(raw);
+      if (fckSlider) fckSlider.value = raw;
+      updateCalculation();
+    });
+  }
+
   if (fckSlider) {
     fckSlider.addEventListener('input', () => {
-      let val = parseFloat(fckSlider.value) || 25;
-      if (isImperial) {
-        state.fck = val / 145.0377;
-      } else {
-        state.fck = val;
-      }
-      const inpFck = document.getElementById('inp_fck');
-      if (inpFck) inpFck.value = isImperial ? Math.round(val) : state.fck;
+      const raw = parseFloat(fckSlider.value) || 0;
+      state.fck = globalUnits.fromDisplayStress(raw);
+      if (inpFck) inpFck.value = raw;
       updateCalculation();
     });
   }
@@ -439,11 +449,14 @@ function bindAnchorTypeSelection() {
 
   const updateLengthOptions = () => {
     const anchor = ANCHOR_TYPES[state.tipoCono];
+    const isImp = globalUnits.isImperial();
     selLength.innerHTML = '';
     anchor.longitudesValidas.forEach(len => {
       const opt = document.createElement('option');
       opt.value = len;
-      opt.textContent = `L = ${len} mm`;
+      opt.textContent = isImp 
+        ? `L = ${globalUnits.toDisplayLength(len)} in (${len} mm)`
+        : `L = ${len} mm`;
       if (len === state.longitud) opt.selected = true;
       selLength.appendChild(opt);
     });
@@ -587,9 +600,11 @@ function bindUserProfileMenu() {
       rowToggleUnits.addEventListener('click', (e) => {
         e.stopPropagation();
         isImperial = !isImperial;
+        globalUnits.setSystem(isImperial ? UNIT_SYSTEMS.IMPERIAL : UNIT_SYSTEMS.METRIC);
         localStorage.setItem(UNITS_STORAGE_KEY, isImperial ? 'imperial' : 'metric');
-        updateUnitsUI();
-        showToast(isImperial ? 'Sistema Imperial (in/lb) activado' : 'Sistema Métrico (mm/kN) activado');
+        applyUnitsToUI();
+        updateCalculation();
+        showToast(isImperial ? 'Cambiado a Sistema Imperial (in / kips / psi)' : 'Cambiado a Sistema Métrico (mm / kN / MPa)');
       });
     }
 
@@ -778,31 +793,27 @@ function syncDiagramFromState() {
 }
 
 function syncInputsFromState() {
-  const boundKeys = ['Nsk', 'Vsk', 'cal', 'car', 'cau', 'cad', 'ha', 'fck'];
-  boundKeys.forEach(k => {
+  ['cal', 'car', 'cau', 'cad', 'ha'].forEach(k => {
     const el = document.getElementById(`inp_${k}`);
     if (el && document.activeElement !== el) {
-      if (isImperial) {
-        if (['cal', 'car', 'cau', 'cad', 'ha'].includes(k)) {
-          el.value = (state[k] / 25.4).toFixed(1);
-          el.step = '0.5';
-        } else if (['Nsk', 'Vsk'].includes(k)) {
-          el.value = (state[k] / 4.4482216).toFixed(1);
-          el.step = '0.1';
-        } else if (k === 'fck') {
-          el.value = Math.round(state.fck * 145.0377);
-          el.step = '50';
-        }
-      } else {
-        el.value = state[k];
-        el.step = (['Nsk', 'Vsk', 'fck'].includes(k)) ? '1' : '10';
-      }
+      el.value = globalUnits.toDisplayLength(state[k]);
     }
   });
 
+  ['Nsk', 'Vsk'].forEach(k => {
+    const el = document.getElementById(`inp_${k}`);
+    if (el && document.activeElement !== el) {
+      el.value = globalUnits.toDisplayForce(state[k]);
+    }
+  });
+
+  const inpFck = document.getElementById('inp_fck');
   const sliderFck = document.getElementById('slider_fck');
+  if (inpFck && document.activeElement !== inpFck) {
+    inpFck.value = globalUnits.toDisplayStress(state.fck);
+  }
   if (sliderFck && document.activeElement !== sliderFck) {
-    sliderFck.value = isImperial ? Math.round(state.fck * 145.0377) : state.fck;
+    sliderFck.value = globalUnits.toDisplayStress(state.fck);
   }
 }
 
@@ -823,15 +834,14 @@ function syncAllUIFromState() {
   const selLength = document.getElementById('sel_anchor_length');
   if (selLength) {
     const anchor = ANCHOR_TYPES[state.tipoCono];
+    const isImp = globalUnits.isImperial();
     selLength.innerHTML = '';
     anchor.longitudesValidas.forEach(len => {
       const opt = document.createElement('option');
       opt.value = len;
-      if (isImperial) {
-        opt.textContent = `L = ${(len / 25.4).toFixed(1)} in (${len} mm)`;
-      } else {
-        opt.textContent = `L = ${len} mm`;
-      }
+      opt.textContent = isImp 
+        ? `L = ${globalUnits.toDisplayLength(len)} in (${len} mm)`
+        : `L = ${len} mm`;
       if (len === state.longitud) opt.selected = true;
       selLength.appendChild(opt);
     });
@@ -842,25 +852,20 @@ function syncAllUIFromState() {
   if (chkHueco) chkHueco.checked = state.afectadoHueco;
 
   const sliderFck = document.getElementById('slider_fck');
-  if (sliderFck) sliderFck.value = isImperial ? Math.round(state.fck * 145.0377) : state.fck;
+  if (sliderFck) sliderFck.value = globalUnits.toDisplayStress(state.fck);
 }
 
 function updateCalculation() {
-  // Run calculation engine (canonical in SI units)
+  // Run calculation engine (Always computes on exact SI state)
   currentCalcResult = calculateAnchor(state);
   const res = currentCalcResult;
-  const unitSys = isImperial ? 'imperial' : 'metric';
 
   // 1. Thickness Validation Warning
   const warnThickness = document.getElementById('warnThickness');
   if (warnThickness) {
     if (state.longitud > state.ha) {
       warnThickness.style.display = 'flex';
-      if (isImperial) {
-        warnThickness.textContent = `⚠️ La longitud de anclaje (L = ${(state.longitud/25.4).toFixed(1)} in) no puede ser superior al espesor del muro (ha = ${(state.ha/25.4).toFixed(1)} in).`;
-      } else {
-        warnThickness.textContent = `⚠️ La longitud de anclaje (L = ${state.longitud} mm) no puede ser superior al espesor del muro (ha = ${state.ha} mm).`;
-      }
+      warnThickness.textContent = `⚠️ La longitud de anclaje (${globalUnits.formatLength(state.longitud)}) no puede ser superior al espesor del muro (${globalUnits.formatLength(state.ha)}).`;
     } else {
       warnThickness.style.display = 'none';
     }
@@ -883,17 +888,16 @@ function updateCalculation() {
     verdictPct.textContent = `${res.global.utilizacionResistencia.toFixed(2)}%`;
   }
   if (verdictFormula) {
-    const conv = isImperial ? (1 / 4.4482216) : 1;
-    const NdDisp = (res.inputs.Nd * conv).toFixed(1);
-    const NRdDisp = (res.traccion.NRd * conv).toFixed(1);
-    const VdDisp = (res.inputs.Vd * conv).toFixed(1);
-    const VRdDisp = (res.cortante.VRd * conv).toFixed(1);
-    verdictFormula.textContent = `(Nsd/NRd)^5/3 + (Vsd/VRd)^5/3 = (${NdDisp}/${NRdDisp})^1.67 + (${VdDisp}/${VRdDisp})^1.67 = ${(res.global.interaccion).toFixed(3)} ≤ 1.0`;
+    const dispNd = globalUnits.formatForce(res.inputs.Nd);
+    const dispNRd = globalUnits.formatForce(res.traccion.NRd);
+    const dispVd = globalUnits.formatForce(res.inputs.Vd);
+    const dispVRd = globalUnits.formatForce(res.cortante.VRd);
+    verdictFormula.textContent = `(Nsd/NRd)^5/3 + (Vsd/VRd)^5/3 = (${dispNd} / ${dispNRd})^1.67 + (${dispVd} / ${dispVRd})^1.67 = ${(res.global.interaccion).toFixed(3)} ≤ 1.0`;
   }
 
   // 3. Render Canvas Chart
   if (interactionChart) {
-    interactionChart.draw(res, unitSys);
+    interactionChart.draw(res);
   }
 
   // 4. Update 6 Failure Mode Cards
@@ -936,25 +940,19 @@ function updateModeCard(elementId, modeData) {
 }
 
 function updateDetailedTables(res) {
-  const lUnit = isImperial ? 'in' : 'mm';
-  const fUnit = isImperial ? 'kips' : 'kN';
-  const lConv = isImperial ? (1 / 25.4) : 1;
-  const fConv = isImperial ? (1 / 4.4482216) : 1;
-  const lDec = isImperial ? 1 : 0;
-
   // Tracción
-  document.getElementById('dt_hef').textContent = `${(res.inputs.longitud * lConv).toFixed(lDec)} ${lUnit}`;
-  document.getElementById('dt_hefPrime').textContent = `${(res.traccion.hefPrime * lConv).toFixed(1)} ${lUnit}`;
-  document.getElementById('dt_Nsa').textContent = `${(res.traccion.Nsa * fConv).toFixed(1)} ${fUnit}`;
-  document.getElementById('dt_Ncb').textContent = `${(res.traccion.Ncb * fConv).toFixed(1)} ${fUnit}`;
-  document.getElementById('dt_NRd').textContent = `${(res.traccion.NRd * fConv).toFixed(1)} ${fUnit}`;
+  document.getElementById('dt_hef').textContent = globalUnits.formatLength(res.inputs.longitud);
+  document.getElementById('dt_hefPrime').textContent = globalUnits.formatLength(res.traccion.hefPrime);
+  document.getElementById('dt_Nsa').textContent = globalUnits.formatForce(res.traccion.Nsa);
+  document.getElementById('dt_Ncb').textContent = globalUnits.formatForce(res.traccion.Ncb);
+  document.getElementById('dt_NRd').textContent = globalUnits.formatForce(res.traccion.NRd);
 
   // Cortante
-  document.getElementById('dt_ca2infPrime').textContent = `${(res.cortante.ca2infPrime * lConv).toFixed(1)} ${lUnit}`;
-  document.getElementById('dt_Vsa').textContent = `${(res.cortante.Vsa * fConv).toFixed(1)} ${fUnit}`;
-  document.getElementById('dt_Vcb').textContent = `${(res.cortante.Vcb * fConv).toFixed(1)} ${fUnit}`;
-  document.getElementById('dt_Vcp').textContent = `${(res.cortante.Vcp * fConv).toFixed(1)} ${fUnit}`;
-  document.getElementById('dt_VRd').textContent = `${(res.cortante.VRd * fConv).toFixed(1)} ${fUnit}`;
+  document.getElementById('dt_ca2infPrime').textContent = globalUnits.formatLength(res.cortante.ca2infPrime);
+  document.getElementById('dt_Vsa').textContent = globalUnits.formatForce(res.cortante.Vsa);
+  document.getElementById('dt_Vcb').textContent = globalUnits.formatForce(res.cortante.Vcb);
+  document.getElementById('dt_Vcp').textContent = globalUnits.formatForce(res.cortante.Vcp);
+  document.getElementById('dt_VRd').textContent = globalUnits.formatForce(res.cortante.VRd);
 }
 
 function showToast(message) {

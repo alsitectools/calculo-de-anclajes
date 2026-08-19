@@ -18,7 +18,7 @@ export const translations = {
     pdf_print: 'PDF',
     dark_mode: 'Modo oscuro',
     switch_imperial: 'Cambiar a Imperial (in/lb)',
-    switch_metric: 'Cambiar a Internacional (mm/kN)',
+    switch_metric: 'Cambiar a Métrico (mm/kN)',
     logout: 'logout',
     user_menu: 'Menú de usuario',
     

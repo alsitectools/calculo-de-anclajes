@@ -1,7 +1,10 @@
+import { globalUnits } from '../engine/units.js';
+
 /**
  * Renderizador Paramétrico y Dinámico del Bloque 3D de Hormigón y Cotas en SVG
  * Escala de profundidad = 1/3 de la escala de ancho y alto (S_D = S / 3).
  * Auto-centrado global adaptativo para garantizar contención total y visualización representativa.
+ * Soporte bidireccional para Sistema Métrico (SI) e Imperial (in/kips).
  */
 
 export class DiagramView {
@@ -168,17 +171,16 @@ export class DiagramView {
     inputs.forEach(inp => {
       inp.addEventListener('input', () => {
         const id = inp.id.replace('diag_', '');
-        let val = parseFloat(inp.value) || 0;
-        if (this.unitSystem === 'imperial') {
-          if (['cal', 'car', 'cau', 'cad', 'ha'].includes(id)) {
-            val = val * 25.4;
-          } else if (['Nsk', 'Vsk'].includes(id)) {
-            val = val * 4.4482216;
-          }
+        const raw = parseFloat(inp.value) || 0;
+        let valSI = raw;
+        if (['cal', 'car', 'cau', 'cad', 'ha'].includes(id)) {
+          valSI = globalUnits.fromDisplayLength(raw);
+        } else if (['Vsk', 'Nsk'].includes(id)) {
+          valSI = globalUnits.fromDisplayForce(raw);
         }
-        this.values[id] = val;
+        this.values[id] = valSI;
         if (this.onValueChange) {
-          this.onValueChange(id, val);
+          this.onValueChange(id, valSI);
         }
         this.updateGeometry();
       });
@@ -483,21 +485,31 @@ export class DiagramView {
     // Nsk (Desplazado hacia abajo para despejar completamente la flecha amarilla)
     setBadgePos('Nsk', Math.min(anchorCenter.x + 65, svgW - 50), Math.min(anchorCenter.y + 64, svgH - 18));
 
-    // Sincronizar inputs con soporte de unidades
-    const syncInp = (id, val) => {
+    // Sincronizar inputs y unidades según globalUnits
+    const unitLabels = globalUnits.getUnitLabels();
+
+    const updateBadgeUnit = (id, unitStr, stepVal) => {
+      const b = this.container.querySelector(`#badge_${id}`);
+      if (b) {
+        const uSpan = b.querySelector('.badge-unit');
+        if (uSpan) uSpan.textContent = unitStr;
+        const inp = b.querySelector('.diag-inp');
+        if (inp) inp.step = stepVal;
+      }
+    };
+
+    ['cal', 'car', 'cau', 'cad', 'ha'].forEach(k => updateBadgeUnit(k, unitLabels.length, unitLabels.lengthStep));
+    ['Vsk', 'Nsk'].forEach(k => updateBadgeUnit(k, unitLabels.force, unitLabels.forceStep));
+
+    const syncInp = (id, valSI) => {
       const inp = this.container.querySelector(`#diag_${id}`);
       if (inp && document.activeElement !== inp) {
-        if (this.unitSystem === 'imperial') {
-          if (['cal', 'car', 'cau', 'cad', 'ha'].includes(id)) {
-            inp.value = (val / 25.4).toFixed(1);
-            inp.step = '0.5';
-          } else if (['Nsk', 'Vsk'].includes(id)) {
-            inp.value = (val / 4.4482216).toFixed(1);
-            inp.step = '0.1';
-          }
+        if (['cal', 'car', 'cau', 'cad', 'ha'].includes(id)) {
+          inp.value = globalUnits.toDisplayLength(valSI);
+        } else if (['Vsk', 'Nsk'].includes(id)) {
+          inp.value = globalUnits.toDisplayForce(valSI);
         } else {
-          inp.value = val;
-          inp.step = ['Nsk', 'Vsk'].includes(id) ? '1' : '10';
+          inp.value = valSI;
         }
       }
     };
@@ -509,24 +521,5 @@ export class DiagramView {
     syncInp('ha', ha);
     syncInp('Vsk', Vsk);
     syncInp('Nsk', Nsk);
-  }
-
-  setUnitSystem(unitSystem) {
-    this.unitSystem = unitSystem;
-    const isImperial = unitSystem === 'imperial';
-    const lenUnit = isImperial ? 'in' : 'mm';
-    const forceUnit = isImperial ? 'kips' : 'kN';
-
-    ['cal', 'car', 'cau', 'cad', 'ha'].forEach(id => {
-      const badge = this.container.querySelector(`#badge_${id} .badge-unit`);
-      if (badge) badge.textContent = lenUnit;
-    });
-
-    ['Vsk', 'Nsk'].forEach(id => {
-      const badge = this.container.querySelector(`#badge_${id} .badge-unit`);
-      if (badge) badge.textContent = forceUnit;
-    });
-
-    this.updateGeometry();
   }
 }

@@ -1,5 +1,8 @@
+import { globalUnits } from '../engine/units.js';
+
 /**
  * Renderizador Canvas de Alta Resolución para el Diagrama de Interacción Axil-Cortante
+ * Soporte bidireccional para Sistema Métrico (kN) e Imperial (kips).
  */
 
 export class InteractionChart {
@@ -24,19 +27,18 @@ export class InteractionChart {
     this.ctx.scale(dpr, dpr);
   }
 
-  draw(data, unitSystem = 'metric') {
+  draw(data) {
     this.lastData = data;
-    this.lastUnitSystem = unitSystem;
-    const isImperial = unitSystem === 'imperial';
-    const forceConv = isImperial ? (1 / 4.4482216) : 1;
-    const forceUnit = isImperial ? 'kips' : 'kN';
-
     const { curva, traccion, cortante, global, inputs } = data;
     const { puntos, puntoOperacion } = curva;
-    const NRd = traccion.NRd * forceConv;
-    const VRd = cortante.VRd * forceConv;
-    const opX_val = puntoOperacion.x * forceConv;
-    const opY_val = puntoOperacion.y * forceConv;
+    
+    // Convert to display units (kN or kips)
+    const isImp = globalUnits.isImperial();
+    const forceUnit = isImp ? 'kips' : 'kN';
+    const NRd = globalUnits.toDisplayForce(traccion.NRd);
+    const VRd = globalUnits.toDisplayForce(cortante.VRd);
+    const operX = globalUnits.toDisplayForce(puntoOperacion.x);
+    const operY = globalUnits.toDisplayForce(puntoOperacion.y);
     const isOK = global.status === 'OK';
 
     const ctx = this.ctx;
@@ -54,10 +56,12 @@ export class InteractionChart {
     const plotW = w - padLeft - padRight;
     const plotH = h - padTop - padBottom;
 
-    // Determine scale max
-    const maxValX = Math.max(VRd * 1.15, opX_val * 1.25, isImperial ? 10 : 50);
-    const maxValY = Math.max(NRd * 1.15, opY_val * 1.25, isImperial ? 10 : 50);
-    const maxScale = Math.ceil(Math.max(maxValX, maxValY) / (isImperial ? 2 : 10)) * (isImperial ? 2 : 10);
+    // Determine scale max in display units
+    const minScale = isImp ? 12 : 50;
+    const maxValX = Math.max(VRd * 1.15, operX * 1.25, minScale);
+    const maxValY = Math.max(NRd * 1.15, operY * 1.25, minScale);
+    const stepBase = isImp ? 2 : 10;
+    const maxScale = Math.ceil(Math.max(maxValX, maxValY) / stepBase) * stepBase;
 
     const scaleX = val => padLeft + (val / maxScale) * plotW;
     const scaleY = val => padTop + plotH - (val / maxScale) * plotH;
@@ -72,7 +76,11 @@ export class InteractionChart {
     ctx.strokeStyle = gridColor;
     ctx.lineWidth = 1;
 
-    const step = isImperial ? (maxScale <= 10 ? 2 : (maxScale <= 30 ? 5 : 10)) : (maxScale <= 60 ? 10 : (maxScale <= 120 ? 20 : 50));
+    let step = maxScale <= 60 ? 10 : (maxScale <= 120 ? 20 : 50);
+    if (isImp) {
+      step = maxScale <= 15 ? 2 : (maxScale <= 30 ? 5 : 10);
+    }
+
     for (let v = 0; v <= maxScale; v += step) {
       // vertical grid
       const x = scaleX(v);
@@ -117,16 +125,21 @@ export class InteractionChart {
     ctx.translate(16, padTop + plotH / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
-    ctx.fillText(`NRd - Axil (${forceUnit})`, 0, 0);
+    ctx.fillText(`NRd - Axil de Tracción (${forceUnit})`, 0, 0);
     ctx.restore();
 
     // 2. Draw Theoretical Curve & Shaded Safety Region
     if (puntos && puntos.length > 0) {
+      const dispPuntos = puntos.map(p => ({
+        x: globalUnits.toDisplayForce(p.x),
+        y: globalUnits.toDisplayForce(p.y)
+      }));
+
       // Fill region under curve
       ctx.beginPath();
       ctx.moveTo(scaleX(0), scaleY(0));
-      for (let i = 0; i < puntos.length; i++) {
-        ctx.lineTo(scaleX(puntos[i].x * forceConv), scaleY(puntos[i].y * forceConv));
+      for (let i = 0; i < dispPuntos.length; i++) {
+        ctx.lineTo(scaleX(dispPuntos[i].x), scaleY(dispPuntos[i].y));
       }
       ctx.lineTo(scaleX(VRd), scaleY(0));
       ctx.closePath();
@@ -144,57 +157,65 @@ export class InteractionChart {
 
       // Stroke curve line
       ctx.beginPath();
-      for (let i = 0; i < puntos.length; i++) {
-        const px = scaleX(puntos[i].x * forceConv);
-        const py = scaleY(puntos[i].y * forceConv);
+      for (let i = 0; i < dispPuntos.length; i++) {
+        const px = scaleX(dispPuntos[i].x);
+        const py = scaleY(dispPuntos[i].y);
         if (i === 0) ctx.moveTo(px, py);
         else ctx.lineTo(px, py);
       }
-      ctx.strokeStyle = isOK ? '#10b981' : '#f59e0b';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([]);
+      ctx.strokeStyle = isOK ? '#10b981' : '#ef4444';
+      ctx.lineWidth = 2.5;
       ctx.stroke();
     }
 
-    // 3. Mark Intercept Points (VRd, 0) and (0, NRd)
-    ctx.fillStyle = '#38bdf8';
+    // 3. Mark Capacities on Axes
+    // NRd limit mark
+    ctx.fillStyle = isLight ? '#0369a1' : '#38bdf8';
     ctx.beginPath();
-    ctx.arc(scaleX(VRd), scaleY(0), 4, 0, Math.PI * 2);
+    ctx.arc(scaleX(0), scaleY(NRd), 4.5, 0, Math.PI * 2);
     ctx.fill();
 
+    // VRd limit mark
     ctx.beginPath();
-    ctx.arc(scaleX(0), scaleY(NRd), 4, 0, Math.PI * 2);
+    ctx.arc(scaleX(VRd), scaleY(0), 4.5, 0, Math.PI * 2);
     ctx.fill();
 
-    // 4. Draw Operating Point (Vsd, Nsd)
-    const opPx = scaleX(opX_val);
-    const opPy = scaleY(opY_val);
+    // 4. Plot Operating / Demand Point (Nd, Vd)
+    const opX = scaleX(operX);
+    const opY = scaleY(operY);
 
-    // Dashed guide lines to axes
+    // Crosshair dashed lines
+    ctx.strokeStyle = isOK ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)';
+    ctx.lineWidth = 1.5;
     ctx.setLineDash([4, 4]);
-    ctx.strokeStyle = isOK ? 'rgba(56, 189, 248, 0.5)' : 'rgba(239, 68, 68, 0.5)';
-    ctx.lineWidth = 1.5;
 
     ctx.beginPath();
-    ctx.moveTo(opPx, padTop + plotH);
-    ctx.lineTo(opPx, opPy);
-    ctx.lineTo(padLeft, opPy);
+    ctx.moveTo(padLeft, opY);
+    ctx.lineTo(opX, opY);
+    ctx.lineTo(opX, padTop + plotH);
     ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.setLineDash([]); // reset dash
 
-    // Point Marker
-    ctx.fillStyle = isOK ? '#ef4444' : '#dc2626';
+    // Glowing Demand Point
+    ctx.fillStyle = isOK ? '#10b981' : '#ef4444';
+    ctx.shadowColor = isOK ? 'rgba(16, 185, 129, 0.8)' : 'rgba(239, 68, 68, 0.8)';
+    ctx.shadowBlur = 10;
     ctx.beginPath();
-    ctx.rect(opPx - 5, opPy - 5, 10, 10);
+    ctx.arc(opX, opY, 6.5, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
 
-    // Point Label
-    ctx.fillStyle = isLight ? '#0f172a' : '#ffffff';
-    ctx.font = '700 11px "JetBrains Mono", monospace';
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.arc(opX, opY, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 5. Demand Point Callout Label
+    ctx.fillStyle = isLight ? '#0f172a' : '#f8fafc';
+    ctx.font = '700 11px Outfit, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(`■ Nsd,Vsd (${opY_val.toFixed(1)}, ${opX_val.toFixed(1)} ${forceUnit})`, opPx + 8, opPy - 6);
+    const labelX = Math.min(opX + 10, w - 160);
+    const labelY = Math.max(opY - 10, padTop + 20);
+    ctx.fillText(`Demanda: (${operX.toFixed(1)}, ${operY.toFixed(1)}) ${forceUnit}`, labelX, labelY);
   }
 }
