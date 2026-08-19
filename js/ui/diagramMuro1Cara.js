@@ -1,9 +1,9 @@
 /**
  * Diagrama Interactivo 2D/3D SVG para Muro a 1 Cara (M1C)
  * Divide la visualización en dos diagramas coordinados:
- * 1. Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache), reescalado para aprovechar el espacio disponible con foco central.
+ * 1. Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache).
  * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º, Placa, Cono de Rotura de Hormigón y Cotas (hef, ca1, ca2, ca3, ca4, Ned).
- * Con títulos exteriores en minúsculas: "Vista General Muro" y "Detalle Anclaje".
+ * El sombreado del hormigón se extiende sin bordes laterales ni inferior (infinito dentro del marco), manteniendo solo la línea horizontal de cota 0 del terreno.
  */
 
 export class DiagramMuro1Cara {
@@ -52,7 +52,7 @@ export class DiagramMuro1Cara {
     } = this.values;
 
     // ==========================================
-    // 1. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA IZQUIERDO (VISTA GENERAL CON FOCO REESCALADO)
+    // 1. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA IZQUIERDO (VISTA GENERAL)
     // ==========================================
     const leftW = 340;
     const leftH = 390;
@@ -61,7 +61,7 @@ export class DiagramMuro1Cara {
     const leftWallX = 145;
     const leftWallW = 11;
     
-    // Reescalado dinámico con foco central (ocupa entre 165px y 240px del espacio vertical)
+    // Reescalado dinámico con foco central
     const leftWallH = Math.min(240, Math.max(160, 140 + (H / 12) * 100));
     const leftWallTop = leftGroundY - leftWallH;
 
@@ -88,7 +88,7 @@ export class DiagramMuro1Cara {
 
     const cotaXLeft = Math.max(18, leftWallX - leftPressureW - 25);
 
-    // Mini anclaje en vista general (más visible y centrado)
+    // Mini anclaje en vista general
     const miniAnchorStartX = leftWallX + leftWallW;
     const miniAnchorStartY = leftGroundY;
     const miniAnchorLen = 65;
@@ -105,7 +105,7 @@ export class DiagramMuro1Cara {
     const detailAnchorStartX = 215;
     const detailAnchorStartY = detailGroundY;
 
-    const detailAnchorLen = 165; // Gran escala con holgura
+    const detailAnchorLen = 165; // Gran escala
     const detailAnchorEndX = detailAnchorStartX - detailAnchorLen * Math.cos(Math.PI / 4);
     const detailAnchorEndY = detailAnchorStartY + detailAnchorLen * Math.sin(Math.PI / 4);
 
@@ -132,7 +132,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- Marco del Dibujo con foco central reescalado -->
+          <!-- Marco del Dibujo con fondo infinito de hormigón -->
           <div style="position: relative; flex: 1; min-height: 380px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
             <svg viewBox="0 0 ${leftW} ${leftH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
               <defs>
@@ -160,9 +160,11 @@ export class DiagramMuro1Cara {
                 </marker>
               </defs>
 
-              <!-- Zapata / Terreno -->
-              <polygon points="12,${leftGroundY} 328,${leftGroundY} 328,${leftH - 12} 12,${leftH - 12}" fill="url(#concreteGradM1C_L)" stroke="#64748b" stroke-width="1.5" />
-              <polygon points="12,${leftGroundY} 328,${leftGroundY} 328,${leftH - 12} 12,${leftH - 12}" fill="url(#diagHatchM1C_L)" />
+              <!-- 1. Terreno / Zapata infinita (Sin bordes laterales ni inferior, ocupa todo el marco inferior) -->
+              <polygon points="0,${leftGroundY} ${leftW},${leftGroundY} ${leftW},${leftH} 0,${leftH}" fill="url(#concreteGradM1C_L)" stroke="none" />
+              <polygon points="0,${leftGroundY} ${leftW},${leftGroundY} ${leftW},${leftH} 0,${leftH}" fill="url(#diagHatchM1C_L)" />
+              <!-- Línea de cota 0 / superficie del terreno -->
+              <line x1="0" y1="${leftGroundY}" x2="${leftW}" y2="${leftGroundY}" stroke="#64748b" stroke-width="2" />
 
               <!-- Mini Cono y Anclaje -->
               <polygon points="${miniAnchorEndX - 5},${leftGroundY} ${miniAnchorEndX - 5},${miniAnchorEndY - 5} ${miniAnchorEndX + 5},${miniAnchorEndY + 5} ${miniAnchorStartX + 25},${miniAnchorEndY - 5} ${miniAnchorStartX},${leftGroundY}" fill="rgba(239, 68, 68, 0.22)" stroke="none" />
@@ -212,7 +214,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- Marco del Dibujo con altura completa sin cortes -->
+          <!-- Marco del Dibujo con fondo infinito de hormigón -->
           <div style="position: relative; flex: 1; min-height: 380px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
             <svg viewBox="0 0 ${rightW} ${rightH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
               <defs>
@@ -230,9 +232,11 @@ export class DiagramMuro1Cara {
                 </marker>
               </defs>
 
-              <!-- Losa de Zapata / Hormigón -->
-              <polygon points="12,${detailGroundY} 328,${detailGroundY} 328,${rightH - 12} 12,${rightH - 12}" fill="url(#concreteGradM1C_R)" stroke="#64748b" stroke-width="1.5" />
-              <polygon points="12,${detailGroundY} 328,${detailGroundY} 328,${rightH - 12} 12,${rightH - 12}" fill="url(#diagHatchM1C_R)" />
+              <!-- 1. Terreno / Zapata infinita (Sin bordes laterales ni inferior) -->
+              <polygon points="0,${detailGroundY} ${rightW},${detailGroundY} ${rightW},${rightH} 0,${rightH}" fill="url(#concreteGradM1C_R)" stroke="none" />
+              <polygon points="0,${detailGroundY} ${rightW},${detailGroundY} ${rightW},${rightH} 0,${rightH}" fill="url(#diagHatchM1C_R)" />
+              <!-- Línea de cota 0 / superficie del terreno -->
+              <line x1="0" y1="${detailGroundY}" x2="${rightW}" y2="${detailGroundY}" stroke="#64748b" stroke-width="2" />
 
               <!-- Tramo inferior del muro / escuadra en superficie -->
               <rect x="${detailAnchorStartX - 14}" y="${detailGroundY - 45}" width="14" height="45" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1" />
