@@ -53,7 +53,7 @@ export const translations = {
 
     // Pas 3
     step3_title: 'Definició de la Resistència del Formigó',
-    concrete_fck_desc: 'Valor comprès entre 8 i 30 MPa. Probeta cilíndrica f\'c segons UNE-EN.',
+    concrete_fck_desc: 'Valor comprès entre 1 i 200 MPa. Probeta cilíndrica f\'c segons UNE-EN.',
     concrete_fck_label: 'Resistència f\'c (fck)',
 
     // Pas 4
@@ -185,7 +185,7 @@ export const translations = {
 
     // Step 3
     step3_title: 'Concrete Compressive Strength',
-    concrete_fck_desc: 'Value between 8 and 30 MPa. Cylinder strength f\'c according to EN standard.',
+    concrete_fck_desc: 'Value between 1 and 200 MPa (145 - 29,000 psi). Cylinder strength f\'c according to EN standard.',
     concrete_fck_label: 'Strength f\'c (fck)',
 
     // Step 4
@@ -317,7 +317,7 @@ export const translations = {
 
     // Paso 3
     step3_title: 'Definición de la Resistencia del Hormigón',
-    concrete_fck_desc: 'Valor comprendido entre 8 y 30 MPa. Probeta cilíndrica f\'c según UNE-EN.',
+    concrete_fck_desc: 'Valor comprendido entre 1 y 200 MPa. Probeta cilíndrica f\'c según UNE-EN.',
     concrete_fck_label: 'Resistencia f\'c (fck)',
 
     // Paso 4
@@ -449,7 +449,7 @@ export const translations = {
 
     // Étape 3
     step3_title: 'Résistance à la Compression du Béton',
-    concrete_fck_desc: 'Valeur comprise entre 8 et 30 MPa. Éprouvette cylindrique f\'c selon norme EN.',
+    concrete_fck_desc: 'Valeur comprise entre 1 et 200 MPa. Éprouvette cylindrique f\'c selon norme EN.',
     concrete_fck_label: 'Résistance f\'c (fck)',
 
     // Étape 4
@@ -581,7 +581,7 @@ export const translations = {
 
     // Passo 3
     step3_title: 'Resistenza a Compressione del Calcestruzzo',
-    concrete_fck_desc: 'Valore compreso tra 8 e 30 MPa. Provino cilindrico f\'c secondo normativa EN.',
+    concrete_fck_desc: 'Valore compreso tra 1 e 200 MPa. Provino cilindrico f\'c secondo normativa EN.',
     concrete_fck_label: 'Resistenza f\'c (fck)',
 
     // Passo 4
@@ -713,7 +713,7 @@ export const translations = {
 
     // Krok 3
     step3_title: 'Wytrzymałość Betonu na Ściskanie',
-    concrete_fck_desc: 'Wartość od 8 do 30 MPa. Wytrzymałość walcowa f\'c zgodnie z normą EN.',
+    concrete_fck_desc: 'Wartość od 1 do 200 MPa. Wytrzymałość walcowa f\'c zgodnie z normą EN.',
     concrete_fck_label: 'Wytrzymałość f\'c (fck)',
 
     // Krok 4
@@ -845,7 +845,7 @@ export const translations = {
 
     // Pasul 3
     step3_title: 'Rezistența la Compresiune a Betonului',
-    concrete_fck_desc: 'Valoare între 8 și 30 MPa. Epruvetă cilindrică f\'c conform standardului EN.',
+    concrete_fck_desc: 'Valoare între 1 și 200 MPa. Epruvetă cilindrică f\'c conform standardului EN.',
     concrete_fck_label: 'Rezistență f\'c (fck)',
 
     // Pasul 4

@@ -98,8 +98,8 @@ export class UnitConverter {
         systemName: 'Imperial (in/lb)',
         badge: 'in/lb',
         fckStep: 50,
-        fckMin: 1150,
-        fckMax: 4350,
+        fckMin: 145,
+        fckMax: 29000,
         lengthStep: 0.1,
         forceStep: 0.1
       };
@@ -111,8 +111,8 @@ export class UnitConverter {
       systemName: 'Métrico (mm/kN)',
       badge: 'mm/kN',
       fckStep: 1,
-      fckMin: 8,
-      fckMax: 30,
+      fckMin: 1,
+      fckMax: 200,
       lengthStep: 10,
       forceStep: 1
     };
