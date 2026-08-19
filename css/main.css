@@ -71,9 +71,9 @@ body {
 }
 
 .alsina-navbar-inner {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0.45rem 1.25rem;
   gap: 1rem;
   width: 100%;
@@ -714,18 +714,10 @@ body.light-theme .calc-table td {
 
 /* Main Layout */
 .app-container {
-  max-width: 1600px;
+  max-width: 1750px;
   margin: 0 auto;
   padding: 1.5rem;
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 1.5rem;
-}
-
-@media (max-width: 1200px) {
-  .app-container {
-    grid-template-columns: 1fr;
-  }
+  width: 100%;
 }
 
 /* Cards */
