@@ -46,11 +46,11 @@ export class DiagramMuro1Cara {
     const wallH = 240; // Represents H
     const wallTop = groundY - wallH;
 
-    // 45 deg anchor in footing
+    // 45 deg anchor in footing (pointing down-left / opposite direction)
     const anchorStartX = wallX + wallW;
     const anchorStartY = groundY;
     const anchorLenPx = 110;
-    const anchorEndX = anchorStartX + anchorLenPx * Math.cos(Math.PI / 4);
+    const anchorEndX = anchorStartX - anchorLenPx * Math.cos(Math.PI / 4);
     const anchorEndY = anchorStartY + anchorLenPx * Math.sin(Math.PI / 4);
 
     const svg = `
@@ -86,14 +86,12 @@ export class DiagramMuro1Cara {
             </marker>
           </defs>
 
-
-
           <!-- 1. Zapata / Terreno (Footing Slab) -->
           <polygon points="60,${groundY} 540,${groundY} 540,${svgHeight - 15} 60,${svgHeight - 15}" fill="url(#concreteGradM1C)" stroke="#64748b" stroke-width="2" />
           <polygon points="60,${groundY} 540,${groundY} 540,${svgHeight - 15} 60,${svgHeight - 15}" fill="url(#diagHatchM1C)" />
 
-          <!-- 2. Cono de Hormigón a 45º (Rotura) -->
-          <polygon points="${anchorStartX},${anchorStartY} ${anchorEndX + 65},${groundY} ${anchorEndX - 20},${anchorEndY + 35}" fill="rgba(239, 68, 68, 0.15)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
+          <!-- 2. Cono de Hormigón a 45º (Rotura simétrica en dirección anclaje) -->
+          <polygon points="${anchorStartX},${anchorStartY} ${anchorEndX - 65},${groundY} ${anchorEndX + 20},${anchorEndY + 35}" fill="rgba(239, 68, 68, 0.15)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
 
           <!-- 3. Encofrado Muro a 1 Cara (M1C Vertical Panel & Escuadra) -->
           <rect x="${wallX}" y="${wallTop}" width="${wallW}" height="${wallH}" rx="3" fill="url(#wallGradM1C)" stroke="#ffffff" stroke-width="1.5" />
@@ -116,14 +114,14 @@ export class DiagramMuro1Cara {
 
           <text x="${wallX - 45}" y="${groundY - 105}" fill="#ffffff" font-size="10" font-weight="800" font-family="monospace" text-anchor="middle">Pmax ${PresionMax} kN/m²</text>
 
-          <!-- 5. Barra Tirante Anclaje a 45º -->
+          <!-- 5. Barra Tirante Anclaje a 45º (Inclinada hacia la izquierda bajo zapata) -->
           <line x1="${anchorStartX}" y1="${anchorStartY}" x2="${anchorEndX}" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" />
-          <!-- Placa de anclaje final -->
-          <line x1="${anchorEndX - 8}" y1="${anchorEndY + 8}" x2="${anchorEndX + 8}" y2="${anchorEndY - 8}" stroke="#e2e8f0" stroke-width="4" />
+          <!-- Placa de anclaje final (Línea blanca perpendicular a la barra) -->
+          <line x1="${anchorEndX - 8}" y1="${anchorEndY - 8}" x2="${anchorEndX + 8}" y2="${anchorEndY + 8}" stroke="#e2e8f0" stroke-width="4" />
           
           <!-- Angle arc 45º -->
-          <path d="M ${anchorStartX + 30} ${anchorStartY} A 30 30 0 0 1 ${anchorStartX + 21} ${anchorStartY + 21}" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2,2" />
-          <text x="${anchorStartX + 34}" y="${anchorStartY + 18}" fill="#f59e0b" font-size="10" font-weight="700">45º</text>
+          <path d="M ${anchorStartX - 30} ${anchorStartY} A 30 30 0 0 0 ${anchorStartX - 21} ${anchorStartY + 21}" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2,2" />
+          <text x="${anchorStartX - 46}" y="${anchorStartY + 18}" fill="#f59e0b" font-size="10" font-weight="700">45º</text>
 
           <!-- 6. Cotas de Geometría y Bordes -->
           <!-- Altura H -->
@@ -133,15 +131,15 @@ export class DiagramMuro1Cara {
           <text x="${wallX - 150}" y="${(wallTop + groundY) / 2}" fill="#f8fafc" font-size="11" font-weight="800" font-family="monospace" text-anchor="middle" transform="rotate(-90 ${wallX - 150} ${(wallTop + groundY) / 2})">H = ${H} m</text>
 
           <!-- Longitud hef -->
-          <text x="${(anchorStartX + anchorEndX) / 2 + 15}" y="${(anchorStartY + anchorEndY) / 2 + 10}" fill="#fde68a" font-size="10" font-weight="800" font-family="monospace">hef = ${hef} mm</text>
+          <text x="${(anchorStartX + anchorEndX) / 2 - 45}" y="${(anchorStartY + anchorEndY) / 2 + 18}" fill="#fde68a" font-size="10" font-weight="800" font-family="monospace">hef = ${hef} mm</text>
 
           <!-- Borde ca1 frontal -->
-          <line x1="${anchorStartX}" y1="${groundY + 15}" x2="${anchorStartX - 70}" y2="${groundY + 15}" stroke="#38bdf8" stroke-width="1" stroke-dasharray="2,2" />
-          <text x="${anchorStartX - 35}" y="${groundY + 28}" fill="#38bdf8" font-size="10" font-weight="700" text-anchor="middle">ca1 = ${ca1} mm</text>
+          <line x1="${anchorStartX}" y1="${groundY + 15}" x2="${anchorStartX - 100}" y2="${groundY + 15}" stroke="#38bdf8" stroke-width="1" stroke-dasharray="2,2" />
+          <text x="${anchorStartX - 50}" y="${groundY + 28}" fill="#38bdf8" font-size="10" font-weight="700" text-anchor="middle">ca1 = ${ca1} mm</text>
 
           <!-- Borde ca2 posterior -->
-          <line x1="${anchorStartX}" y1="${groundY + 15}" x2="${anchorStartX + 200}" y2="${groundY + 15}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2" />
-          <text x="${anchorStartX + 100}" y="${groundY + 28}" fill="#94a3b8" font-size="10" font-weight="700" text-anchor="middle">ca2 = ${ca2} mm</text>
+          <line x1="${anchorStartX}" y1="${groundY + 15}" x2="${anchorStartX + 120}" y2="${groundY + 15}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2" />
+          <text x="${anchorStartX + 60}" y="${groundY + 28}" fill="#94a3b8" font-size="10" font-weight="700" text-anchor="middle">ca2 = ${ca2} mm</text>
 
           <!-- Ancho Batache label -->
           <rect x="420" y="30" width="150" height="40" rx="6" fill="rgba(15,23,42,0.85)" stroke="rgba(148,163,184,0.3)" />
