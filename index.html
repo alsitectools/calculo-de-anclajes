@@ -893,28 +893,58 @@
         <!-- Paso 4: Memoria Técnica Desglosada M1C -->
         <section class="accordion-wrapper">
           <div class="accordion-header" id="accHeaderM1C">
-            <div class="accordion-title">
-              <span data-i18n="m1c_acc_title">📐 Memoria Técnica y Fórmulas de Cálculo M1C</span>
-            </div>
+            <span data-i18n="m1c_acc_title">📐 Desglose Detallado de Fórmulas y Verificaciones Técnicas M1C</span>
             <span class="acc-arrow">▼</span>
           </div>
 
           <div class="accordion-body" id="accBodyM1C">
-            <div class="tech-table-container">
-              <table class="tech-table">
-                <thead>
-                  <tr>
-                    <th data-i18n="th_parameter">Parámetro</th>
-                    <th data-i18n="th_symbol">Símbolo</th>
-                    <th data-i18n="th_calc_value">Valor de Cálculo</th>
-                    <th data-i18n="th_standard_formula">Norma / Fórmula</th>
-                  </tr>
-                </thead>
-                <tbody id="m1c_tech_table_body">
-                  <!-- Dynamic rows -->
-                </tbody>
-              </table>
-            </div>
+            <!-- 1. Empujes de Hormigón y Batache -->
+            <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--accent-blue);" data-i18n="m1c_check_empujes">Empuje del Hormigón y Batache</h4>
+            <table class="calc-table">
+              <thead>
+                <tr>
+                  <th data-i18n="th_parameter">Parámetro</th>
+                  <th data-i18n="th_symbol">Símbolo</th>
+                  <th data-i18n="th_calc_value">Valor de Cálculo</th>
+                  <th data-i18n="th_standard_formula">Norma / Fórmula</th>
+                </tr>
+              </thead>
+              <tbody id="m1c_table_empujes">
+                <!-- Dynamic rows -->
+              </tbody>
+            </table>
+
+            <!-- 2. Esfuerzos de Demanda en Anclajes a 45º -->
+            <h4 style="font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.5rem; color: var(--accent-cyan);" data-i18n="m1c_check_demanda">Esfuerzos de Demanda en Anclajes a 45º</h4>
+            <table class="calc-table">
+              <thead>
+                <tr>
+                  <th data-i18n="th_parameter">Parámetro</th>
+                  <th data-i18n="th_symbol">Símbolo</th>
+                  <th data-i18n="th_calc_value">Valor de Cálculo</th>
+                  <th data-i18n="th_standard_formula">Norma / Fórmula</th>
+                </tr>
+              </thead>
+              <tbody id="m1c_table_demanda">
+                <!-- Dynamic rows -->
+              </tbody>
+            </table>
+
+            <!-- 3. Comprobación Arrancamiento Cono de Hormigón (45º) -->
+            <h4 style="font-size: 0.95rem; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #f59e0b;" data-i18n="m1c_check_cono">Comprobación Arrancamiento Cono de Hormigón (45º)</h4>
+            <table class="calc-table">
+              <thead>
+                <tr>
+                  <th data-i18n="th_parameter">Parámetro</th>
+                  <th data-i18n="th_symbol">Símbolo</th>
+                  <th data-i18n="th_calc_value">Valor de Cálculo</th>
+                  <th data-i18n="th_standard_formula">Norma / Fórmula</th>
+                </tr>
+              </thead>
+              <tbody id="m1c_table_cono">
+                <!-- Dynamic rows -->
+              </tbody>
+            </table>
           </div>
         </section>
 

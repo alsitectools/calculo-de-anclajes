@@ -146,7 +146,10 @@ export const translations = {
     "m1c_tension_uls": "Tracció de Càlcul Ned (ELU)",
     "m1c_tension_sls": "Tracció en Servei Nek (ELS)",
     "m1c_concrete_uls": "Capacitat Hormigó Nbc,Rd (ELU)",
-    "m1c_concrete_sls": "Capacitat Hormigó Nbc,Rd,ser (ELS)"
+    "m1c_concrete_sls": "Capacitat Hormigó Nbc,Rd,ser (ELS)",
+    "m1c_check_empujes": "Empenyiment del Formigó i Batatxe",
+    "m1c_check_demanda": "Esforços de Demanda en Ancoratges a 45º",
+    "m1c_check_cono": "Comprovació Trencament Con de Formigó (45º)"
   },
   "en": {
     "back_to_portal": "Back to portal",
@@ -280,7 +283,10 @@ export const translations = {
     "m1c_tension_uls": "Design Tension Force Ned (ULS)",
     "m1c_tension_sls": "Service Tension Force Nek (SLS)",
     "m1c_concrete_uls": "Concrete Capacity Nbc,Rd (ULS)",
-    "m1c_concrete_sls": "Concrete Capacity Nbc,Rd,ser (SLS)"
+    "m1c_concrete_sls": "Concrete Capacity Nbc,Rd,ser (SLS)",
+    "m1c_check_empujes": "Fresh Concrete Pressure & Section Forces",
+    "m1c_check_demanda": "45º Anchor Demand Forces",
+    "m1c_check_cono": "45º Concrete Cone Breakout Verification"
   },
   "es": {
     "back_to_portal": "Back to portal",
@@ -414,7 +420,10 @@ export const translations = {
     "m1c_tension_uls": "Tracción de Cálculo Ned (ELU)",
     "m1c_tension_sls": "Tracción en Servicio Nek (ELS)",
     "m1c_concrete_uls": "Capacidad Hormigón Nbc,Rd (ELU)",
-    "m1c_concrete_sls": "Capacidad Hormigón Nbc,Rd,ser (ELS)"
+    "m1c_concrete_sls": "Capacidad Hormigón Nbc,Rd,ser (ELS)",
+    "m1c_check_empujes": "Empuje del Hormigón y Batache",
+    "m1c_check_demanda": "Esfuerzos de Demanda en Anclajes a 45º",
+    "m1c_check_cono": "Comprobación Arrancamiento Cono de Hormigón (45º)"
   },
   "fr": {
     "back_to_portal": "Back to portal",
@@ -548,7 +557,10 @@ export const translations = {
     "m1c_tension_uls": "Traction de Calcul Ned (ELU)",
     "m1c_tension_sls": "Traction en Service Nek (ELS)",
     "m1c_concrete_uls": "Capacité Béton Nbc,Rd (ELU)",
-    "m1c_concrete_sls": "Capacité Béton Nbc,Rd,ser (ELS)"
+    "m1c_concrete_sls": "Capacité Béton Nbc,Rd,ser (ELS)",
+    "m1c_check_empujes": "Poussée du Béton et Plot",
+    "m1c_check_demanda": "Efforts de Demande sur Ancrages à 45º",
+    "m1c_check_cono": "Vérification Rupture Cône de Béton (45º)"
   },
   "it": {
     "back_to_portal": "Back to portal",
@@ -682,7 +694,10 @@ export const translations = {
     "m1c_tension_uls": "Trazione di Progetto Ned (SLU)",
     "m1c_tension_sls": "Trazione in Esercizio Nek (SLE)",
     "m1c_concrete_uls": "Capacità Calcestruzzo Nbc,Rd (SLU)",
-    "m1c_concrete_sls": "Capacità Calcestruzzo Nbc,Rd,ser (SLE)"
+    "m1c_concrete_sls": "Capacità Calcestruzzo Nbc,Rd,ser (SLE)",
+    "m1c_check_empujes": "Spinta del Calcestruzzo e Sezione",
+    "m1c_check_demanda": "Sollecitazioni di Progetto su Ancoraggi a 45º",
+    "m1c_check_cono": "Verifica Rottura Cono Calcestruzzo (45º)"
   },
   "pl": {
     "back_to_portal": "Back to portal",
@@ -816,7 +831,10 @@ export const translations = {
     "m1c_tension_uls": "Siła Rozciągająca Obliczeniowa Ned (SGN)",
     "m1c_tension_sls": "Siła Rozciągająca Charakterystyczna Nek (SGU)",
     "m1c_concrete_uls": "Nośność Betonu Nbc,Rd (SGN)",
-    "m1c_concrete_sls": "Nośność Betonu Nbc,Rd,ser (SGU)"
+    "m1c_concrete_sls": "Nośność Betonu Nbc,Rd,ser (SGU)",
+    "m1c_check_empujes": "Parcie Betonu i Siły na Sekcję",
+    "m1c_check_demanda": "Siły Wymagane w Kotwach pod kątem 45º",
+    "m1c_check_cono": "Weryfikacja Zniszczenia Stożka Betonu (45º)"
   },
   "ro": {
     "back_to_portal": "Back to portal",
@@ -950,6 +968,9 @@ export const translations = {
     "m1c_tension_uls": "Forță de Tracțiune de Calcul Ned (SLU)",
     "m1c_tension_sls": "Forță de Tracțiune în Serviciu Nek (SLS)",
     "m1c_concrete_uls": "Capacitate Beton Nbc,Rd (SLU)",
-    "m1c_concrete_sls": "Capacitate Beton Nbc,Rd,ser (SLS)"
+    "m1c_concrete_sls": "Capacitate Beton Nbc,Rd,ser (SLS)",
+    "m1c_check_empujes": "Împingerea Betonului și Tronson",
+    "m1c_check_demanda": "Eforturi de Solicitare pe Ancore la 45º",
+    "m1c_check_cono": "Verificare Rupere Con de Beton (45º)"
   }
 };

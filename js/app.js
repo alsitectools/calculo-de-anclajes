@@ -1369,40 +1369,76 @@ function updateM1CCalculation() {
 }
 
 function renderM1CTechMemory(res) {
-  const tbody = document.getElementById('m1c_tech_table_body');
-  if (!tbody) return;
+  const tEmpujes = document.getElementById('m1c_table_empujes');
+  const tDemanda = document.getElementById('m1c_table_demanda');
+  const tCono = document.getElementById('m1c_table_cono');
 
-  const rows = [
-    { name: 'Profundidad de presión máxima', sym: 'Hlim', val: `${res.empujes.Hlim.toFixed(2)} m`, rule: 'min(Pmax / γh, H)' },
-    { name: 'Fuerza horizontal hidrostática', sym: 'Fx1', val: `${res.empujes.Fx1.toFixed(2)} kN/m`, rule: 'γh × Hlim² × 0.5' },
-    { name: 'Altura centro de fuerzas Fx1', sym: 'h cdg Fx1', val: `${res.empujes.h_cdg_Fx1.toFixed(3)} m`, rule: 'H - (2/3) × Hlim' },
-    { name: 'Fuerza horizontal constante', sym: 'Fx2', val: `${res.empujes.Fx2.toFixed(2)} kN/m`, rule: 'Pmax × (H - Hlim)' },
-    { name: 'Altura centro de fuerzas Fx2', sym: 'h cdg Fx2', val: `${res.empujes.h_cdg_Fx2.toFixed(2)} m`, rule: '(H - Hlim) × 0.5' },
-    { name: 'Fuerza horizontal total', sym: 'Fx,tot', val: `${res.empujes.Fx_tot.toFixed(2)} kN/m`, rule: 'Fx1 + Fx2' },
-    { name: 'Altura centro de gravedad total', sym: 'h cdg tot', val: `${res.empujes.h_cdg_Fx_tot.toFixed(3)} m`, rule: '(Fx1×h1 + Fx2×h2) / Fx,tot' },
-    { name: 'Empuje horizontal por batache', sym: 'Fx,batache', val: `${res.empujes.Fx_tot_batache.toFixed(2)} kN`, rule: 'Fx,tot × b' },
-    { name: 'Empuje horizontal por anclaje', sym: 'Fx,anclaje', val: `${res.empujes.Fx_anclaje.toFixed(2)} kN`, rule: 'Fx,batache / n' },
-    { name: 'Tracción en servicio (SLS)', sym: 'Nek', val: `${res.demanda.Nek_anclaje.toFixed(2)} kN`, rule: '√(2 × Fx,anclaje²)' },
-    { name: 'Tracción de cálculo (ULS)', sym: 'Ned', val: `${res.demanda.Ned_anclaje.toFixed(2)} kN`, rule: 'Nek × γq' },
-    { name: 'Borde frontal efectivo (45º)', sym: 'ca1,ef', val: `${res.hormigon.ca1_efectivo.toFixed(1)} mm`, rule: 'min(hef × f(α), ca1)' },
-    { name: 'Área bruta cono hormigón', sym: 'Anc0', val: `${(res.hormigon.Anc0 / 1e6).toFixed(3)} m²`, rule: '9 × hef²' },
-    { name: 'Área neta cono hormigón', sym: 'Anc', val: `${(res.hormigon.Anc / 1e6).toFixed(3)} m²`, rule: '(x1 + x2) × (y1 + y2)' },
-    { name: 'Factor reducción área cono', sym: 'Anc / Anc0', val: `${res.hormigon.Anc_ratio.toFixed(4)}`, rule: 'Anc / Anc0' },
-    { name: 'Capacidad básica cono', sym: 'Nb', val: `${res.hormigon.Nb.toFixed(2)} kN`, rule: 'Kc × λ × √fcj × hef^1.5 / 1000' },
-    { name: 'Capacidad cono reducida', sym: 'Nbc', val: `${res.hormigon.Nbc.toFixed(2)} kN`, rule: 'Nb × (Anc / Anc0)' },
-    { name: 'Resistencia de cálculo cono (ULS)', sym: 'Nbc,Rd', val: `${res.hormigon.Nbc_Rd.toFixed(2)} kN`, rule: 'Nbc / γM,conc (γM = 1.5)' },
-    { name: 'Resistencia en servicio cono (SLS)', sym: 'Nbc,Rd,ser', val: `${res.hormigon.Nbc_Rd_ser.toFixed(2)} kN`, rule: 'Nbc,Rd / γQ (γQ = 1.5)' }
-  ];
+  if (tEmpujes) {
+    const rowsEmpujes = [
+      { name: 'Profundidad de presión máxima', sym: 'Hlim', val: `${res.empujes.Hlim.toFixed(2)} m`, rule: 'min(Pmax / γh, H)' },
+      { name: 'Fuerza horizontal hidrostática', sym: 'Fx1', val: `${res.empujes.Fx1.toFixed(2)} kN/m`, rule: 'γh × Hlim² × 0.5' },
+      { name: 'Altura centro de fuerzas Fx1', sym: 'h cdg Fx1', val: `${res.empujes.h_cdg_Fx1.toFixed(3)} m`, rule: 'H - (2/3) × Hlim' },
+      { name: 'Fuerza horizontal constante', sym: 'Fx2', val: `${res.empujes.Fx2.toFixed(2)} kN/m`, rule: 'Pmax × (H - Hlim)' },
+      { name: 'Altura centro de fuerzas Fx2', sym: 'h cdg Fx2', val: `${res.empujes.h_cdg_Fx2.toFixed(2)} m`, rule: '(H - Hlim) × 0.5' },
+      { name: 'Fuerza horizontal total', sym: 'Fx,tot', val: `${res.empujes.Fx_tot.toFixed(2)} kN/m`, rule: 'Fx1 + Fx2' },
+      { name: 'Altura centro de gravedad total', sym: 'h cdg tot', val: `${res.empujes.h_cdg_Fx_tot.toFixed(3)} m`, rule: '(Fx1×h1 + Fx2×h2) / Fx,tot' },
+      { name: 'Empuje horizontal por batache', sym: 'Fx,batache', val: `${res.empujes.Fx_tot_batache.toFixed(2)} kN`, rule: 'Fx,tot × b' },
+      { name: 'Empuje horizontal por anclaje', sym: 'Fx,anclaje', val: `${res.empujes.Fx_anclaje.toFixed(2)} kN`, rule: 'Fx,batache / n' }
+    ];
+    tEmpujes.innerHTML = '';
+    rowsEmpujes.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.name}</td>
+        <td class="mono">${r.sym}</td>
+        <td class="mono" style="font-weight: 600;">${r.val}</td>
+        <td class="mono" style="color: var(--text-muted); font-size: 0.8rem;">${r.rule}</td>
+      `;
+      tEmpujes.appendChild(tr);
+    });
+  }
 
-  tbody.innerHTML = '';
-  rows.forEach(r => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${r.name}</td>
-      <td class="mono">${r.sym}</td>
-      <td class="mono" style="font-weight: 700;">${r.val}</td>
-      <td class="mono" style="color: var(--text-muted); font-size: 0.8rem;">${r.rule}</td>
-    `;
-    tbody.appendChild(tr);
-  });
+  if (tDemanda) {
+    const rowsDemanda = [
+      { name: 'Tracción en servicio (SLS)', sym: 'Nek', val: globalUnits.formatForce(res.demanda.Nek_anclaje), rule: '√(2 × Fx,anclaje²)' },
+      { name: 'Tracción de cálculo (ULS)', sym: 'Ned', val: globalUnits.formatForce(res.demanda.Ned_anclaje), rule: 'Nek × γq' },
+      { name: 'Cortante de cálculo viga (ULS)', sym: 'Vz,Ed', val: globalUnits.formatForce(res.demanda.Vz_Ed), rule: 'Ned' },
+      { name: 'Momento flector de cálculo viga', sym: 'My,Ed', val: `${res.demanda.My_Ed.toFixed(2)} kNm`, rule: 'Ned × (ca3 / 1000)' }
+    ];
+    tDemanda.innerHTML = '';
+    rowsDemanda.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.name}</td>
+        <td class="mono">${r.sym}</td>
+        <td class="mono" style="font-weight: 600;">${r.val}</td>
+        <td class="mono" style="color: var(--text-muted); font-size: 0.8rem;">${r.rule}</td>
+      `;
+      tDemanda.appendChild(tr);
+    });
+  }
+
+  if (tCono) {
+    const rowsCono = [
+      { name: 'Borde frontal efectivo (45º)', sym: 'ca1,ef', val: `${res.hormigon.ca1_efectivo.toFixed(1)} mm`, rule: 'min(hef × f(α), ca1)' },
+      { name: 'Área bruta cono hormigón', sym: 'Anc0', val: `${(res.hormigon.Anc0 / 1e6).toFixed(3)} m²`, rule: '9 × hef²' },
+      { name: 'Área neta cono hormigón', sym: 'Anc', val: `${(res.hormigon.Anc / 1e6).toFixed(3)} m²`, rule: '(x1 + x2) × (y1 + y2)' },
+      { name: 'Factor reducción área cono', sym: 'Anc / Anc0', val: `${res.hormigon.Anc_ratio.toFixed(4)}`, rule: 'Anc / Anc0' },
+      { name: 'Capacidad básica cono', sym: 'Nb', val: globalUnits.formatForce(res.hormigon.Nb), rule: 'Kc × λ × √fcj × hef^1.5 / 1000' },
+      { name: 'Capacidad cono reducida', sym: 'Nbc', val: globalUnits.formatForce(res.hormigon.Nbc), rule: 'Nb × (Anc / Anc0)' },
+      { name: 'Capacidad de Cálculo Hormigón (ULS)', sym: 'Nbc,Rd', val: `<span style="font-weight: 700; color: ${res.hormigon.concrete_ULS_OK ? 'var(--success)' : 'var(--danger)'};">${globalUnits.formatForce(res.hormigon.Nbc_Rd)}</span>`, rule: 'Nbc / γM,conc (γM = 1.5)' },
+      { name: 'Capacidad en Servicio Hormigón (SLS)', sym: 'Nbc,Rd,ser', val: `<span style="font-weight: 700; color: ${res.hormigon.concrete_SLS_OK ? 'var(--success)' : 'var(--danger)'};">${globalUnits.formatForce(res.hormigon.Nbc_Rd_ser)}</span>`, rule: 'Nbc,Rd / γQ (γQ = 1.5)' }
+    ];
+    tCono.innerHTML = '';
+    rowsCono.forEach(r => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.name}</td>
+        <td class="mono">${r.sym}</td>
+        <td class="mono">${r.val}</td>
+        <td class="mono" style="color: var(--text-muted); font-size: 0.8rem;">${r.rule}</td>
+      `;
+      tCono.appendChild(tr);
+    });
+  }
 }
