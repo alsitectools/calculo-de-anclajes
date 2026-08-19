@@ -247,6 +247,18 @@ export function calculateMuro1Cara(params) {
       Fx_tot_escuadra,
       Fx_anclaje
     },
+    empuje: {
+      Hlim,
+      Fx1,
+      h_cdg_Fx1,
+      Fx2,
+      h_cdg_Fx2,
+      Fx_tot,
+      h_cdg_Fx_tot,
+      Fx_tot_batache,
+      Fx_tot_escuadra,
+      Fx_anclaje
+    },
     demanda: {
       Nek_escuadra,
       Nek_anclaje,

@@ -1172,8 +1172,9 @@ function syncM1CInputsFromState() {
   });
 
   const inpHlim = document.getElementById('inp_m1c_Hlim');
-  if (inpHlim && currentM1CResult) {
-    inpHlim.value = (currentM1CResult.empuje.Hlim || (m1cState.PresionMax / (m1cState.PespecificoHorm || 25))).toFixed(2);
+  if (inpHlim) {
+    const val = currentM1CResult?.empujes?.Hlim ?? Math.min(m1cState.PresionMax / (m1cState.PespecificoHorm || 25), m1cState.H);
+    inpHlim.value = val.toFixed(2);
   }
 
   const inpFcj = document.getElementById('inp_m1c_fcj');
@@ -1288,8 +1289,8 @@ function updateM1CCalculation() {
 
   // Update Hlim indicator input
   const inpHlim = document.getElementById('inp_m1c_Hlim');
-  if (inpHlim && res.empuje) {
-    inpHlim.value = res.empuje.Hlim.toFixed(2);
+  if (inpHlim && res.empujes) {
+    inpHlim.value = res.empujes.Hlim.toFixed(2);
   }
 
   // 1. Draw M1C Canvas Chart
