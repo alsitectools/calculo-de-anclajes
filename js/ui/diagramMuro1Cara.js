@@ -86,11 +86,7 @@ export class DiagramMuro1Cara {
             </marker>
           </defs>
 
-          <!-- Grid Background Lines -->
-          <g stroke="rgba(255,255,255,0.04)" stroke-width="1">
-            ${Array.from({ length: 12 }, (_, i) => `<line x1="${i * 50}" y1="0" x2="${i * 50}" y2="${svgHeight}" />`).join('')}
-            ${Array.from({ length: 9 }, (_, i) => `<line x1="0" y1="${i * 50}" x2="${svgWidth}" y2="${i * 50}" />`).join('')}
-          </g>
+
 
           <!-- 1. Zapata / Terreno (Footing Slab) -->
           <polygon points="60,${groundY} 540,${groundY} 540,${svgHeight - 15} 60,${svgHeight - 15}" fill="url(#concreteGradM1C)" stroke="#64748b" stroke-width="2" />
