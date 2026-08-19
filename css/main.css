@@ -812,6 +812,23 @@ body.light-theme .calc-table td {
   box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
 }
 
+.input-badge.locked {
+  background: rgba(15, 23, 42, 0.5);
+  border-color: rgba(148, 163, 184, 0.15);
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.input-badge.locked input {
+  cursor: not-allowed;
+  color: var(--text-muted);
+}
+
+.input-badge.locked:focus-within {
+  border-color: rgba(148, 163, 184, 0.15);
+  box-shadow: none;
+}
+
 .input-badge label {
   display: block;
   font-size: 0.75rem;
