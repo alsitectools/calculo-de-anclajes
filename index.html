@@ -249,16 +249,18 @@
               <span class="unit">mm</span>
             </div>
           </div>
-        </div>
 
-        <!-- Checkbox Afectado por Hueco -->
-        <div class="hueco-toggle-wrapper">
-          <label class="hueco-checkbox-label">
-            <input type="checkbox" id="chk_hueco" style="display:none;">
-            <span class="custom-checkbox"></span>
-            <span style="font-weight: 600; font-size: 0.95rem;" data-i18n="void_affect_title">Afectado por hueco inferior</span>
-          </label>
-          <button id="btnHelpVoid" class="btn-help-icon" title="Ver explicación gráfica de afectación por huecos">?</button>
+          <!-- Checkbox Afectado por Hueco integrado en el grid -->
+          <div class="input-badge hueco-badge-card">
+            <div class="hueco-card-inner">
+              <label class="hueco-checkbox-label" for="chk_hueco">
+                <input type="checkbox" id="chk_hueco" style="display:none;">
+                <span class="custom-checkbox"></span>
+                <span class="hueco-title-text" data-i18n="void_affect_title">Afectado por hueco inferior</span>
+              </label>
+              <button id="btnHelpVoid" class="btn-help-icon" title="Ver explicación gráfica de afectación por huecos">?</button>
+            </div>
+          </div>
         </div>
       </section>
 

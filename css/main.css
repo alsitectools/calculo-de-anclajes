@@ -799,7 +799,7 @@ body.light-theme .calc-table td {
 /* Input badges overlaid or structured around diagram */
 .diagram-inputs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: 0.75rem;
   margin-top: 1rem;
 }
@@ -810,6 +810,9 @@ body.light-theme .calc-table td {
   border-radius: var(--radius-sm);
   padding: 0.5rem 0.75rem;
   transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .input-badge:focus-within {
@@ -856,17 +859,58 @@ body.light-theme .calc-table td {
   font-weight: 600;
 }
 
-/* Checkbox Hueco */
-.hueco-toggle-wrapper {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 0.85rem 1.25rem;
-  margin-top: 1rem;
+/* Checkbox Hueco Badge (integrated in 5-col grid row 2) */
+.hueco-badge-card {
+  grid-column: span 3;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.hueco-badge-card:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(15, 23, 42, 0.95);
+}
+
+body.light-theme .hueco-badge-card {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+body.light-theme .hueco-badge-card:hover {
+  border-color: #94a3b8;
+}
+
+.hueco-card-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  width: 100%;
+  height: 100%;
+  gap: 0.75rem;
+}
+
+.hueco-title-text {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-main);
+}
+
+@media (max-width: 1200px) {
+  .diagram-inputs-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .hueco-badge-card {
+    grid-column: span 2 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .diagram-inputs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .hueco-badge-card {
+    grid-column: span 2 !important;
+  }
 }
 
 .hueco-checkbox-label {

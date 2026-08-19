@@ -424,10 +424,18 @@ function bindInputs() {
 
   // Afectado por Hueco Checkbox
   const chkHueco = document.getElementById('chk_hueco');
+  const cardHueco = document.querySelector('.hueco-badge-card');
   if (chkHueco) {
     chkHueco.addEventListener('change', () => {
       state.afectadoHueco = chkHueco.checked;
       updateCalculation();
+    });
+  }
+  if (cardHueco && chkHueco) {
+    cardHueco.addEventListener('click', (e) => {
+      if (e.target.closest('#btnHelpVoid') || e.target.closest('.hueco-checkbox-label')) return;
+      chkHueco.checked = !chkHueco.checked;
+      chkHueco.dispatchEvent(new Event('change'));
     });
   }
 
