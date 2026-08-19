@@ -90,8 +90,10 @@ export class DiagramMuro1Cara {
           <polygon points="60,${groundY} 540,${groundY} 540,${svgHeight - 15} 60,${svgHeight - 15}" fill="url(#concreteGradM1C)" stroke="#64748b" stroke-width="2" />
           <polygon points="60,${groundY} 540,${groundY} 540,${svgHeight - 15} 60,${svgHeight - 15}" fill="url(#diagHatchM1C)" />
 
-          <!-- 2. Cono de Hormigón a 45º (Rotura con caras perimetrales limpias) -->
-          <polygon points="${anchorEndX - 8},${groundY} ${anchorEndX - 8},${anchorEndY - 8} ${anchorEndX + 8},${anchorEndY + 8} ${anchorStartX + 42},${anchorEndY - 10} ${anchorStartX},${groundY}" fill="rgba(239, 68, 68, 0.15)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
+          <!-- 2. Cono de Hormigón a 45º (Sombreado idéntico con líneas punteadas solo en cara vertical y base) -->
+          <polygon points="${anchorEndX - 8},${groundY} ${anchorEndX - 8},${anchorEndY - 8} ${anchorEndX + 8},${anchorEndY + 8} ${anchorStartX + 42},${anchorEndY - 10} ${anchorStartX},${groundY}" fill="rgba(239, 68, 68, 0.15)" stroke="none" />
+          <line x1="${anchorEndX - 8}" y1="${groundY}" x2="${anchorEndX - 8}" y2="${anchorEndY - 8}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
+          <line x1="${anchorEndX + 8}" y1="${anchorEndY + 8}" x2="${anchorStartX + 42}" y2="${anchorEndY - 10}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
 
           <!-- 3. Encofrado Muro a 1 Cara (M1C Vertical Panel & Escuadra) -->
           <rect x="${wallX}" y="${wallTop}" width="${wallW}" height="${wallH}" rx="3" fill="url(#wallGradM1C)" stroke="#ffffff" stroke-width="1.5" />
