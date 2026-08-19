@@ -1149,6 +1149,7 @@ function syncM1CInputsFromState() {
   const map = {
     'H': 'inp_m1c_H',
     'PresionMax': 'inp_m1c_Pmax',
+    'PespecificoHorm': 'inp_m1c_Pesp',
     'AnchoBatache': 'inp_m1c_b',
     'NumAnclajes': 'inp_m1c_n',
     'gamma_q': 'inp_m1c_gamma_q',
@@ -1169,6 +1170,11 @@ function syncM1CInputsFromState() {
       }
     }
   });
+
+  const inpHlim = document.getElementById('inp_m1c_Hlim');
+  if (inpHlim && currentM1CResult) {
+    inpHlim.value = (currentM1CResult.empuje.Hlim || (m1cState.PresionMax / (m1cState.PespecificoHorm || 25))).toFixed(2);
+  }
 
   const inpFcj = document.getElementById('inp_m1c_fcj');
   const sliderFcj = document.getElementById('slider_m1c_fcj');
@@ -1198,6 +1204,7 @@ function bindMuro1CaraInputs() {
   const directInputs = [
     { id: 'inp_m1c_H', key: 'H' },
     { id: 'inp_m1c_Pmax', key: 'PresionMax' },
+    { id: 'inp_m1c_Pesp', key: 'PespecificoHorm' },
     { id: 'inp_m1c_b', key: 'AnchoBatache' },
     { id: 'inp_m1c_n', key: 'NumAnclajes' },
     { id: 'inp_m1c_gamma_q', key: 'gamma_q' }
@@ -1277,6 +1284,12 @@ function updateM1CCalculation() {
 
   if (diagramM1C) {
     diagramM1C.updateValues(m1cState);
+  }
+
+  // Update Hlim indicator input
+  const inpHlim = document.getElementById('inp_m1c_Hlim');
+  if (inpHlim && res.empuje) {
+    inpHlim.value = res.empuje.Hlim.toFixed(2);
   }
 
   // 1. Draw M1C Canvas Chart
@@ -1391,6 +1404,7 @@ function renderM1CTechMemory(res) {
 
   if (tEmpujes) {
     const rowsEmpujes = [
+      { name: 'Peso específico del hormigón', sym: 'γh', val: `${m1cState.PespecificoHorm || 25} kN/m³`, rule: 'Densidad hormigón fresco' },
       { name: 'Profundidad de presión máxima', sym: 'Hlim', val: `${res.empujes.Hlim.toFixed(2)} m`, rule: 'min(Pmax / γh, H)' },
       { name: 'Fuerza horizontal hidrostática', sym: 'Fx1', val: `${res.empujes.Fx1.toFixed(2)} kN/m`, rule: 'γh × Hlim² × 0.5' },
       { name: 'Altura centro de fuerzas Fx1', sym: 'h cdg Fx1', val: `${res.empujes.h_cdg_Fx1.toFixed(3)} m`, rule: 'H - (2/3) × Hlim' },
