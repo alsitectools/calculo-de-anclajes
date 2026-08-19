@@ -3,7 +3,7 @@
  * Divide la visualización en 3 esquemas coordinados:
  * 1. Columna Izquierda: Vista General del Muro (con altura perfectamente alineada con la base de Planta Anclajes).
  * 2. Columna Derecha - Superior: Detalle Anclaje (Sección a 45º) con el suelo en el centro vertical y Badges Interactivos para ca1, ca2 y hef.
- * 3. Columna Derecha - Inferior: Planta Anclajes que llena todo el ancho de lado a lado sin márgenes negros, con encofrado rojo, anclajes amarillos/blancos, cotas ca3 y ca4 arriba y cota b abajo.
+ * 3. Columna Derecha - Inferior: Planta Anclajes de lado a lado con las puntas de las flechas de cota tocando exactamente las líneas discontinuas de referencia.
  */
 
 import { globalUnits } from '../engine/units.js';
@@ -180,7 +180,7 @@ export class DiagramMuro1Cara {
     const ca4BadgeX = (rod1R + rod2L) / 2; // 230
     const ca4BadgeY = 18;
 
-    const ca3BadgeX = 370;
+    const ca3BadgeX = (group2Center + rod2R) / 2; // 335
     const ca3BadgeY = 18;
 
     // Cotas superiores (y = 38)
@@ -305,11 +305,11 @@ export class DiagramMuro1Cara {
                     <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
                   </marker>
 
-                  <marker id="dimArrowStartM1C_Sec" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                    <path d="M 8 1.5 L 0 5 L 8 8.5 z" fill="#38bdf8" />
+                  <marker id="dimArrowStartM1C_Sec" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M 10 1.5 L 0 5 L 10 8.5 z" fill="#38bdf8" />
                   </marker>
-                  <marker id="dimArrowEndM1C_Sec" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8" />
+                  <marker id="dimArrowEndM1C_Sec" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#38bdf8" />
                   </marker>
                 </defs>
 
@@ -340,12 +340,12 @@ export class DiagramMuro1Cara {
                 <text x="${secAnchorStartX - 45}" y="${secAnchorStartY + 16}" fill="#f59e0b" font-size="10" font-weight="800">45º</text>
 
                 <!-- Cotas estilo ingeniería ca1 y ca2 -->
-                <line x1="${secConeTopLeftX}" y1="${secGroundY}" x2="${secConeTopLeftX}" y2="${secTopDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
-                <line x1="${secAnchorStartX}" y1="${secGroundY}" x2="${secAnchorStartX}" y2="${secTopDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
-                <line x1="${secCa2EndX}" y1="${secGroundY}" x2="${secCa2EndX}" y2="${secTopDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
+                <line x1="${secConeTopLeftX}" y1="${secGroundY}" x2="${secConeTopLeftX}" y2="${secTopDimY - 8}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
+                <line x1="${secAnchorStartX}" y1="${secGroundY}" x2="${secAnchorStartX}" y2="${secTopDimY - 8}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
+                <line x1="${secCa2EndX}" y1="${secGroundY}" x2="${secCa2EndX}" y2="${secTopDimY - 8}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
 
-                <line x1="${secConeTopLeftX + 2}" y1="${secTopDimY}" x2="${secAnchorStartX - 2}" y2="${secTopDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Sec)" marker-end="url(#dimArrowEndM1C_Sec)" />
-                <line x1="${secAnchorStartX + 2}" y1="${secTopDimY}" x2="${secCa2EndX - 2}" y2="${secTopDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Sec)" marker-end="url(#dimArrowEndM1C_Sec)" />
+                <line x1="${secConeTopLeftX}" y1="${secTopDimY}" x2="${secAnchorStartX}" y2="${secTopDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Sec)" marker-end="url(#dimArrowEndM1C_Sec)" />
+                <line x1="${secAnchorStartX}" y1="${secTopDimY}" x2="${secCa2EndX}" y2="${secTopDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Sec)" marker-end="url(#dimArrowEndM1C_Sec)" />
               </svg>
 
               <!-- Badges Interactivos Sección -->
@@ -375,7 +375,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- BLOQUE 3: DETALLE EN PLANTA (DE LADO A LADO SIN MARGENES NEGROS) -->
+          <!-- BLOQUE 3: DETALLE EN PLANTA (CON FLECHAS TOCANDO EXACTAMENTE LAS LÍNEAS DISCONTINUAS) -->
           <div style="display: flex; flex-direction: column; width: 100%;">
             <div style="display: flex; justify-content: center; margin-bottom: 0.4rem; height: 28px; align-items: center;">
               <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; padding: 0.3rem 0.85rem; font-size: 0.80rem; font-weight: 700; color: #bae6fd; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
@@ -395,11 +395,12 @@ export class DiagramMuro1Cara {
                     <line x1="0" y1="0" x2="0" y2="10" stroke="#475569" stroke-width="1.5" opacity="0.4" />
                   </pattern>
 
-                  <marker id="dimArrowStartM1C_Plan" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                    <path d="M 8 1.5 L 0 5 L 8 8.5 z" fill="#38bdf8" />
+                  <!-- Marcadores con la punta EXACTA en refX=0 y refX=10 -->
+                  <marker id="dimArrowStartM1C_Plan" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M 10 1.5 L 0 5 L 10 8.5 z" fill="#38bdf8" />
                   </marker>
-                  <marker id="dimArrowEndM1C_Plan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
-                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8" />
+                  <marker id="dimArrowEndM1C_Plan" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                    <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#38bdf8" />
                   </marker>
                 </defs>
 
@@ -408,7 +409,7 @@ export class DiagramMuro1Cara {
                 <polygon points="0,0 ${planW},0 ${planW},${planH} 0,${planH}" fill="url(#diagHatchM1C_Plan)" />
 
                 <!-- Eje Central del Grupo Derecho (Dashed Axis Line) -->
-                <line x1="${group2Center}" y1="28" x2="${group2Center}" y2="200" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="8,4,2,4" opacity="0.85" />
+                <line x1="${group2Center}" y1="26" x2="${group2Center}" y2="200" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="8,4,2,4" opacity="0.85" />
 
                 <!-- ================= ANCLAJES (BARRAS AMARILLAS Y PLACAS BLANCAS) ================= -->
                 <!-- Grupo 1 Izquierda: 2 barras de anclaje amarillas con placa blanca -->
@@ -445,30 +446,30 @@ export class DiagramMuro1Cara {
                 <rect x="${group2Center + 2}" y="122" width="8" height="85" fill="#c8102e" stroke="#990b22" stroke-width="1" />
                 <rect x="${group2Center - 28}" y="146" width="56" height="24" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
                 <polygon points="${rod2L - 4},154 ${rod2L + 4},150 ${rod2L + 4},162 ${rod2L - 4},166" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
-                <polygon points="${rod2R - 4},150 ${rod2R + 4},146 ${rod2R + 4},158 ${rod2R - 4},162" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <polygon points="${rod2R - 4},154 ${rod2R + 4},150 ${rod2R + 4},162 ${rod2R - 4},166" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
 
                 <!-- ================= COTAS SUPERIORES EN PLANTA (ca3 y ca4) ================= -->
-                <!-- Líneas de extensión vertical hacia arriba -->
-                <line x1="${rod1R}" y1="${plateY - 4}" x2="${rod1R}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${rod2L}" y1="${plateY - 4}" x2="${rod2L}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${group2Center}" y1="28" x2="${group2Center}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
-                <line x1="${rod2R}" y1="${plateY - 4}" x2="${rod2R}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <!-- Líneas de extensión vertical hacia arriba (Sobrepasan 10px la línea de cota) -->
+                <line x1="${rod1R}" y1="${plateY - 2}" x2="${rod1R}" y2="${planDimY - 10}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${rod2L}" y1="${plateY - 2}" x2="${rod2L}" y2="${planDimY - 10}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${group2Center}" y1="26" x2="${group2Center}" y2="${planDimY - 10}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
+                <line x1="${rod2R}" y1="${plateY - 2}" x2="${rod2R}" y2="${planDimY - 10}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
 
-                <!-- Línea de cota ca3 -->
-                <line x1="${group2Center + 2}" y1="${planDimY}" x2="${rod2R - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
-                <text x="${(group2Center + rod2R) / 2 + 35}" y="${planDimY + 14}" fill="#94a3b8" font-size="8" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
+                <!-- Línea de cota ca4 (Puntas tocan exactamente rod1R y rod2L) -->
+                <line x1="${rod1R}" y1="${planDimY}" x2="${rod2L}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
+                <text x="${ca4BadgeX}" y="${planDimY + 14}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca4 ≤ 1.5 hef</text>
 
-                <!-- Línea de cota ca4 -->
-                <line x1="${rod1R + 2}" y1="${planDimY}" x2="${rod2L - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
-                <text x="${ca4BadgeX}" y="${planDimY + 14}" fill="#94a3b8" font-size="8" font-weight="700" font-family="monospace" text-anchor="middle">ca4 ≤ 1.5 hef</text>
+                <!-- Línea de cota ca3 (Puntas tocan exactamente group2Center y rod2R) -->
+                <line x1="${group2Center}" y1="${planDimY}" x2="${rod2R}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
+                <text x="${ca3BadgeX}" y="${planDimY + 14}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
 
                 <!-- ================= COTA INFERIOR ANCHO DE BATACHE (b) ================= -->
-                <!-- Líneas de extensión vertical hacia abajo -->
-                <line x1="${batacheLeftX}" y1="135" x2="${batacheLeftX}" y2="${planBatacheY + 8}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${batacheRightX}" y1="135" x2="${batacheRightX}" y2="${planBatacheY + 8}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <!-- Líneas de extensión vertical hacia abajo (Sobrepasan 10px la línea de cota) -->
+                <line x1="${batacheLeftX}" y1="120" x2="${batacheLeftX}" y2="${planBatacheY + 10}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${batacheRightX}" y1="120" x2="${batacheRightX}" y2="${planBatacheY + 10}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
 
-                <!-- Línea de cota b -->
-                <line x1="${batacheLeftX + 2}" y1="${planBatacheY}" x2="${batacheRightX - 2}" y2="${planBatacheY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
+                <!-- Línea de cota b (Puntas tocan exactamente batacheLeftX y batacheRightX) -->
+                <line x1="${batacheLeftX}" y1="${planBatacheY}" x2="${batacheRightX}" y2="${planBatacheY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
               </svg>
 
               <!-- Badges Interactivos Planta (ca4 y ca3 arriba) -->
