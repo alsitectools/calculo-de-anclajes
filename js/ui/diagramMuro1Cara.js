@@ -90,8 +90,8 @@ export class DiagramMuro1Cara {
           <polygon points="60,${groundY} 540,${groundY} 540,${svgHeight - 15} 60,${svgHeight - 15}" fill="url(#concreteGradM1C)" stroke="#64748b" stroke-width="2" />
           <polygon points="60,${groundY} 540,${groundY} 540,${svgHeight - 15} 60,${svgHeight - 15}" fill="url(#diagHatchM1C)" />
 
-          <!-- 2. Cono de Hormigón a 45º (Rotura simétrica en dirección anclaje) -->
-          <polygon points="${anchorStartX},${anchorStartY} ${anchorEndX - 65},${groundY} ${anchorEndX + 20},${anchorEndY + 35}" fill="rgba(239, 68, 68, 0.15)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
+          <!-- 2. Cono de Hormigón a 45º (Rotura: cara izquierda vertical y cara derecha inclinada) -->
+          <polygon points="${anchorEndX - 8},${groundY} ${anchorEndX - 8},${anchorEndY - 8} ${anchorEndX + 8},${anchorEndY + 8} ${anchorStartX + 50},${groundY}" fill="rgba(239, 68, 68, 0.15)" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
 
           <!-- 3. Encofrado Muro a 1 Cara (M1C Vertical Panel & Escuadra) -->
           <rect x="${wallX}" y="${wallTop}" width="${wallW}" height="${wallH}" rx="3" fill="url(#wallGradM1C)" stroke="#ffffff" stroke-width="1.5" />
@@ -134,8 +134,8 @@ export class DiagramMuro1Cara {
           <text x="${(anchorStartX + anchorEndX) / 2 - 45}" y="${(anchorStartY + anchorEndY) / 2 + 18}" fill="#fde68a" font-size="10" font-weight="800" font-family="monospace">hef = ${hef} mm</text>
 
           <!-- Borde ca1 frontal -->
-          <line x1="${anchorStartX}" y1="${groundY + 15}" x2="${anchorStartX - 100}" y2="${groundY + 15}" stroke="#38bdf8" stroke-width="1" stroke-dasharray="2,2" />
-          <text x="${anchorStartX - 50}" y="${groundY + 28}" fill="#38bdf8" font-size="10" font-weight="700" text-anchor="middle">ca1 = ${ca1} mm</text>
+          <line x1="${anchorStartX}" y1="${groundY + 15}" x2="${anchorEndX - 8}" y2="${groundY + 15}" stroke="#38bdf8" stroke-width="1" stroke-dasharray="2,2" />
+          <text x="${(anchorStartX + anchorEndX - 8) / 2}" y="${groundY + 28}" fill="#38bdf8" font-size="10" font-weight="700" text-anchor="middle">ca1 = ${ca1} mm</text>
 
           <!-- Borde ca2 posterior -->
           <line x1="${anchorStartX}" y1="${groundY + 15}" x2="${anchorStartX + 120}" y2="${groundY + 15}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2" />
