@@ -3,7 +3,7 @@
  * Divide la visualización en 3 esquemas coordinados:
  * 1. Columna Izquierda: Vista General del Muro (con altura perfectamente alineada con la base de Planta Anclajes).
  * 2. Columna Derecha - Superior: Detalle Anclaje (Sección a 45º) con el suelo en el centro vertical y Badges Interactivos para ca1, ca2 y hef.
- * 3. Columna Derecha - Inferior: Planta Anclajes con encofrado rojo, anclajes amarillos y blancos, y cota ca3 desde el eje central entre anclajes hasta el eje del anclaje, y ca4 entre grupos de anclajes.
+ * 3. Columna Derecha - Inferior: Planta Anclajes con encofrado rojo, anclajes amarillos y blancos, y badges interactivos ca3 y ca4 colocados directamente sobre las líneas de cota.
  */
 
 import { globalUnits } from '../engine/units.js';
@@ -149,16 +149,16 @@ export class DiagramMuro1Cara {
     const secCa2EndX = secAnchorStartX + 85;
 
     const ca1BadgeX = (secConeTopLeftX + secAnchorStartX) / 2;
-    const ca1BadgeY = secTopDimY - 14;
+    const ca1BadgeY = secTopDimY;
 
     const ca2BadgeX = (secAnchorStartX + secCa2EndX) / 2;
-    const ca2BadgeY = secTopDimY - 14;
+    const ca2BadgeY = secTopDimY;
 
     const hefBadgeX = (secAnchorStartX + secAnchorEndX) / 2 - 38;
     const hefBadgeY = (secAnchorStartY + secAnchorEndY) / 2 + 8;
 
     // ==========================================
-    // 3. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 3 (PLANTA ANCLAJES HOMOGÉNEA)
+    // 3. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 3 (PLANTA ANCLAJES CON INPUTS SOBRE COTAS)
     // ==========================================
     const planW = 340;
     const planH = 240;
@@ -172,17 +172,17 @@ export class DiagramMuro1Cara {
     const rod2L = group2Center - 18; // 212
     const rod2R = group2Center + 18; // 248
 
-    const planDimY = 16;
+    const planDimY = 32;
     
-    // Cota ca3: desde el eje central entre anclajes (230) hasta el anclaje derecho (248)
-    const ca3BadgeX = (group2Center + rod2R) / 2 + 25;
-    const ca3BadgeY = 32;
+    // Cota ca3: centrada en el eje entre el centro del grupo 2 y el anclaje derecho
+    const ca3BadgeX = (group2Center + rod2R) / 2;
+    const ca3BadgeY = planDimY;
 
-    // Cota ca4: entre el anclaje derecho del grupo 1 y el anclaje izquierdo del grupo 2
+    // Cota ca4: centrada entre el anclaje derecho del grupo 1 y el izquierdo del grupo 2
     const ca4BadgeX = (rod1R + rod2L) / 2;
-    const ca4BadgeY = 32;
+    const ca4BadgeY = planDimY;
 
-    const plateY = 62;
+    const plateY = 65;
     const anchorEndY = 185;
 
     const html = `
@@ -337,7 +337,7 @@ export class DiagramMuro1Cara {
                 <line x1="${secAnchorStartX + 2}" y1="${secTopDimY}" x2="${secCa2EndX - 2}" y2="${secTopDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Sec)" marker-end="url(#dimArrowEndM1C_Sec)" />
               </svg>
 
-              <!-- Badges Interactivos Sección -->
+              <!-- Badges Interactivos Sección (Sobre las cotas) -->
               <div id="badge_m1c_ca1" class="param-badge-overlay" style="position: absolute; left: ${toPct(ca1BadgeX, secW)}; top: ${toPct(ca1BadgeY, secH)}; transform: translate(-50%, -50%);">
                 <div class="mini-input-badge">
                   <span class="badge-lbl">ca,1</span>
@@ -364,7 +364,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- BLOQUE 3: DETALLE EN PLANTA (VISTA SUPERIOR HOMOGÉNEA) -->
+          <!-- BLOQUE 3: DETALLE EN PLANTA (INPUTS SITUADOS DIRECTAMENTE SOBRE LAS COTAS) -->
           <div style="display: flex; flex-direction: column; width: 100%;">
             <div style="display: flex; justify-content: center; margin-bottom: 0.4rem; height: 28px; align-items: center;">
               <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; padding: 0.3rem 0.85rem; font-size: 0.80rem; font-weight: 700; color: #bae6fd; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
@@ -438,33 +438,35 @@ export class DiagramMuro1Cara {
 
                 <!-- ================= COTAS EN PLANTA (ca3 y ca4) ================= -->
                 <!-- Líneas de extensión vertical hacia arriba -->
-                <line x1="${rod1R}" y1="58" x2="${rod1R}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${rod2L}" y1="58" x2="${rod2L}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${group2Center}" y1="12" x2="${group2Center}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
-                <line x1="${rod2R}" y1="58" x2="${rod2R}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${rod1R}" y1="58" x2="${rod1R}" y2="${planDimY - 14}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${rod2L}" y1="58" x2="${rod2L}" y2="${planDimY - 14}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${group2Center}" y1="12" x2="${group2Center}" y2="${planDimY - 14}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
+                <line x1="${rod2R}" y1="58" x2="${rod2R}" y2="${planDimY - 14}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
 
-                <!-- Línea de cota ca3 (Desde el eje central entre anclajes 230 hasta el anclaje derecho 248) -->
+                <!-- Texto de especificación encima de las cotas -->
+                <text x="${ca4BadgeX}" y="${planDimY - 16}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca4 ≤ 1.5 hef</text>
+                <text x="${ca3BadgeX}" y="${planDimY - 16}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
+
+                <!-- Línea de cota ca3 (Desde el eje central 230 hasta el anclaje 248) -->
                 <line x1="${group2Center + 2}" y1="${planDimY}" x2="${rod2R - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
-                <text x="${(group2Center + rod2R) / 2}" y="${planDimY - 6}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
 
-                <!-- Línea de cota ca4 (Entre el anclaje rod1R y rod2L) -->
+                <!-- Línea de cota ca4 (Entre rod1R y rod2L) -->
                 <line x1="${rod1R + 2}" y1="${planDimY}" x2="${rod2L - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
-                <text x="${ca4BadgeX}" y="${planDimY - 6}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca4 ≤ 1.5 hef</text>
               </svg>
 
-              <!-- Badges Interactivos Planta (Por encima sin tapar el dibujo) -->
-              <div id="badge_m1c_ca3" class="param-badge-overlay" style="position: absolute; left: ${toPct(ca3BadgeX, planW)}; top: ${toPct(ca3BadgeY, planH)}; transform: translate(-50%, -50%);">
-                <div class="mini-input-badge">
-                  <span class="badge-lbl">ca,3</span>
-                  <input type="number" id="diag_m1c_ca3" class="diag-inp" min="50" max="5000" step="${unitStep}" value="${ca3Display}" />
-                  <span class="badge-unit">${unitLen}</span>
-                </div>
-              </div>
-
+              <!-- Badges Interactivos Planta (Centrados directamente SOBRE las líneas de cota) -->
               <div id="badge_m1c_ca4" class="param-badge-overlay" style="position: absolute; left: ${toPct(ca4BadgeX, planW)}; top: ${toPct(ca4BadgeY, planH)}; transform: translate(-50%, -50%);">
                 <div class="mini-input-badge">
                   <span class="badge-lbl">ca,4</span>
                   <input type="number" id="diag_m1c_ca4" class="diag-inp" min="50" max="5000" step="${unitStep}" value="${ca4Display}" />
+                  <span class="badge-unit">${unitLen}</span>
+                </div>
+              </div>
+
+              <div id="badge_m1c_ca3" class="param-badge-overlay" style="position: absolute; left: ${toPct(ca3BadgeX, planW)}; top: ${toPct(ca3BadgeY, planH)}; transform: translate(-50%, -50%);">
+                <div class="mini-input-badge">
+                  <span class="badge-lbl">ca,3</span>
+                  <input type="number" id="diag_m1c_ca3" class="diag-inp" min="50" max="5000" step="${unitStep}" value="${ca3Display}" />
                   <span class="badge-unit">${unitLen}</span>
                 </div>
               </div>
