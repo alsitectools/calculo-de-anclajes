@@ -1,8 +1,8 @@
 /**
  * Diagrama Interactivo 2D/3D SVG para Muro a 1 Cara (M1C)
  * Divide la visualización en dos diagramas coordinados:
- * 1. Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache).
- * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º, Placa, Cono de Rotura de Hormigón y Cotas, centrado verticalmente en el marco.
+ * 1. Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache), con cota H a la derecha.
+ * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º, Placa, Cono de Rotura de Hormigón y Cotas, centrado verticalmente.
  */
 
 export class DiagramMuro1Cara {
@@ -57,7 +57,7 @@ export class DiagramMuro1Cara {
     const leftH = 390;
 
     const leftGroundY = 280;
-    const leftWallX = 145;
+    const leftWallX = 140;
     const leftWallW = 11;
     
     // Reescalado dinámico con foco central
@@ -85,7 +85,9 @@ export class DiagramMuro1Cara {
       arrowsLeftSvg += `<line x1="${leftWallX - curW}" y1="${arrowY}" x2="${leftWallX - 3}" y2="${arrowY}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />\n`;
     }
 
-    const cotaXLeft = Math.max(18, leftWallX - leftPressureW - 25);
+    // Cota H a la derecha del muro y de la escuadra
+    const escuadraFootX = leftWallX + leftWallW + leftWallH * 0.45;
+    const cotaXRight = Math.min(318, Math.max(265, escuadraFootX + 22));
 
     // Mini anclaje en vista general
     const miniAnchorStartX = leftWallX + leftWallW;
@@ -190,16 +192,16 @@ export class DiagramMuro1Cara {
               <!-- Rótulo Pmax -->
               <text x="${leftWallX - leftPressureW / 2}" y="${leftGroundY - 10}" fill="#ffffff" font-size="9.5" font-weight="800" font-family="monospace" text-anchor="middle">Pmax ${PresionMax}k</text>
 
-              <!-- Cota H -->
-              <line x1="${cotaXLeft}" y1="${leftWallTop}" x2="${cotaXLeft}" y2="${leftGroundY}" stroke="#94a3b8" stroke-width="1" />
-              <line x1="${cotaXLeft - 4}" y1="${leftWallTop}" x2="${cotaXLeft + 4}" y2="${leftWallTop}" stroke="#94a3b8" stroke-width="1" />
-              <line x1="${cotaXLeft - 4}" y1="${leftGroundY}" x2="${cotaXLeft + 4}" y2="${leftGroundY}" stroke="#94a3b8" stroke-width="1" />
-              <text x="${cotaXLeft - 12}" y="${(leftWallTop + leftGroundY) / 2}" fill="#f8fafc" font-size="10.5" font-weight="800" font-family="monospace" text-anchor="middle" transform="rotate(-90 ${cotaXLeft - 12} ${(leftWallTop + leftGroundY) / 2})">H = ${H} m</text>
+              <!-- Cota H a la derecha del dibujo -->
+              <line x1="${cotaXRight}" y1="${leftWallTop}" x2="${cotaXRight}" y2="${leftGroundY}" stroke="#94a3b8" stroke-width="1.2" />
+              <line x1="${cotaXRight - 4}" y1="${leftWallTop}" x2="${cotaXRight + 4}" y2="${leftWallTop}" stroke="#94a3b8" stroke-width="1.2" />
+              <line x1="${cotaXRight - 4}" y1="${leftGroundY}" x2="${cotaXRight + 4}" y2="${leftGroundY}" stroke="#94a3b8" stroke-width="1.2" />
+              <text x="${cotaXRight + 14}" y="${(leftWallTop + leftGroundY) / 2}" fill="#f8fafc" font-size="10.5" font-weight="800" font-family="monospace" text-anchor="middle" transform="rotate(90 ${cotaXRight + 14} ${(leftWallTop + leftGroundY) / 2})">H = ${H} m</text>
 
-              <!-- Ancho Batache Badge -->
-              <rect x="200" y="10" width="125" height="34" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(56,189,248,0.35)" />
-              <text x="262" y="24" fill="#94a3b8" font-size="8.5" font-weight="700" text-anchor="middle">BATACHE</text>
-              <text x="262" y="38" fill="#38bdf8" font-size="11" font-weight="800" font-family="monospace" text-anchor="middle">b=${AnchoBatache}m (${NumAnclajes}u)</text>
+              <!-- Ancho Batache Badge en la esquina superior izquierda -->
+              <rect x="15" y="10" width="125" height="34" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(56,189,248,0.35)" />
+              <text x="77" y="24" fill="#94a3b8" font-size="8.5" font-weight="700" text-anchor="middle">BATACHE</text>
+              <text x="77" y="38" fill="#38bdf8" font-size="11" font-weight="800" font-family="monospace" text-anchor="middle">b=${AnchoBatache}m (${NumAnclajes}u)</text>
             </svg>
           </div>
         </div>
