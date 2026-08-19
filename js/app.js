@@ -1,5 +1,7 @@
 import { ANCHOR_TYPES, calculateAnchor } from './engine/anchorEngine.js';
+import { calculateMuro1Cara, VIGA_PROFILES, TIE_BAR_TYPES } from './engine/muro1caraEngine.js';
 import { DiagramView } from './ui/diagramView.js';
+import { DiagramMuro1Cara } from './ui/diagramMuro1Cara.js';
 import { InteractionChart } from './ui/interactionChart.js';
 import { generateDocx } from './report/docxGenerator.js';
 import { getTemplateBuffer } from './report/embeddedTemplates.js';
@@ -11,6 +13,28 @@ const THEME_STORAGE_KEY = 'alsina_anchor_theme_v1';
 const UNITS_STORAGE_KEY = 'alsina_anchor_units_v1';
 
 let isImperial = false;
+let currentCalcMode = 'trepante'; // 'trepante' | 'muro1cara'
+
+// Muro 1 Cara (M1C) Default State
+const DEFAULT_M1C_STATE = {
+  H: 9,
+  PresionMax: 25,
+  AnchoBatache: 2,
+  NumAnclajes: 4,
+  gamma_q: 1.5,
+  PespecificoHorm: 25,
+  fcj: 35,
+  hef: 440,
+  ca1: 500,
+  ca2: 1500,
+  ca3: 200,
+  ca4: 900,
+  alpha: 45
+};
+
+let m1cState = { ...DEFAULT_M1C_STATE };
+let diagramM1C = null;
+let currentM1CResult = null;
 
 // Default State (Always in SI Units internally: mm, kN, MPa)
 const state = {
@@ -257,7 +281,10 @@ function confirmDeleteHypothesis() {
 }
 
 function initUI() {
-  // Initialize Diagram View
+  // Initialize Calculation Mode Switcher
+  bindCalculationModeSwitcher();
+
+  // Initialize Diagram View (Trepante)
   const diagramContainer = document.getElementById('diagramViewContainer');
   if (diagramContainer) {
     diagramView = new DiagramView(diagramContainer, (key, value) => {
@@ -267,11 +294,14 @@ function initUI() {
     });
   }
 
-  // Initialize Canvas Chart
+  // Initialize Canvas Chart (Trepante)
   const chartCanvas = document.getElementById('interactionCanvas');
   if (chartCanvas) {
     interactionChart = new InteractionChart(chartCanvas);
   }
+
+  // Initialize Muro 1 Cara UI
+  initMuro1CaraUI();
 
   // Bind Form Controls
   bindInputs();
@@ -281,11 +311,50 @@ function initUI() {
   bindUserProfileMenu();
 }
 
+function bindCalculationModeSwitcher() {
+  const btnTrepante = document.getElementById('btnModeTrepante');
+  const btnMuro = document.getElementById('btnModeMuro1Cara');
+
+  if (btnTrepante) {
+    btnTrepante.addEventListener('click', () => {
+      switchCalculationMode('trepante');
+    });
+  }
+
+  if (btnMuro) {
+    btnMuro.addEventListener('click', () => {
+      switchCalculationMode('muro1cara');
+    });
+  }
+}
+
+function switchCalculationMode(mode) {
+  currentCalcMode = mode;
+  const btnTrepante = document.getElementById('btnModeTrepante');
+  const btnMuro = document.getElementById('btnModeMuro1Cara');
+  const viewTrepante = document.getElementById('viewTrepante');
+  const viewMuro = document.getElementById('viewMuro1Cara');
+
+  if (mode === 'muro1cara') {
+    if (btnTrepante) btnTrepante.classList.remove('active');
+    if (btnMuro) btnMuro.classList.add('active');
+    if (viewTrepante) viewTrepante.style.display = 'none';
+    if (viewMuro) viewMuro.style.display = 'grid';
+    updateM1CCalculation();
+  } else {
+    if (btnMuro) btnMuro.classList.remove('active');
+    if (btnTrepante) btnTrepante.classList.add('active');
+    if (viewMuro) viewMuro.style.display = 'none';
+    if (viewTrepante) viewTrepante.style.display = 'grid';
+    updateCalculation();
+  }
+}
+
 function applyUnitsToUI() {
   const isImp = globalUnits.isImperial();
   const labels = globalUnits.getUnitLabels();
 
-  // 1. Update unit badges in inputs grid
+  // 1. Update unit badges in inputs grid (Trepante)
   const unitMap = {
     'inp_Nsk': labels.force,
     'inp_Vsk': labels.force,
@@ -294,7 +363,13 @@ function applyUnitsToUI() {
     'inp_cau': labels.length,
     'inp_cad': labels.length,
     'inp_ha': labels.length,
-    'inp_fck': labels.stress
+    'inp_fck': labels.stress,
+    'inp_m1c_fcj': labels.stress,
+    'inp_m1c_hef': labels.length,
+    'inp_m1c_ca1': labels.length,
+    'inp_m1c_ca2': labels.length,
+    'inp_m1c_ca3': labels.length,
+    'inp_m1c_ca4': labels.length
   };
 
   Object.entries(unitMap).forEach(([id, unitText]) => {
@@ -312,7 +387,7 @@ function applyUnitsToUI() {
   if (inpNsk) { inpNsk.step = labels.forceStep; inpNsk.max = isImp ? '225' : '1000'; }
   if (inpVsk) { inpVsk.step = labels.forceStep; inpVsk.max = isImp ? '225' : '1000'; }
 
-  ['inp_cal', 'inp_car', 'inp_cau', 'inp_cad', 'inp_ha'].forEach(id => {
+  ['inp_cal', 'inp_car', 'inp_cau', 'inp_cad', 'inp_ha', 'inp_m1c_hef', 'inp_m1c_ca1', 'inp_m1c_ca2', 'inp_m1c_ca3', 'inp_m1c_ca4'].forEach(id => {
     const inp = document.getElementById(id);
     if (inp) {
       inp.step = labels.lengthStep;
@@ -332,6 +407,19 @@ function applyUnitsToUI() {
     sliderFck.min = labels.fckMin;
     sliderFck.max = labels.fckMax;
     sliderFck.step = labels.fckStep;
+  }
+
+  const inpM1CFcj = document.getElementById('inp_m1c_fcj');
+  const sliderM1CFcj = document.getElementById('slider_m1c_fcj');
+  if (inpM1CFcj) {
+    inpM1CFcj.min = labels.fckMin;
+    inpM1CFcj.max = labels.fckMax;
+    inpM1CFcj.step = labels.fckStep;
+  }
+  if (sliderM1CFcj) {
+    sliderM1CFcj.min = labels.fckMin;
+    sliderM1CFcj.max = labels.fckMax;
+    sliderM1CFcj.step = labels.fckStep;
   }
 
   // 3. Update length options in dropdown
@@ -357,6 +445,9 @@ function applyUnitsToUI() {
   // 5. Sync inputs and diagram
   syncInputsFromState();
   syncDiagramFromState();
+  updateSliderTooltip();
+  updateM1CSliderTooltip();
+  updateM1CCalculation();
 }
 
 function updateUnitsUI() {
@@ -617,6 +708,7 @@ function bindUserProfileMenu() {
           rowLanguageSelect.classList.remove('active');
           updateUnitsUI();
           updateCalculation();
+          updateM1CCalculation();
           showToast(t('toast_lang_changed'));
         }
       });
@@ -1024,4 +1116,293 @@ function showToast(message) {
     toast.style.transform = 'translateY(10px)';
     setTimeout(() => toast.remove(), 300);
   }, 3000);
+}
+
+// =========================================================================
+// MURO A 1 CARA (M1C) CONTROLLER & LOGIC
+// =========================================================================
+
+function initMuro1CaraUI() {
+  const container = document.getElementById('diagramMuroContainer');
+  if (container) {
+    diagramM1C = new DiagramMuro1Cara(container, (key, value) => {
+      m1cState[key] = value;
+      syncM1CInputsFromState();
+      updateM1CCalculation();
+    });
+  }
+
+  bindMuro1CaraInputs();
+  bindM1CAccordion();
+  updateM1CSliderTooltip();
+  updateM1CCalculation();
+}
+
+function syncM1CInputsFromState() {
+  const map = {
+    'H': 'inp_m1c_H',
+    'PresionMax': 'inp_m1c_Pmax',
+    'AnchoBatache': 'inp_m1c_b',
+    'NumAnclajes': 'inp_m1c_n',
+    'gamma_q': 'inp_m1c_gamma_q',
+    'hef': 'inp_m1c_hef',
+    'ca1': 'inp_m1c_ca1',
+    'ca2': 'inp_m1c_ca2',
+    'ca3': 'inp_m1c_ca3',
+    'ca4': 'inp_m1c_ca4'
+  };
+
+  Object.entries(map).forEach(([k, id]) => {
+    const el = document.getElementById(id);
+    if (el && document.activeElement !== el) {
+      if (['hef', 'ca1', 'ca2', 'ca3', 'ca4'].includes(k)) {
+        el.value = globalUnits.toDisplayLength(m1cState[k]);
+      } else {
+        el.value = m1cState[k];
+      }
+    }
+  });
+
+  const inpFcj = document.getElementById('inp_m1c_fcj');
+  const sliderFcj = document.getElementById('slider_m1c_fcj');
+  if (inpFcj && document.activeElement !== inpFcj) {
+    inpFcj.value = globalUnits.toDisplayStress(m1cState.fcj);
+  }
+  if (sliderFcj && document.activeElement !== sliderFcj) {
+    sliderFcj.value = globalUnits.toDisplayStress(m1cState.fcj);
+  }
+  updateM1CSliderTooltip();
+}
+
+function bindMuro1CaraInputs() {
+  const m1cLengths = ['hef', 'ca1', 'ca2', 'ca3', 'ca4'];
+  m1cLengths.forEach(k => {
+    const el = document.getElementById(`inp_m1c_${k}`);
+    if (el) {
+      el.addEventListener('input', () => {
+        const raw = parseFloat(el.value) || 0;
+        m1cState[k] = globalUnits.fromDisplayLength(raw);
+        if (diagramM1C) diagramM1C.updateValues(m1cState);
+        updateM1CCalculation();
+      });
+    }
+  });
+
+  const directInputs = [
+    { id: 'inp_m1c_H', key: 'H' },
+    { id: 'inp_m1c_Pmax', key: 'PresionMax' },
+    { id: 'inp_m1c_b', key: 'AnchoBatache' },
+    { id: 'inp_m1c_n', key: 'NumAnclajes' },
+    { id: 'inp_m1c_gamma_q', key: 'gamma_q' }
+  ];
+
+  directInputs.forEach(({ id, key }) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', () => {
+        m1cState[key] = parseFloat(el.value) || 0;
+        if (diagramM1C) diagramM1C.updateValues(m1cState);
+        updateM1CCalculation();
+      });
+    }
+  });
+
+  const inpFcj = document.getElementById('inp_m1c_fcj');
+  const sliderFcj = document.getElementById('slider_m1c_fcj');
+
+  if (inpFcj) {
+    inpFcj.addEventListener('input', () => {
+      const raw = parseFloat(inpFcj.value) || 0;
+      m1cState.fcj = globalUnits.fromDisplayStress(raw);
+      if (sliderFcj) sliderFcj.value = raw;
+      updateM1CSliderTooltip();
+      updateM1CCalculation();
+    });
+  }
+
+  if (sliderFcj) {
+    sliderFcj.addEventListener('input', () => {
+      const raw = parseFloat(sliderFcj.value) || 0;
+      m1cState.fcj = globalUnits.fromDisplayStress(raw);
+      if (inpFcj) inpFcj.value = raw;
+      updateM1CSliderTooltip();
+      updateM1CCalculation();
+    });
+  }
+}
+
+function updateM1CSliderTooltip() {
+  const slider = document.getElementById('slider_m1c_fcj');
+  const tooltip = document.getElementById('m1cSliderTooltip');
+  if (!slider || !tooltip) return;
+
+  const min = parseFloat(slider.min) || 1;
+  const max = parseFloat(slider.max) || 200;
+  const val = parseFloat(slider.value) || 35;
+  const percent = Math.min(100, Math.max(0, ((val - min) / (max - min)) * 100));
+
+  const thumbOffset = 11 - (percent * 0.22);
+  tooltip.style.left = `calc(${percent}% + ${thumbOffset}px)`;
+
+  const isImp = globalUnits.isImperial();
+  const unit = isImp ? 'psi' : 'MPa';
+  tooltip.textContent = `${val} ${unit}`;
+
+  slider.style.setProperty('--slider-progress', `${percent}%`);
+}
+
+function bindM1CAccordion() {
+  const header = document.getElementById('accHeaderM1C');
+  const body = document.getElementById('accBodyM1C');
+  if (header && body) {
+    header.addEventListener('click', () => {
+      const isOpen = body.classList.contains('open');
+      body.classList.toggle('open', !isOpen);
+      const arrow = header.querySelector('.acc-arrow');
+      if (arrow) arrow.textContent = isOpen ? '▼' : '▲';
+    });
+  }
+}
+
+function updateM1CCalculation() {
+  currentM1CResult = calculateMuro1Cara(m1cState);
+  const res = currentM1CResult;
+
+  if (diagramM1C) {
+    diagramM1C.updateValues(m1cState);
+  }
+
+  // 1. Overall Status Verdict
+  const vBadge = document.getElementById('m1c_verdictBadge');
+  const vPercent = document.getElementById('m1c_utilizationPercent');
+  const vFormula = document.getElementById('m1c_formulaBox');
+
+  const util = res.hormigon.concrete_ULS_util;
+  const isOk = res.hormigon.concrete_ULS_OK && res.hormigon.concrete_SLS_OK;
+
+  if (vBadge) {
+    vBadge.className = `verdict-badge ${isOk ? 'ok' : 'ko'}`;
+    vBadge.textContent = isOk ? t('verdict_ok') : t('verdict_ko');
+  }
+
+  if (vPercent) {
+    vPercent.textContent = `${util.toFixed(1)}%`;
+    vPercent.style.color = isOk ? 'var(--success)' : 'var(--danger)';
+  }
+
+  if (vFormula) {
+    const nedStr = globalUnits.formatForce(res.demanda.Ned_anclaje);
+    const nbcStr = globalUnits.formatForce(res.hormigon.Nbc_Rd);
+    const sym = isOk ? '≤' : '>';
+    vFormula.textContent = `Ned = ${nedStr} ${sym} Nbc,Rd = ${nbcStr} (Aprovechamiento ${util.toFixed(1)}% ${isOk ? '≤' : '>'} 100%)`;
+  }
+
+  // 2. Concrete Breakout Card
+  const cBadge = document.getElementById('m1c_badge_concrete');
+  const txtNed = document.getElementById('m1c_txt_Ned');
+  const txtNbcRd = document.getElementById('m1c_txt_NbcRd');
+  const progConcrete = document.getElementById('m1c_prog_concrete');
+
+  if (cBadge) {
+    cBadge.className = `status-pill ${res.hormigon.concrete_ULS_OK ? 'status-ok' : 'status-ko'}`;
+    cBadge.textContent = res.hormigon.concrete_ULS_OK ? t('verdict_ok') : t('verdict_ko');
+  }
+  if (txtNed) txtNed.textContent = globalUnits.formatForce(res.demanda.Ned_anclaje);
+  if (txtNbcRd) txtNbcRd.textContent = globalUnits.formatForce(res.hormigon.Nbc_Rd);
+
+  if (progConcrete) {
+    const capped = Math.min(100, Math.max(0, util));
+    progConcrete.style.width = `${capped}%`;
+    progConcrete.className = `progress-bar-fill ${util <= 100 ? 'progress-ok' : 'progress-ko'}`;
+  }
+
+  // 3. Vigas Tirante Table
+  const txtMyEd = document.getElementById('m1c_txt_MyEd');
+  if (txtMyEd) txtMyEd.textContent = res.demanda.My_Ed.toFixed(2);
+
+  const vigasBody = document.getElementById('m1c_vigas_table_body');
+  if (vigasBody) {
+    vigasBody.innerHTML = '';
+    Object.values(res.vigas).forEach(v => {
+      const tr = document.createElement('tr');
+      const isBeamOk = v.isOk;
+      tr.innerHTML = `
+        <td style="font-weight: 700;">${v.name}</td>
+        <td class="mono">${v.Mel_Rd.toFixed(2)} kNm</td>
+        <td class="mono">${v.one_minus_rho.toFixed(3)}</td>
+        <td>
+          <span class="status-pill ${isBeamOk ? 'status-ok' : 'status-ko'}" style="font-size: 0.72rem; padding: 0.2rem 0.55rem;">
+            ${isBeamOk ? t('verdict_ok') : t('verdict_ko')} (${v.utilization.toFixed(1)}%)
+          </span>
+        </td>
+      `;
+      vigasBody.appendChild(tr);
+    });
+  }
+
+  // 4. Barras Tirante Table
+  const txtNek = document.getElementById('m1c_txt_Nek');
+  if (txtNek) txtNek.textContent = globalUnits.formatForce(res.demanda.Nek_anclaje);
+
+  const barrasBody = document.getElementById('m1c_barras_table_body');
+  if (barrasBody) {
+    barrasBody.innerHTML = '';
+    Object.values(res.barras).forEach(b => {
+      const tr = document.createElement('tr');
+      const isBarOk = b.isOk;
+      tr.innerHTML = `
+        <td style="font-weight: 600;">${b.name}</td>
+        <td class="mono">${globalUnits.formatForce(b.NRd_ser)}</td>
+        <td class="mono">${b.utilization.toFixed(1)}%</td>
+        <td>
+          <span class="status-pill ${isBarOk ? 'status-ok' : 'status-ko'}" style="font-size: 0.72rem; padding: 0.2rem 0.55rem;">
+            ${isBarOk ? t('verdict_ok') : t('verdict_ko')}
+          </span>
+        </td>
+      `;
+      barrasBody.appendChild(tr);
+    });
+  }
+
+  // 5. Technical Memory Table
+  renderM1CTechMemory(res);
+}
+
+function renderM1CTechMemory(res) {
+  const tbody = document.getElementById('m1c_tech_table_body');
+  if (!tbody) return;
+
+  const rows = [
+    { name: 'Profundidad de presión máxima', sym: 'Hlim', val: `${res.empujes.Hlim.toFixed(2)} m`, rule: 'min(Pmax / γh, H)' },
+    { name: 'Fuerza horizontal hidrostática', sym: 'Fx1', val: `${res.empujes.Fx1.toFixed(2)} kN/m`, rule: 'γh × Hlim² × 0.5' },
+    { name: 'Altura centro de fuerzas Fx1', sym: 'h cdg Fx1', val: `${res.empujes.h_cdg_Fx1.toFixed(3)} m`, rule: 'H - (2/3) × Hlim' },
+    { name: 'Fuerza horizontal constante', sym: 'Fx2', val: `${res.empujes.Fx2.toFixed(2)} kN/m`, rule: 'Pmax × (H - Hlim)' },
+    { name: 'Altura centro de fuerzas Fx2', sym: 'h cdg Fx2', val: `${res.empujes.h_cdg_Fx2.toFixed(2)} m`, rule: '(H - Hlim) × 0.5' },
+    { name: 'Fuerza horizontal total', sym: 'Fx,tot', val: `${res.empujes.Fx_tot.toFixed(2)} kN/m`, rule: 'Fx1 + Fx2' },
+    { name: 'Altura centro de gravedad total', sym: 'h cdg tot', val: `${res.empujes.h_cdg_Fx_tot.toFixed(3)} m`, rule: '(Fx1×h1 + Fx2×h2) / Fx,tot' },
+    { name: 'Empuje horizontal por batache', sym: 'Fx,batache', val: `${res.empujes.Fx_tot_batache.toFixed(2)} kN`, rule: 'Fx,tot × b' },
+    { name: 'Empuje horizontal por anclaje', sym: 'Fx,anclaje', val: `${res.empujes.Fx_anclaje.toFixed(2)} kN`, rule: 'Fx,batache / n' },
+    { name: 'Tracción en servicio (SLS)', sym: 'Nek', val: `${res.demanda.Nek_anclaje.toFixed(2)} kN`, rule: '√(2 × Fx,anclaje²)' },
+    { name: 'Tracción de cálculo (ULS)', sym: 'Ned', val: `${res.demanda.Ned_anclaje.toFixed(2)} kN`, rule: 'Nek × γq' },
+    { name: 'Borde frontal efectivo (45º)', sym: 'ca1,ef', val: `${res.hormigon.ca1_efectivo.toFixed(1)} mm`, rule: 'min(hef × f(α), ca1)' },
+    { name: 'Área bruta cono hormigón', sym: 'Anc0', val: `${(res.hormigon.Anc0 / 1e6).toFixed(3)} m²`, rule: '9 × hef²' },
+    { name: 'Área neta cono hormigón', sym: 'Anc', val: `${(res.hormigon.Anc / 1e6).toFixed(3)} m²`, rule: '(x1 + x2) × (y1 + y2)' },
+    { name: 'Factor reducción área cono', sym: 'Anc / Anc0', val: `${res.hormigon.Anc_ratio.toFixed(4)}`, rule: 'Anc / Anc0' },
+    { name: 'Capacidad básica cono', sym: 'Nb', val: `${res.hormigon.Nb.toFixed(2)} kN`, rule: 'Kc × λ × √fcj × hef^1.5 / 1000' },
+    { name: 'Capacidad cono reducida', sym: 'Nbc', val: `${res.hormigon.Nbc.toFixed(2)} kN`, rule: 'Nb × (Anc / Anc0)' },
+    { name: 'Resistencia de cálculo cono (ULS)', sym: 'Nbc,Rd', val: `${res.hormigon.Nbc_Rd.toFixed(2)} kN`, rule: 'Nbc / γM,conc (γM = 1.5)' },
+    { name: 'Resistencia en servicio cono (SLS)', sym: 'Nbc,Rd,ser', val: `${res.hormigon.Nbc_Rd_ser.toFixed(2)} kN`, rule: 'Nbc,Rd / γQ (γQ = 1.5)' }
+  ];
+
+  tbody.innerHTML = '';
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${r.name}</td>
+      <td class="mono">${r.sym}</td>
+      <td class="mono" style="font-weight: 700;">${r.val}</td>
+      <td class="mono" style="color: var(--text-muted); font-size: 0.8rem;">${r.rule}</td>
+    `;
+    tbody.appendChild(tr);
+  });
 }

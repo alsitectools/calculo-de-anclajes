@@ -1624,13 +1624,134 @@ canvas#interactionCanvas {
   to { transform: translateX(0); opacity: 1; }
 }
 
+/* Calculation Mode Switcher in Header */
+.alsina-calc-selector {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.alsina-calc-tab {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.alsina-calc-tab:hover {
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.alsina-calc-tab.active {
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(200, 16, 46, 0.4);
+}
+
+body.light-theme .alsina-calc-selector {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+body.light-theme .alsina-calc-tab {
+  color: #64748b;
+}
+
+body.light-theme .alsina-calc-tab:hover {
+  color: #0f172a;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .alsina-calc-tab.active {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+/* Multi-Calculation Views Container */
+.calc-view-container {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+  width: 100%;
+}
+
+@media (max-width: 1280px) {
+  .calc-view-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* M1C Tables */
+.m1c-table-wrap {
+  margin-top: 0.6rem;
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.m1c-compact-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  background: rgba(15, 23, 42, 0.3);
+}
+
+body.light-theme .m1c-compact-table {
+  background: #ffffff;
+}
+
+.m1c-compact-table th {
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+body.light-theme .m1c-compact-table th {
+  background: #f8fafc;
+}
+
+.m1c-compact-table td {
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  color: var(--text-main);
+}
+
+.m1c-compact-table tr:last-child td {
+  border-bottom: none;
+}
+
+.m1c-compact-table tr:hover td {
+  background: rgba(255, 255, 255, 0.03);
+}
+
 /* Print Styles */
 @media print {
   body {
     background: white;
     color: black;
   }
-  .app-header, .header-actions, .select-preset, .btn, .hueco-toggle-wrapper {
+  .app-header, .header-actions, .select-preset, .btn, .hueco-toggle-wrapper, .alsina-calc-selector {
     display: none !important;
   }
   .app-container {
