@@ -2,8 +2,7 @@
  * Diagrama Interactivo 2D/3D SVG para Muro a 1 Cara (M1C)
  * Divide la visualización en dos diagramas coordinados:
  * 1. Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache).
- * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º, Placa, Cono de Rotura de Hormigón y Cotas (hef, ca1, ca2, ca3, ca4, Ned).
- * El sombreado del hormigón se extiende sin bordes laterales ni inferior (infinito dentro del marco), manteniendo solo la línea horizontal de cota 0 del terreno.
+ * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º, Placa, Cono de Rotura de Hormigón y Cotas, centrado verticalmente en el marco.
  */
 
 export class DiagramMuro1Cara {
@@ -96,12 +95,13 @@ export class DiagramMuro1Cara {
     const miniAnchorEndY = miniAnchorStartY + miniAnchorLen * Math.sin(Math.PI / 4);
 
     // ==========================================
-    // 2. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA DERECHO (DETALLE GRAN ESCALA)
+    // 2. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA DERECHO (DETALLE CENTRADO VERTICALMENTE)
     // ==========================================
     const rightW = 340;
     const rightH = 390;
 
-    const detailGroundY = 85;
+    // Centrado vertical: cota del terreno en Y = 135
+    const detailGroundY = 135;
     const detailAnchorStartX = 215;
     const detailAnchorStartY = detailGroundY;
 
@@ -160,7 +160,7 @@ export class DiagramMuro1Cara {
                 </marker>
               </defs>
 
-              <!-- 1. Terreno / Zapata infinita (Sin bordes laterales ni inferior, ocupa todo el marco inferior) -->
+              <!-- 1. Terreno / Zapata infinita -->
               <polygon points="0,${leftGroundY} ${leftW},${leftGroundY} ${leftW},${leftH} 0,${leftH}" fill="url(#concreteGradM1C_L)" stroke="none" />
               <polygon points="0,${leftGroundY} ${leftW},${leftGroundY} ${leftW},${leftH} 0,${leftH}" fill="url(#diagHatchM1C_L)" />
               <!-- Línea de cota 0 / superficie del terreno -->
@@ -204,7 +204,7 @@ export class DiagramMuro1Cara {
           </div>
         </div>
 
-        <!-- 2. BLOQUE DERECHO: DETALLE ANCLAJE -->
+        <!-- 2. BLOQUE DERECHO: DETALLE ANCLAJE (CENTRADO VERTICALMENTE) -->
         <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
           
           <!-- Cuadro de texto exterior en minúsculas -->
@@ -214,7 +214,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- Marco del Dibujo con fondo infinito de hormigón -->
+          <!-- Marco del Dibujo con anclaje centrado verticalmente -->
           <div style="position: relative; flex: 1; min-height: 380px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
             <svg viewBox="0 0 ${rightW} ${rightH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
               <defs>
@@ -232,7 +232,7 @@ export class DiagramMuro1Cara {
                 </marker>
               </defs>
 
-              <!-- 1. Terreno / Zapata infinita (Sin bordes laterales ni inferior) -->
+              <!-- 1. Terreno / Zapata infinita -->
               <polygon points="0,${detailGroundY} ${rightW},${detailGroundY} ${rightW},${rightH} 0,${rightH}" fill="url(#concreteGradM1C_R)" stroke="none" />
               <polygon points="0,${detailGroundY} ${rightW},${detailGroundY} ${rightW},${rightH} 0,${rightH}" fill="url(#diagHatchM1C_R)" />
               <!-- Línea de cota 0 / superficie del terreno -->
@@ -278,11 +278,11 @@ export class DiagramMuro1Cara {
               <text x="${detailAnchorStartX + 48}" y="${detailGroundY + 32}" fill="#94a3b8" font-size="10.5" font-weight="700" text-anchor="middle">ca2 = ${ca2} mm</text>
 
               <!-- Badges ca3 y ca4 laterales inferiores -->
-              <rect x="25" y="${rightH - 48}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
-              <text x="92" y="${rightH - 30}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca3 (izq) = ${ca3} mm</text>
+              <rect x="25" y="${rightH - 45}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
+              <text x="92" y="${rightH - 27}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca3 (izq) = ${ca3} mm</text>
 
-              <rect x="180" y="${rightH - 48}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
-              <text x="247" y="${rightH - 30}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca4 (der) = ${ca4} mm</text>
+              <rect x="180" y="${rightH - 45}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
+              <text x="247" y="${rightH - 27}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca4 (der) = ${ca4} mm</text>
             </svg>
           </div>
         </div>
