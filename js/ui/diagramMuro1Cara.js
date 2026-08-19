@@ -3,7 +3,7 @@
  * Divide la visualización en 3 esquemas coordinados:
  * 1. Columna Izquierda: Vista General del Muro (con altura perfectamente alineada con la base de Planta Anclajes).
  * 2. Columna Derecha - Superior: Detalle Anclaje (Sección a 45º) con el suelo en el centro vertical y Badges Interactivos para ca1, ca2 y hef.
- * 3. Columna Derecha - Inferior: Planta Anclajes con encofrado rojo, anclajes amarillos/blancos, cotas ca3 y ca4 arriba, y cota interactiva de Ancho de Batache (b) en la base.
+ * 3. Columna Derecha - Inferior: Planta Anclajes que llena todo el ancho de lado a lado sin márgenes negros, con encofrado rojo, anclajes amarillos/blancos, cotas ca3 y ca4 arriba y cota b abajo.
  */
 
 import { globalUnits } from '../engine/units.js';
@@ -85,11 +85,11 @@ export class DiagramMuro1Cara {
     // ==========================================
     // 1. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA IZQUIERDO (VISTA GENERAL ALINEADA)
     // ==========================================
-    const leftW = 340;
+    const leftW = 360;
     const leftH = 460;
 
     const leftGroundY = 325;
-    const leftWallX = 135;
+    const leftWallX = 145;
     const leftWallW = 12;
     
     const leftWallH = Math.min(270, Math.max(160, 150 + (H / 12) * 110));
@@ -101,7 +101,7 @@ export class DiagramMuro1Cara {
     const hlimPx = leftWallH * hlimRatio;
     const leftHlimY = leftWallTop + hlimPx;
 
-    const leftPressureW = Math.min(105, Math.max(32, 28 + (PresionMax / 60) * 70));
+    const leftPressureW = Math.min(115, Math.max(35, 30 + (PresionMax / 60) * 75));
 
     // Flechas de empuje en vista general
     const numArrowsLeft = 6;
@@ -118,7 +118,7 @@ export class DiagramMuro1Cara {
 
     // Cota H a la derecha del muro y de la escuadra
     const escuadraFootX = leftWallX + leftWallW + leftWallH * 0.45;
-    const cotaXRight = Math.min(318, Math.max(265, escuadraFootX + 20));
+    const cotaXRight = Math.min(340, Math.max(285, escuadraFootX + 22));
 
     // Mini anclaje en vista general
     const miniAnchorStartX = leftWallX + leftWallW;
@@ -130,11 +130,11 @@ export class DiagramMuro1Cara {
     // ==========================================
     // 2. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 2 (DETALLE SECCIÓN ANCLAJE)
     // ==========================================
-    const secW = 340;
+    const secW = 460;
     const secH = 220;
 
     const secGroundY = 110;
-    const secAnchorStartX = 215;
+    const secAnchorStartX = 275;
     const secAnchorStartY = secGroundY;
 
     const secAnchorLen = 115;
@@ -150,7 +150,7 @@ export class DiagramMuro1Cara {
     const secConeBottomRightY = secAnchorEndY - 10;
 
     const secTopDimY = secGroundY - 22;
-    const secCa2EndX = secAnchorStartX + 85;
+    const secCa2EndX = secAnchorStartX + 95;
 
     const ca1BadgeX = (secConeTopLeftX + secAnchorStartX) / 2;
     const ca1BadgeY = secTopDimY - 14;
@@ -162,25 +162,25 @@ export class DiagramMuro1Cara {
     const hefBadgeY = (secAnchorStartY + secAnchorEndY) / 2 + 8;
 
     // ==========================================
-    // 3. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 3 (PLANTA ANCLAJES CON COTA BATACHE)
+    // 3. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 3 (PLANTA ANCLAJES ANCHO COMPLETO)
     // ==========================================
-    const planW = 340;
+    const planW = 460;
     const planH = 250;
 
     const planWallY = 108;
-    const group1Center = 70;
-    const group2Center = 215;
+    const group1Center = 135;
+    const group2Center = 325;
 
-    const rod1L = 52;
-    const rod1R = 88;
-    const rod2L = 195;
-    const rod2R = 240;
+    const rod1L = 115;
+    const rod1R = 155;
+    const rod2L = 305;
+    const rod2R = 345;
 
     // Inputs superiores ca4 y ca3 (y = 18)
-    const ca4BadgeX = (rod1R + rod2L) / 2; // 141.5
+    const ca4BadgeX = (rod1R + rod2L) / 2; // 230
     const ca4BadgeY = 18;
 
-    const ca3BadgeX = (group2Center + rod2R) / 2 + 15; // 242.5
+    const ca3BadgeX = 370;
     const ca3BadgeY = 18;
 
     // Cotas superiores (y = 38)
@@ -191,8 +191,8 @@ export class DiagramMuro1Cara {
 
     // Cota inferior para Ancho de Batache (y = 222)
     const planBatacheY = 222;
-    const batacheLeftX = 25;
-    const batacheRightX = 315;
+    const batacheLeftX = 30;
+    const batacheRightX = 430;
     const batacheBadgeX = (batacheLeftX + batacheRightX) / 2;
     const batacheBadgeY = 222;
 
@@ -209,7 +209,7 @@ export class DiagramMuro1Cara {
           </div>
 
           <div style="position: relative; flex: 1; height: calc(100% - 35px); min-height: 490px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
-            <svg viewBox="0 0 ${leftW} ${leftH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
+            <svg viewBox="0 0 ${leftW} ${leftH}" style="width: 100%; height: 100%;" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="concreteGradM1C_L" x1="0" y1="0" x2="1" y2="1">
                   <stop offset="0%" stop-color="#3b485d" />
@@ -290,7 +290,7 @@ export class DiagramMuro1Cara {
             </div>
 
             <div style="position: relative; height: 220px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
-              <svg viewBox="0 0 ${secW} ${secH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
+              <svg viewBox="0 0 ${secW} ${secH}" style="width: 100%; height: 100%;" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="concreteGradM1C_Sec" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0%" stop-color="#3b485d" />
@@ -375,7 +375,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- BLOQUE 3: DETALLE EN PLANTA (CON COTAS SUPERIORES E INFERIOR DE BATACHE) -->
+          <!-- BLOQUE 3: DETALLE EN PLANTA (DE LADO A LADO SIN MARGENES NEGROS) -->
           <div style="display: flex; flex-direction: column; width: 100%;">
             <div style="display: flex; justify-content: center; margin-bottom: 0.4rem; height: 28px; align-items: center;">
               <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; padding: 0.3rem 0.85rem; font-size: 0.80rem; font-weight: 700; color: #bae6fd; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
@@ -384,7 +384,7 @@ export class DiagramMuro1Cara {
             </div>
 
             <div style="position: relative; height: 250px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
-              <svg viewBox="0 0 ${planW} ${planH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
+              <svg viewBox="0 0 ${planW} ${planH}" style="width: 100%; height: 100%;" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="concreteGradM1C_Plan" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0%" stop-color="#3b485d" />
@@ -403,7 +403,7 @@ export class DiagramMuro1Cara {
                   </marker>
                 </defs>
 
-                <!-- Fondo Losa Hormigón en Planta -->
+                <!-- Fondo Losa Hormigón en Planta (De lado a lado) -->
                 <polygon points="0,0 ${planW},0 ${planW},${planH} 0,${planH}" fill="url(#concreteGradM1C_Plan)" stroke="none" />
                 <polygon points="0,0 ${planW},0 ${planW},${planH} 0,${planH}" fill="url(#diagHatchM1C_Plan)" />
 
@@ -429,7 +429,7 @@ export class DiagramMuro1Cara {
                 <line x1="${rod2R}" y1="${plateY}" x2="${rod2R}" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4.5" stroke-linecap="round" />
                 <line x1="${rod2R - 10}" y1="${plateY}" x2="${rod2R + 10}" y2="${plateY}" stroke="#f8fafc" stroke-width="4.5" stroke-linecap="round" />
 
-                <!-- ================= ENCOFRADO HORIZONTAL ROJO CON BORDE BLANCO ================= -->
+                <!-- ================= ENCOFRADO HORIZONTAL ROJO (DE LADO A LADO) ================= -->
                 <rect x="0" y="${planWallY}" width="${planW}" height="14" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1.2" />
 
                 <!-- ================= ESCUADRA BASE (UPN ROJOS Y PLACAS REPARTO) ================= -->
@@ -445,7 +445,7 @@ export class DiagramMuro1Cara {
                 <rect x="${group2Center + 2}" y="122" width="8" height="85" fill="#c8102e" stroke="#990b22" stroke-width="1" />
                 <rect x="${group2Center - 28}" y="146" width="56" height="24" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
                 <polygon points="${rod2L - 4},154 ${rod2L + 4},150 ${rod2L + 4},162 ${rod2L - 4},166" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
-                <polygon points="${rod2R - 4},154 ${rod2R + 4},150 ${rod2R + 4},162 ${rod2R - 4},166" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <polygon points="${rod2R - 4},150 ${rod2R + 4},146 ${rod2R + 4},158 ${rod2R - 4},162" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
 
                 <!-- ================= COTAS SUPERIORES EN PLANTA (ca3 y ca4) ================= -->
                 <!-- Líneas de extensión vertical hacia arriba -->
@@ -456,7 +456,7 @@ export class DiagramMuro1Cara {
 
                 <!-- Línea de cota ca3 -->
                 <line x1="${group2Center + 2}" y1="${planDimY}" x2="${rod2R - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
-                <text x="${(group2Center + rod2R) / 2 + 18}" y="${planDimY + 14}" fill="#94a3b8" font-size="8" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
+                <text x="${(group2Center + rod2R) / 2 + 35}" y="${planDimY + 14}" fill="#94a3b8" font-size="8" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
 
                 <!-- Línea de cota ca4 -->
                 <line x1="${rod1R + 2}" y1="${planDimY}" x2="${rod2L - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
