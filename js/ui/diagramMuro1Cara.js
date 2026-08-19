@@ -1,6 +1,6 @@
 /**
  * Diagrama Interactivo 2D/3D SVG para Muro a 1 Cara (M1C)
- * Representa el encofrado vertical M1C, la zapata, el empuje de hormigón y el anclaje a 45º
+ * Representa el encofrado vertical M1C, la zapata, el empuje hidrostático/constante dinámico y el anclaje a 45º
  */
 
 export class DiagramMuro1Cara {
@@ -11,6 +11,7 @@ export class DiagramMuro1Cara {
     this.values = {
       H: 9,              // m
       PresionMax: 25,    // kN/m2
+      PespecificoHorm: 25, // kN/m3
       AnchoBatache: 2,   // m
       NumAnclajes: 4,    // ud
       hef: 440,          // mm
@@ -34,7 +35,7 @@ export class DiagramMuro1Cara {
   }
 
   render() {
-    const { H, PresionMax, AnchoBatache, hef, ca1, ca2, ca3, ca4 } = this.values;
+    const { H = 9, PresionMax = 25, PespecificoHorm = 25, AnchoBatache = 2, NumAnclajes = 4, hef = 440, ca1 = 500, ca2 = 1500 } = this.values;
 
     const svgWidth = 600;
     const svgHeight = 440;
@@ -42,16 +43,37 @@ export class DiagramMuro1Cara {
     // Dimensions for the drawing
     const groundY = 320;
     const wallX = 240;
-    const wallW = 12.5; // 1/4 of previous 50px width
+    const wallW = 12.5; // 1/4 of previous width
     const wallH = 240; // Represents H
     const wallTop = groundY - wallH;
 
-    // 45 deg anchor in footing (pointing down-left / opposite direction)
+    // Dinámica de Profundidad Hidrostática Hlim
+    const gamma_h = PespecificoHorm > 0 ? PespecificoHorm : 25;
+    const Hlim = Math.min(PresionMax / gamma_h, H);
+    const hlimRatio = Math.min(1, Math.max(0.04, Hlim / H));
+    const hlimPx = wallH * hlimRatio;
+    const hlimY = wallTop + hlimPx;
+    const pressureW = 90;
+
+    // 45 deg anchor in footing (pointing down-left)
     const anchorStartX = wallX + wallW;
     const anchorStartY = groundY;
     const anchorLenPx = 110;
     const anchorEndX = anchorStartX - anchorLenPx * Math.cos(Math.PI / 4);
     const anchorEndY = anchorStartY + anchorLenPx * Math.sin(Math.PI / 4);
+
+    // Dynamic pressure arrows
+    const numArrows = 6;
+    let arrowsSvg = '';
+    for (let i = 0; i < numArrows; i++) {
+      const arrowY = groundY - 18 - (i * (wallH - 36) / (numArrows - 1));
+      let curW = pressureW;
+      if (arrowY < hlimY) {
+        const triFactor = Math.max(0.08, (arrowY - wallTop) / Math.max(1, (hlimY - wallTop)));
+        curW = pressureW * triFactor;
+      }
+      arrowsSvg += `<line x1="${wallX - curW}" y1="${arrowY}" x2="${wallX - 3}" y2="${arrowY}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />\n`;
+    }
 
     const svg = `
       <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
@@ -102,19 +124,18 @@ export class DiagramMuro1Cara {
           <polygon points="${wallX + wallW},${wallTop + 40} ${wallX + wallW + 110},${groundY} ${wallX + wallW},${groundY}" fill="rgba(200,16,46,0.15)" stroke="#c8102e" stroke-width="2.5" />
           <line x1="${wallX + wallW}" y1="${wallTop + 130}" x2="${wallX + wallW + 65}" y2="${groundY}" stroke="#c8102e" stroke-width="2" stroke-dasharray="2,2" />
 
-          <!-- 4. Diagrama de Presiones de Hormigón Fresco (Izquierda del encofrado) -->
-          <!-- Triangular + Rectangular Pressure Polygon -->
-          <polygon points="${wallX - 90},${groundY} ${wallX - 90},${wallTop + 70} ${wallX},${wallTop} ${wallX},${groundY}" fill="url(#pressureGradM1C)" stroke="#38bdf8" stroke-width="1.5" />
+          <!-- 4. Diagrama Dinámico de Presiones (Zona Hidrostática Hlim + Zona Constante Pmax) -->
+          <polygon points="${wallX - pressureW},${groundY} ${wallX - pressureW},${hlimY} ${wallX},${wallTop} ${wallX},${groundY}" fill="url(#pressureGradM1C)" stroke="#38bdf8" stroke-width="1.5" />
           
-          <!-- Pressure force arrows (6 arrows strictly contained within the blue contour) -->
-          <line x1="${wallX - 90}" y1="${groundY - 20}" x2="${wallX - 3}" y2="${groundY - 20}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />
-          <line x1="${wallX - 90}" y1="${groundY - 55}" x2="${wallX - 3}" y2="${groundY - 55}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />
-          <line x1="${wallX - 90}" y1="${groundY - 90}" x2="${wallX - 3}" y2="${groundY - 90}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />
-          <line x1="${wallX - 90}" y1="${groundY - 130}" x2="${wallX - 3}" y2="${groundY - 130}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />
-          <line x1="${wallX - 77}" y1="${wallTop + 60}" x2="${wallX - 3}" y2="${wallTop + 60}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />
-          <line x1="${wallX - 32}" y1="${wallTop + 25}" x2="${wallX - 3}" y2="${wallTop + 25}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />
+          <!-- Flechas de fuerza generadas dinámicamente -->
+          ${arrowsSvg}
 
-          <text x="${wallX - 45}" y="${groundY - 105}" fill="#ffffff" font-size="10" font-weight="800" font-family="monospace" text-anchor="middle">Pmax ${PresionMax} kN/m²</text>
+          <!-- Línea indicadora y cota Hlim de profundidad hidrostática -->
+          <line x1="${wallX - pressureW - 15}" y1="${hlimY}" x2="${wallX}" y2="${hlimY}" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="3,2" />
+          <text x="${wallX - pressureW - 20}" y="${hlimY + 3.5}" fill="#f59e0b" font-size="9.5" font-weight="700" text-anchor="end">Hlim = ${Hlim.toFixed(2)} m</text>
+
+          <!-- Rótulo Pmax -->
+          <text x="${wallX - 45}" y="${groundY - 12}" fill="#ffffff" font-size="10" font-weight="800" font-family="monospace" text-anchor="middle">Pmax ${PresionMax} kN/m²</text>
 
           <!-- 5. Barra Tirante Anclaje a 45º (Inclinada hacia la izquierda bajo zapata) -->
           <line x1="${anchorStartX}" y1="${anchorStartY}" x2="${anchorEndX}" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" />
@@ -146,7 +167,7 @@ export class DiagramMuro1Cara {
           <!-- Ancho Batache label -->
           <rect x="420" y="30" width="150" height="40" rx="6" fill="rgba(15,23,42,0.85)" stroke="rgba(148,163,184,0.3)" />
           <text x="495" y="48" fill="#94a3b8" font-size="9" font-weight="700" text-anchor="middle">ANCHO BATACHE</text>
-          <text x="495" y="63" fill="#38bdf8" font-size="12" font-weight="800" font-family="monospace" text-anchor="middle">b = ${AnchoBatache} m (${this.values.NumAnclajes} anclajes)</text>
+          <text x="495" y="63" fill="#38bdf8" font-size="12" font-weight="800" font-family="monospace" text-anchor="middle">b = ${AnchoBatache} m (${NumAnclajes} anclajes)</text>
         </svg>
 
       </div>
