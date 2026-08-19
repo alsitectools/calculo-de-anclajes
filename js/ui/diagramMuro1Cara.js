@@ -2,7 +2,7 @@
  * Diagrama Interactivo 2D/3D SVG para Muro a 1 Cara (M1C)
  * Divide la visualización en dos diagramas coordinados:
  * 1. Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache), con cota H a la derecha.
- * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º, Placa, Cono de Rotura de Hormigón y Cotas, centrado verticalmente.
+ * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º con la línea del suelo exactamente en el centro vertical del marco.
  */
 
 export class DiagramMuro1Cara {
@@ -97,29 +97,29 @@ export class DiagramMuro1Cara {
     const miniAnchorEndY = miniAnchorStartY + miniAnchorLen * Math.sin(Math.PI / 4);
 
     // ==========================================
-    // 2. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA DERECHO (DETALLE CENTRADO VERTICALMENTE)
+    // 2. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA DERECHO (SUELO EN EL CENTRO VERTICAL: Y = 195)
     // ==========================================
     const rightW = 340;
     const rightH = 390;
 
-    // Centrado vertical: cota del terreno en Y = 135
-    const detailGroundY = 135;
+    // Suelo exactamente en el centro vertical de 390px
+    const detailGroundY = 195;
     const detailAnchorStartX = 215;
     const detailAnchorStartY = detailGroundY;
 
-    const detailAnchorLen = 165; // Gran escala
+    const detailAnchorLen = 140; // Proporción áurea respecto al suelo central
     const detailAnchorEndX = detailAnchorStartX - detailAnchorLen * Math.cos(Math.PI / 4);
     const detailAnchorEndY = detailAnchorStartY + detailAnchorLen * Math.sin(Math.PI / 4);
 
-    // Placa de anclaje final (ancho 24px perpendicular a 45º)
+    // Placa de anclaje final (ancho 22px perpendicular a 45º)
     const plateHalf = 11;
     const plateP1 = { x: detailAnchorEndX - plateHalf, y: detailAnchorEndY - plateHalf };
     const plateP2 = { x: detailAnchorEndX + plateHalf, y: detailAnchorEndY + plateHalf };
 
     // Cono de rotura a gran escala
     const coneTopLeftX = plateP1.x;
-    const coneBottomRightX = detailAnchorStartX + 65;
-    const coneBottomRightY = detailAnchorEndY - 15;
+    const coneBottomRightX = detailAnchorStartX + 60;
+    const coneBottomRightY = detailAnchorEndY - 12;
 
     const html = `
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; width: 100%; height: 100%;">
@@ -206,7 +206,7 @@ export class DiagramMuro1Cara {
           </div>
         </div>
 
-        <!-- 2. BLOQUE DERECHO: DETALLE ANCLAJE (CENTRADO VERTICALMENTE) -->
+        <!-- 2. BLOQUE DERECHO: DETALLE ANCLAJE (SUELO EN EL CENTRO EXACTO: Y = 195) -->
         <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
           
           <!-- Cuadro de texto exterior en minúsculas -->
@@ -216,7 +216,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- Marco del Dibujo con anclaje centrado verticalmente -->
+          <!-- Marco del Dibujo con suelo centrado como referencia -->
           <div style="position: relative; flex: 1; min-height: 380px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
             <svg viewBox="0 0 ${rightW} ${rightH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
               <defs>
@@ -234,15 +234,15 @@ export class DiagramMuro1Cara {
                 </marker>
               </defs>
 
-              <!-- 1. Terreno / Zapata infinita -->
+              <!-- 1. Terreno / Zapata infinita (Desde Y=195 hasta el fondo) -->
               <polygon points="0,${detailGroundY} ${rightW},${detailGroundY} ${rightW},${rightH} 0,${rightH}" fill="url(#concreteGradM1C_R)" stroke="none" />
               <polygon points="0,${detailGroundY} ${rightW},${detailGroundY} ${rightW},${rightH} 0,${rightH}" fill="url(#diagHatchM1C_R)" />
-              <!-- Línea de cota 0 / superficie del terreno -->
+              <!-- Línea horizontal de cota 0 / Suelo en el centro -->
               <line x1="0" y1="${detailGroundY}" x2="${rightW}" y2="${detailGroundY}" stroke="#64748b" stroke-width="2" />
 
-              <!-- Tramo inferior del muro / escuadra en superficie -->
-              <rect x="${detailAnchorStartX - 14}" y="${detailGroundY - 45}" width="14" height="45" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1" />
-              <polygon points="${detailAnchorStartX},${detailGroundY - 35} ${detailAnchorStartX + 45},${detailGroundY} ${detailAnchorStartX},${detailGroundY}" fill="rgba(200,16,46,0.2)" stroke="#c8102e" stroke-width="1.5" />
+              <!-- Tramo inferior del muro / escuadra en superficie sobre el suelo -->
+              <rect x="${detailAnchorStartX - 14}" y="${detailGroundY - 60}" width="14" height="60" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1.2" />
+              <polygon points="${detailAnchorStartX},${detailGroundY - 48} ${detailAnchorStartX + 55},${detailGroundY} ${detailAnchorStartX},${detailGroundY}" fill="rgba(200,16,46,0.2)" stroke="#c8102e" stroke-width="1.8" />
 
               <!-- Cono de Hormigón a Gran Escala -->
               <polygon points="${coneTopLeftX},${detailGroundY} ${plateP1.x},${plateP1.y} ${plateP2.x},${plateP2.y} ${coneBottomRightX},${coneBottomRightY} ${detailAnchorStartX},${detailGroundY}" fill="rgba(239, 68, 68, 0.18)" stroke="none" />
@@ -257,9 +257,9 @@ export class DiagramMuro1Cara {
               <!-- Placa de anclaje final blanca -->
               <line x1="${plateP1.x}" y1="${plateP1.y}" x2="${plateP2.x}" y2="${plateP2.y}" stroke="#f8fafc" stroke-width="5.5" />
 
-              <!-- Vector de Tracción Ned saliendo de la barra -->
-              <line x1="${detailAnchorStartX}" y1="${detailAnchorStartY}" x2="${detailAnchorStartX + 50}" y2="${detailAnchorStartY - 50}" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrowNedM1C)" />
-              <text x="${detailAnchorStartX + 56}" y="${detailAnchorStartY - 46}" fill="#f59e0b" font-size="10" font-weight="800" font-family="monospace">Ned</text>
+              <!-- Vector de Tracción Ned saliendo hacia arriba a 45º -->
+              <line x1="${detailAnchorStartX}" y1="${detailAnchorStartY}" x2="${detailAnchorStartX + 65}" y2="${detailAnchorStartY - 65}" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrowNedM1C)" />
+              <text x="${detailAnchorStartX + 72}" y="${detailAnchorStartY - 60}" fill="#f59e0b" font-size="10.5" font-weight="800" font-family="monospace">Ned</text>
 
               <!-- Arco de ángulo 45º -->
               <path d="M ${detailAnchorStartX - 38} ${detailAnchorStartY} A 38 38 0 0 0 ${detailAnchorStartX - 27} ${detailAnchorStartY + 27}" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="3,2" />
@@ -280,11 +280,11 @@ export class DiagramMuro1Cara {
               <text x="${detailAnchorStartX + 48}" y="${detailGroundY + 32}" fill="#94a3b8" font-size="10.5" font-weight="700" text-anchor="middle">ca2 = ${ca2} mm</text>
 
               <!-- Badges ca3 y ca4 laterales inferiores -->
-              <rect x="25" y="${rightH - 45}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
-              <text x="92" y="${rightH - 27}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca3 (izq) = ${ca3} mm</text>
+              <rect x="25" y="${rightH - 42}" width="135" height="26" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
+              <text x="92" y="${rightH - 25}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca3 (izq) = ${ca3} mm</text>
 
-              <rect x="180" y="${rightH - 45}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
-              <text x="247" y="${rightH - 27}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca4 (der) = ${ca4} mm</text>
+              <rect x="180" y="${rightH - 42}" width="135" height="26" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
+              <text x="247" y="${rightH - 25}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca4 (der) = ${ca4} mm</text>
             </svg>
           </div>
         </div>
