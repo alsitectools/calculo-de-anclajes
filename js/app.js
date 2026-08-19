@@ -409,6 +409,7 @@ function bindInputs() {
       const raw = parseFloat(inpFck.value) || 0;
       state.fck = globalUnits.fromDisplayStress(raw);
       if (fckSlider) fckSlider.value = raw;
+      updateSliderTooltip();
       updateCalculation();
     });
   }
@@ -418,6 +419,7 @@ function bindInputs() {
       const raw = parseFloat(fckSlider.value) || 0;
       state.fck = globalUnits.fromDisplayStress(raw);
       if (inpFck) inpFck.value = raw;
+      updateSliderTooltip();
       updateCalculation();
     });
   }
@@ -840,6 +842,27 @@ function syncInputsFromState() {
   if (sliderFck && document.activeElement !== sliderFck) {
     sliderFck.value = globalUnits.toDisplayStress(state.fck);
   }
+  updateSliderTooltip();
+}
+
+function updateSliderTooltip() {
+  const slider = document.getElementById('slider_fck');
+  const tooltip = document.getElementById('fckSliderTooltip');
+  if (!slider || !tooltip) return;
+
+  const min = parseFloat(slider.min) || 1;
+  const max = parseFloat(slider.max) || 200;
+  const val = parseFloat(slider.value) || 10;
+  const percent = Math.min(100, Math.max(0, ((val - min) / (max - min)) * 100));
+
+  const thumbOffset = 11 - (percent * 0.22);
+  tooltip.style.left = `calc(${percent}% + ${thumbOffset}px)`;
+
+  const isImp = globalUnits.isImperial();
+  const unit = isImp ? 'psi' : 'MPa';
+  tooltip.textContent = `${val} ${unit}`;
+
+  slider.style.setProperty('--slider-progress', `${percent}%`);
 }
 
 function syncAllUIFromState() {
