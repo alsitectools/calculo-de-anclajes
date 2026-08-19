@@ -41,8 +41,8 @@ export class DiagramMuro1Cara {
 
     // Dimensions for the drawing
     const groundY = 320;
-    const wallX = 220;
-    const wallW = 50;
+    const wallX = 240;
+    const wallW = 12.5; // 1/4 of previous 50px width
     const wallH = 240; // Represents H
     const wallTop = groundY - wallH;
 
@@ -137,8 +137,8 @@ export class DiagramMuro1Cara {
           <text x="${(anchorStartX + anchorEndX) / 2 + 15}" y="${(anchorStartY + anchorEndY) / 2 + 10}" fill="#fde68a" font-size="10" font-weight="800" font-family="monospace">hef = ${hef} mm</text>
 
           <!-- Borde ca1 frontal -->
-          <line x1="${anchorStartX}" y1="${groundY + 15}" x2="${wallX}" y2="${groundY + 15}" stroke="#38bdf8" stroke-width="1" stroke-dasharray="2,2" />
-          <text x="${(anchorStartX + wallX) / 2}" y="${groundY + 28}" fill="#38bdf8" font-size="10" font-weight="700" text-anchor="middle">ca1 = ${ca1} mm</text>
+          <line x1="${anchorStartX}" y1="${groundY + 15}" x2="${anchorStartX - 70}" y2="${groundY + 15}" stroke="#38bdf8" stroke-width="1" stroke-dasharray="2,2" />
+          <text x="${anchorStartX - 35}" y="${groundY + 28}" fill="#38bdf8" font-size="10" font-weight="700" text-anchor="middle">ca1 = ${ca1} mm</text>
 
           <!-- Borde ca2 posterior -->
           <line x1="${anchorStartX}" y1="${groundY + 15}" x2="${anchorStartX + 200}" y2="${groundY + 15}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="2,2" />
