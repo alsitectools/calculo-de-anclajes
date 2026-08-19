@@ -776,30 +776,46 @@
       <!-- RIGHT COLUMN: RESULTS & VERIFICATIONS -->
       <div class="results-column results-dashboard">
 
-        <!-- Paso 3: Verificación de Resistencia Global M1C -->
-        <section class="card results-summary-card">
+        <!-- Paso 3: Diagrama de Interacción Axil - Cortante (Ned - Ved) -->
+        <section class="card chart-card">
           <div class="card-header">
             <div class="card-title">
               <span class="step-num">3</span>
-              <span data-i18n="m1c_step3_title">Verificación de Resistencia Global del Anclaje M1C</span>
+              <span data-i18n="chart_card_title">Diagrama de Interacción Axil - Cortante (Nsd - Vsd)</span>
             </div>
           </div>
 
-          <!-- Overall Verdict Card -->
-          <div class="verdict-banner-card" id="m1c_verdictBanner">
-            <div class="verdict-status-box">
-              <span class="verdict-label" data-i18n="interaction_label">ESTADO GLOBAL</span>
-              <div id="m1c_verdictBadge" class="verdict-badge ko">FALLO</div>
-            </div>
-            <div class="verdict-percent-box">
-              <span class="verdict-sublabel" data-i18n="resistance_verification">APROVECHAMIENTO CONO HORMIGÓN</span>
-              <div id="m1c_utilizationPercent" class="verdict-percent">121.4%</div>
+          <div class="chart-wrapper">
+            <canvas id="interactionCanvasM1C"></canvas>
+          </div>
+        </section>
+
+        <!-- Paso 4: Verificación de Resistencia Global M1C -->
+        <section class="card" style="margin-top: 1.5rem;">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="step-num">4</span>
+              <span data-i18n="step5_title">Verificación de Resistencia Global</span>
             </div>
           </div>
 
-          <!-- Formula callout banner -->
-          <div class="formula-verdict-box" id="m1c_formulaBox">
-            Ned = 225.4 kN &gt; Nbc,Rd = 185.7 kN (Aprovechamiento 121.4% &gt; 100%)
+          <!-- Global Verdict Box matching Trepante design -->
+          <div id="m1c_globalVerdictCard" class="global-verdict-card verdict-ko">
+            <div class="verdict-badge-main">
+              <div>
+                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;" data-i18n="interaction_label">Interacción</div>
+                <div id="m1c_verdictPill" class="verdict-pill">NO OK</div>
+              </div>
+            </div>
+
+            <div class="verdict-utilization">
+              <div class="util-label" data-i18n="resistance_verification">Verificación de Resistencia</div>
+              <div id="m1c_verdictUtilPct" class="util-val">121.4%</div>
+            </div>
+
+            <div id="m1c_verdictFormulaText" class="verdict-formula" style="width: 100%;">
+              Ned = 225.4 kN &gt; Nbc,Rd = 185.7 kN (Aprovechamiento 121.4% &gt; 100%)
+            </div>
           </div>
 
           <!-- Failure Modes & Components Grid -->

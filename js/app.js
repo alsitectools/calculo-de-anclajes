@@ -80,6 +80,7 @@ const DEFAULT_HYPOTHESIS_DATA = {
 
 let diagramView = null;
 let interactionChart = null;
+let interactionChartM1C = null;
 let currentCalcResult = null;
 
 // Hypotheses Store
@@ -742,6 +743,9 @@ function bindUserProfileMenu() {
         if (interactionChart && currentCalcResult) {
           interactionChart.draw(currentCalcResult);
         }
+        if (interactionChartM1C && currentM1CResult) {
+          interactionChartM1C.draw(currentM1CResult);
+        }
       });
     }
 
@@ -1132,6 +1136,11 @@ function initMuro1CaraUI() {
     });
   }
 
+  const chartCanvasM1C = document.getElementById('interactionCanvasM1C');
+  if (chartCanvasM1C) {
+    interactionChartM1C = new InteractionChart(chartCanvasM1C);
+  }
+
   bindMuro1CaraInputs();
   bindM1CAccordion();
   updateM1CSliderTooltip();
@@ -1272,29 +1281,37 @@ function updateM1CCalculation() {
     diagramM1C.updateValues(m1cState);
   }
 
-  // 1. Overall Status Verdict
-  const vBadge = document.getElementById('m1c_verdictBadge');
-  const vPercent = document.getElementById('m1c_utilizationPercent');
-  const vFormula = document.getElementById('m1c_formulaBox');
+  // 1. Interaction Chart M1C
+  if (interactionChartM1C) {
+    interactionChartM1C.draw(res);
+  }
+
+  // 2. Overall Status Verdict Box (Matching Trepante)
+  const globalCard = document.getElementById('m1c_globalVerdictCard');
+  const vPill = document.getElementById('m1c_verdictPill');
+  const vPercent = document.getElementById('m1c_verdictUtilPct');
+  const vFormula = document.getElementById('m1c_verdictFormulaText');
 
   const util = res.hormigon.concrete_ULS_util;
   const isOk = res.hormigon.concrete_ULS_OK && res.hormigon.concrete_SLS_OK;
 
-  if (vBadge) {
-    vBadge.className = `verdict-badge ${isOk ? 'ok' : 'ko'}`;
-    vBadge.textContent = isOk ? t('verdict_ok') : t('verdict_ko');
+  if (globalCard) {
+    globalCard.className = `global-verdict-card ${isOk ? 'verdict-ok' : 'verdict-ko'}`;
+  }
+
+  if (vPill) {
+    vPill.textContent = isOk ? t('verdict_ok') : t('verdict_ko');
   }
 
   if (vPercent) {
-    vPercent.textContent = `${util.toFixed(1)}%`;
-    vPercent.style.color = isOk ? 'var(--success)' : 'var(--danger)';
+    vPercent.textContent = `${util.toFixed(2)}%`;
   }
 
   if (vFormula) {
     const nedStr = globalUnits.formatForce(res.demanda.Ned_anclaje);
     const nbcStr = globalUnits.formatForce(res.hormigon.Nbc_Rd);
     const sym = isOk ? '≤' : '>';
-    vFormula.textContent = `Ned = ${nedStr} ${sym} Nbc,Rd = ${nbcStr} (Aprovechamiento ${util.toFixed(1)}% ${isOk ? '≤' : '>'} 100%)`;
+    vFormula.textContent = `(Ned / Nbc,Rd) = (${nedStr} / ${nbcStr}) = ${(util / 100).toFixed(3)} ${sym} 1.0 (Aprovechamiento ${util.toFixed(1)}% ${isOk ? '≤ 100%' : '> 100%'})`;
   }
 
   // 2. Concrete Breakout Card
