@@ -2,8 +2,10 @@
  * Diagrama Interactivo 2D/3D SVG para Muro a 1 Cara (M1C)
  * Divide la visualización en dos diagramas coordinados:
  * 1. Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache), con cota H a la derecha.
- * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º con la línea del suelo exactamente en el centro vertical del marco.
+ * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º con la línea del suelo en el centro vertical y Badges Interactivos para ca1, ca2, ca3, ca4 y hef con el mismo diseño de cotas.
  */
+
+import { globalUnits } from '../engine/units.js';
 
 export class DiagramMuro1Cara {
   constructor(container, onValueChange) {
@@ -33,6 +35,19 @@ export class DiagramMuro1Cara {
 
   updateValues(newValues) {
     Object.assign(this.values, newValues);
+
+    // Si un input del diagrama tiene el foco, actualizamos los demás sin re-renderizar para no perder el cursor
+    const activeEl = document.activeElement;
+    if (activeEl && activeEl.classList.contains('diag-inp') && this.container.contains(activeEl)) {
+      ['ca1', 'ca2', 'ca3', 'ca4', 'hef'].forEach(k => {
+        const inp = this.container.querySelector(`#diag_m1c_${k}`);
+        if (inp && inp !== activeEl) {
+          inp.value = globalUnits.toDisplayLength(this.values[k]);
+        }
+      });
+      return;
+    }
+
     this.render();
   }
 
@@ -49,6 +64,16 @@ export class DiagramMuro1Cara {
       ca3 = 200,
       ca4 = 900
     } = this.values;
+
+    const unitLabels = globalUnits.getUnitLabels();
+    const unitLen = unitLabels.length;
+    const unitStep = unitLabels.lengthStep;
+
+    const ca1Display = globalUnits.toDisplayLength(ca1);
+    const ca2Display = globalUnits.toDisplayLength(ca2);
+    const ca3Display = globalUnits.toDisplayLength(ca3);
+    const ca4Display = globalUnits.toDisplayLength(ca4);
+    const hefDisplay = globalUnits.toDisplayLength(hef);
 
     // ==========================================
     // 1. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA IZQUIERDO (VISTA GENERAL)
@@ -97,17 +122,16 @@ export class DiagramMuro1Cara {
     const miniAnchorEndY = miniAnchorStartY + miniAnchorLen * Math.sin(Math.PI / 4);
 
     // ==========================================
-    // 2. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA DERECHO (SUELO EN EL CENTRO VERTICAL: Y = 195)
+    // 2. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA DERECHO (SUELO EN EL CENTRO EXACTO: Y = 195)
     // ==========================================
     const rightW = 340;
     const rightH = 390;
 
-    // Suelo exactamente en el centro vertical de 390px
     const detailGroundY = 195;
     const detailAnchorStartX = 215;
     const detailAnchorStartY = detailGroundY;
 
-    const detailAnchorLen = 140; // Proporción áurea respecto al suelo central
+    const detailAnchorLen = 140;
     const detailAnchorEndX = detailAnchorStartX - detailAnchorLen * Math.cos(Math.PI / 4);
     const detailAnchorEndY = detailAnchorStartY + detailAnchorLen * Math.sin(Math.PI / 4);
 
@@ -120,6 +144,22 @@ export class DiagramMuro1Cara {
     const coneTopLeftX = plateP1.x;
     const coneBottomRightX = detailAnchorStartX + 60;
     const coneBottomRightY = detailAnchorEndY - 12;
+
+    // Cotas superiores en superficie
+    const topDimY = detailGroundY - 26;
+    const ca2EndX = detailAnchorStartX + 95;
+
+    // Posiciones de Badges Interactivos (en %)
+    const toPct = (val, max) => `${((val / max) * 100).toFixed(2)}%`;
+
+    const ca1BadgeX = (coneTopLeftX + detailAnchorStartX) / 2;
+    const ca1BadgeY = topDimY - 14;
+
+    const ca2BadgeX = (detailAnchorStartX + ca2EndX) / 2;
+    const ca2BadgeY = topDimY - 14;
+
+    const hefBadgeX = (detailAnchorStartX + detailAnchorEndX) / 2 - 42;
+    const hefBadgeY = (detailAnchorStartY + detailAnchorEndY) / 2 + 10;
 
     const html = `
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; width: 100%; height: 100%;">
@@ -206,7 +246,7 @@ export class DiagramMuro1Cara {
           </div>
         </div>
 
-        <!-- 2. BLOQUE DERECHO: DETALLE ANCLAJE (SUELO EN EL CENTRO EXACTO: Y = 195) -->
+        <!-- 2. BLOQUE DERECHO: DETALLE ANCLAJE CON COTAS E INPUTS INTERACTIVOS -->
         <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
           
           <!-- Cuadro de texto exterior en minúsculas -->
@@ -216,7 +256,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- Marco del Dibujo con suelo centrado como referencia -->
+          <!-- Marco del Dibujo con overlays interactivos -->
           <div style="position: relative; flex: 1; min-height: 380px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
             <svg viewBox="0 0 ${rightW} ${rightH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
               <defs>
@@ -231,6 +271,14 @@ export class DiagramMuro1Cara {
 
                 <marker id="arrowNedM1C" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                   <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
+                </marker>
+
+                <!-- Marcadores de flechas para cotas estilo ingeniería -->
+                <marker id="dimArrowStartM1C" viewBox="0 0 10 10" refX="2" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M 8 1.5 L 0 5 L 8 8.5 z" fill="#38bdf8" />
+                </marker>
+                <marker id="dimArrowEndM1C" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8" />
                 </marker>
               </defs>
 
@@ -265,27 +313,68 @@ export class DiagramMuro1Cara {
               <path d="M ${detailAnchorStartX - 38} ${detailAnchorStartY} A 38 38 0 0 0 ${detailAnchorStartX - 27} ${detailAnchorStartY + 27}" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="3,2" />
               <text x="${detailAnchorStartX - 55}" y="${detailAnchorStartY + 22}" fill="#f59e0b" font-size="11" font-weight="800">45º</text>
 
-              <!-- Cota hef a lo largo de la barra -->
-              <text x="${(detailAnchorStartX + detailAnchorEndX) / 2 - 58}" y="${(detailAnchorStartY + detailAnchorEndY) / 2 + 25}" fill="#fde68a" font-size="11.5" font-weight="800" font-family="monospace">hef = ${hef} mm</text>
+              <!-- Líneas de cota estilo profesional (Superiores ca1 y ca2) -->
+              <!-- Líneas de extensión vertical -->
+              <line x1="${coneTopLeftX}" y1="${detailGroundY}" x2="${coneTopLeftX}" y2="${topDimY - 8}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
+              <line x1="${detailAnchorStartX}" y1="${detailGroundY}" x2="${detailAnchorStartX}" y2="${topDimY - 8}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
+              <line x1="${ca2EndX}" y1="${detailGroundY}" x2="${ca2EndX}" y2="${topDimY - 8}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
 
-              <!-- Cota ca1 frontal en superficie -->
-              <line x1="${detailAnchorStartX}" y1="${detailGroundY + 18}" x2="${coneTopLeftX}" y2="${detailGroundY + 18}" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,2" />
-              <line x1="${detailAnchorStartX}" y1="${detailGroundY + 14}" x2="${detailAnchorStartX}" y2="${detailGroundY + 22}" stroke="#38bdf8" stroke-width="1.2" />
-              <line x1="${coneTopLeftX}" y1="${detailGroundY + 14}" x2="${coneTopLeftX}" y2="${detailGroundY + 22}" stroke="#38bdf8" stroke-width="1.2" />
-              <text x="${(detailAnchorStartX + coneTopLeftX) / 2}" y="${detailGroundY + 32}" fill="#38bdf8" font-size="10.5" font-weight="700" text-anchor="middle">ca1 = ${ca1} mm</text>
+              <!-- Línea de cota ca1 -->
+              <line x1="${coneTopLeftX + 2}" y1="${topDimY}" x2="${detailAnchorStartX - 2}" y2="${topDimY}" stroke="#38bdf8" stroke-width="1.5" marker-start="url(#dimArrowStartM1C)" marker-end="url(#dimArrowEndM1C)" />
 
-              <!-- Cota ca2 posterior en superficie -->
-              <line x1="${detailAnchorStartX}" y1="${detailGroundY + 18}" x2="${detailAnchorStartX + 95}" y2="${detailGroundY + 18}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,2" />
-              <line x1="${detailAnchorStartX + 95}" y1="${detailGroundY + 14}" x2="${detailAnchorStartX + 95}" y2="${detailGroundY + 22}" stroke="#94a3b8" stroke-width="1.2" />
-              <text x="${detailAnchorStartX + 48}" y="${detailGroundY + 32}" fill="#94a3b8" font-size="10.5" font-weight="700" text-anchor="middle">ca2 = ${ca2} mm</text>
-
-              <!-- Badges ca3 y ca4 laterales inferiores -->
-              <rect x="25" y="${rightH - 42}" width="135" height="26" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
-              <text x="92" y="${rightH - 25}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca3 (izq) = ${ca3} mm</text>
-
-              <rect x="180" y="${rightH - 42}" width="135" height="26" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
-              <text x="247" y="${rightH - 25}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca4 (der) = ${ca4} mm</text>
+              <!-- Línea de cota ca2 -->
+              <line x1="${detailAnchorStartX + 2}" y1="${topDimY}" x2="${ca2EndX - 2}" y2="${topDimY}" stroke="#38bdf8" stroke-width="1.5" marker-start="url(#dimArrowStartM1C)" marker-end="url(#dimArrowEndM1C)" />
             </svg>
+
+            <!-- ========================================== -->
+            <!-- BADGES INPUTS INTERACTIVOS (ESTILO TREPANTES) -->
+            <!-- ========================================== -->
+
+            <!-- 1. Badge ca1 -->
+            <div id="badge_m1c_ca1" class="param-badge-overlay" style="position: absolute; left: ${toPct(ca1BadgeX, rightW)}; top: ${toPct(ca1BadgeY, rightH)}; transform: translate(-50%, -50%);">
+              <div class="mini-input-badge">
+                <span class="badge-lbl">ca,1</span>
+                <input type="number" id="diag_m1c_ca1" class="diag-inp" min="50" max="5000" step="${unitStep}" value="${ca1Display}" />
+                <span class="badge-unit">${unitLen}</span>
+              </div>
+            </div>
+
+            <!-- 2. Badge ca2 -->
+            <div id="badge_m1c_ca2" class="param-badge-overlay" style="position: absolute; left: ${toPct(ca2BadgeX, rightW)}; top: ${toPct(ca2BadgeY, rightH)}; transform: translate(-50%, -50%);">
+              <div class="mini-input-badge">
+                <span class="badge-lbl">ca,2</span>
+                <input type="number" id="diag_m1c_ca2" class="diag-inp" min="50" max="5000" step="${unitStep}" value="${ca2Display}" />
+                <span class="badge-unit">${unitLen}</span>
+              </div>
+            </div>
+
+            <!-- 3. Badge hef -->
+            <div id="badge_m1c_hef" class="param-badge-overlay" style="position: absolute; left: ${toPct(hefBadgeX, rightW)}; top: ${toPct(hefBadgeY, rightH)}; transform: translate(-50%, -50%);">
+              <div class="mini-input-badge highlight-ha">
+                <span class="badge-lbl">hef</span>
+                <input type="number" id="diag_m1c_hef" class="diag-inp" min="50" max="5000" step="${unitStep}" value="${hefDisplay}" />
+                <span class="badge-unit">${unitLen}</span>
+              </div>
+            </div>
+
+            <!-- 4. Badge ca3 (izq) -->
+            <div id="badge_m1c_ca3" class="param-badge-overlay" style="position: absolute; left: 28%; top: 90%; transform: translate(-50%, -50%);">
+              <div class="mini-input-badge">
+                <span class="badge-lbl">ca,3 (izq)</span>
+                <input type="number" id="diag_m1c_ca3" class="diag-inp" min="50" max="5000" step="${unitStep}" value="${ca3Display}" />
+                <span class="badge-unit">${unitLen}</span>
+              </div>
+            </div>
+
+            <!-- 5. Badge ca4 (der) -->
+            <div id="badge_m1c_ca4" class="param-badge-overlay" style="position: absolute; left: 72%; top: 90%; transform: translate(-50%, -50%);">
+              <div class="mini-input-badge">
+                <span class="badge-lbl">ca,4 (der)</span>
+                <input type="number" id="diag_m1c_ca4" class="diag-inp" min="50" max="5000" step="${unitStep}" value="${ca4Display}" />
+                <span class="badge-unit">${unitLen}</span>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -293,5 +382,21 @@ export class DiagramMuro1Cara {
     `;
 
     this.container.innerHTML = html;
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    const inputs = this.container.querySelectorAll('.diag-inp');
+    inputs.forEach(inp => {
+      inp.addEventListener('input', () => {
+        const id = inp.id.replace('diag_m1c_', '');
+        const raw = parseFloat(inp.value) || 0;
+        const valSI = globalUnits.fromDisplayLength(raw);
+        this.values[id] = valSI;
+        if (this.onValueChange) {
+          this.onValueChange(id, valSI);
+        }
+      });
+    });
   }
 }
