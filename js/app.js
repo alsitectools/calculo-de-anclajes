@@ -24,7 +24,7 @@ const state = {
   cau: 500,
   cad: 500,
   ha: 400,
-  fck: 30,
+  fck: 10,
   afectadoHueco: false,
   fisuracion: 'SI',
 
@@ -49,7 +49,7 @@ const DEFAULT_HYPOTHESIS_DATA = {
   cau: 500,
   cad: 500,
   ha: 400,
-  fck: 30,
+  fck: 10,
   afectadoHueco: false,
   fisuracion: 'SI'
 };

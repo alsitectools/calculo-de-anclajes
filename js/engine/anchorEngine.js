@@ -73,7 +73,7 @@ export function calculateAnchor(params) {
     cau = 500,            // mm (sup)
     cad = 500,            // mm (inf)
     ha = 400,             // mm (espesor)
-    fck = 30,             // MPa (fc', comprendido entre 8 y 30 MPa)
+    fck = 10,             // MPa (fc', comprendido entre 1 y 200 MPa)
     afectadoHueco = false,// true = SI, false = NO
     fisuracion = 'SI'     // 'SI' o 'NO'
   } = params;
