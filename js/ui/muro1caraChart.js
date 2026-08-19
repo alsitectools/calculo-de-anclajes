@@ -4,7 +4,7 @@ import { calculateMuro1Cara } from '../engine/muro1caraEngine.js';
 
 /**
  * Renderizador Canvas de Alta Resolución para el Diagrama de Demanda vs Capacidad de Muro a 1 Cara (M1C)
- * Dibuja la curva de capacidad resistente del cono Nbc,Rd(hef) frente a la demanda Ned.
+ * Dibuja la curva de capacidad resistente del cono Nbc,Rd(hef) frente a la demanda Ned con auto-reescalado dinámico.
  */
 export class Muro1CaraChart {
   constructor(canvasElement) {
@@ -17,16 +17,16 @@ export class Muro1CaraChart {
   }
 
   setupHighDPI() {
-    const rect = this.canvas.getBoundingClientRect();
+    const parent = this.canvas.parentElement;
+    const computedW = parent ? parent.clientWidth : (this.canvas.clientWidth || 500);
+    const computedH = parent ? parent.clientHeight : (this.canvas.clientHeight || 300);
+
     const dpr = window.devicePixelRatio || 1;
-    const computedW = rect.width > 0 ? rect.width : (this.canvas.parentElement?.clientWidth || 500);
-    const computedH = rect.height > 0 ? rect.height : (this.canvas.parentElement?.clientHeight || 280);
+    this.width = computedW > 0 ? computedW : 500;
+    this.height = computedH > 0 ? computedH : 300;
 
-    this.width = computedW;
-    this.height = computedH;
-
-    this.canvas.width = Math.round(computedW * dpr);
-    this.canvas.height = Math.round(computedH * dpr);
+    this.canvas.width = Math.round(this.width * dpr);
+    this.canvas.height = Math.round(this.height * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
@@ -40,9 +40,9 @@ export class Muro1CaraChart {
     const forceUnit = isImp ? 'kips' : 'kN';
     const lenUnit = isImp ? 'in' : 'mm';
 
-    const currentHef = inputs.hef; // in mm
-    const currentNed = res.demanda.Ned_anclaje; // in kN
-    const currentNbcRd = res.hormigon.Nbc_Rd; // in kN
+    const currentHef = inputs.hef || 440; // in mm
+    const currentNed = res.demanda.Ned_anclaje || 0; // in kN
+    const currentNbcRd = res.hormigon.Nbc_Rd || 1; // in kN
     const isOK = res.hormigon.concrete_ULS_OK;
 
     const ctx = this.ctx;
@@ -51,17 +51,17 @@ export class Muro1CaraChart {
 
     ctx.clearRect(0, 0, w, h);
 
-    // Padding
+    // Dynamic padding so all axes, tick labels and titles fit comfortably
     const padLeft = 65;
     const padRight = 35;
     const padTop = 30;
     const padBottom = 45;
 
-    const plotW = w - padLeft - padRight;
-    const plotH = h - padTop - padBottom;
+    const plotW = Math.max(10, w - padLeft - padRight);
+    const plotH = Math.max(10, h - padTop - padBottom);
 
-    // Generate curve points for hef from 100mm to max(hef * 1.6, 800)
-    const maxHefMM = Math.max(currentHef * 1.5, 800);
+    // Generate curve points for hef from 50mm up to generous range covering currentHef
+    const maxHefMM = Math.max(currentHef * 1.6, 900);
     const numPoints = 60;
     const curvePoints = [];
 
@@ -79,9 +79,10 @@ export class Muro1CaraChart {
     const dispCurrentNed = globalUnits.toDisplayForce(currentNed);
     const dispCurrentNbcRd = globalUnits.toDisplayForce(currentNbcRd);
 
-    // Determine max axes scales
-    const maxCap = Math.max(...curvePoints.map(p => p.cap), dispCurrentNed * 1.25);
-    const maxDispX = globalUnits.toDisplayLength(maxHefMM);
+    // Determine max axes scales (auto-rescales whenever Pmax or any force/length changes)
+    const allCaps = curvePoints.map(p => p.cap);
+    const maxCap = Math.max(...allCaps, dispCurrentNed * 1.3, dispCurrentNbcRd * 1.25, isImp ? 15 : 50);
+    const maxDispX = Math.max(globalUnits.toDisplayLength(maxHefMM), dispCurrentHef * 1.3, isImp ? 20 : 600);
 
     const stepBaseX = isImp ? 5 : 100;
     const stepBaseY = isImp ? 10 : 50;
@@ -103,7 +104,11 @@ export class Muro1CaraChart {
     ctx.lineWidth = 1;
 
     // X grid lines
-    const stepX = isImp ? (maxX <= 30 ? 5 : 10) : (maxX <= 500 ? 100 : 200);
+    let stepX = maxDispX <= 400 ? 50 : (maxDispX <= 1000 ? 100 : 200);
+    if (isImp) {
+      stepX = maxDispX <= 20 ? 5 : (maxDispX <= 40 ? 10 : 20);
+    }
+
     for (let vx = 0; vx <= maxX; vx += stepX) {
       const x = scaleX(vx);
       ctx.beginPath();
@@ -118,7 +123,11 @@ export class Muro1CaraChart {
     }
 
     // Y grid lines
-    const stepY = isImp ? (maxY <= 50 ? 10 : 20) : (maxY <= 200 ? 50 : 100);
+    let stepY = maxY <= 60 ? 10 : (maxY <= 150 ? 25 : (maxY <= 300 ? 50 : 100));
+    if (isImp) {
+      stepY = maxY <= 15 ? 2 : (maxY <= 35 ? 5 : 10);
+    }
+
     for (let vy = 0; vy <= maxY; vy += stepY) {
       const y = scaleY(vy);
       ctx.beginPath();
@@ -228,7 +237,7 @@ export class Muro1CaraChart {
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // 5. Tooltip Tag on Point
+    // 5. Tooltip Tag on Point (strictly bound inside canvas frame)
     const labelText = `Demanda Ned = ${dispCurrentNed} ${forceUnit} (${isOK ? 'OK' : 'FALLO'})`;
     ctx.font = 'bold 11px Outfit, sans-serif';
     const textW = ctx.measureText(labelText).width;
@@ -238,10 +247,12 @@ export class Muro1CaraChart {
     let tagX = ptX + 12;
     let tagY = ptY - 28;
     if (tagX + boxW > padLeft + plotW) tagX = ptX - boxW - 12;
-    if (tagY < padTop) tagY = ptY + 10;
+    if (tagX < padLeft) tagX = padLeft + 6;
+    if (tagY < padTop) tagY = ptY + 12;
+    if (tagY + boxH > padTop + plotH) tagY = padTop + plotH - boxH - 6;
 
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
-    ctx.strokeStyle = isOK ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.6)';
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+    ctx.strokeStyle = isOK ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.roundRect(tagX, tagY, boxW, boxH, 6);

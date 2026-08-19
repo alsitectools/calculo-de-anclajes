@@ -17,16 +17,16 @@ export class InteractionChart {
   }
 
   setupHighDPI() {
-    const rect = this.canvas.getBoundingClientRect();
+    const parent = this.canvas.parentElement;
+    const computedW = parent ? parent.clientWidth : (this.canvas.clientWidth || 500);
+    const computedH = parent ? parent.clientHeight : (this.canvas.clientHeight || 320);
+
     const dpr = window.devicePixelRatio || 1;
-    const computedW = rect.width > 0 ? rect.width : (this.canvas.parentElement?.clientWidth || 500);
-    const computedH = rect.height > 0 ? rect.height : (this.canvas.parentElement?.clientHeight || 320);
+    this.width = computedW > 0 ? computedW : 500;
+    this.height = computedH > 0 ? computedH : 320;
 
-    this.width = computedW;
-    this.height = computedH;
-
-    this.canvas.width = Math.round(computedW * dpr);
-    this.canvas.height = Math.round(computedH * dpr);
+    this.canvas.width = Math.round(this.width * dpr);
+    this.canvas.height = Math.round(this.height * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
