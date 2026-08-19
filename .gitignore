@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+Thumbs.db
+*.log
+scratch_*.js
+scratch_*.ps1
+decomp_dir.txt
+sheet_dump.txt
+vba_strings.txt
+output_test_*.docx
+extracted_*/
+.tempmediaStorage/
+.system_generated/
+.agents/

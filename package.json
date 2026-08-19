@@ -1,0 +1,12 @@
+{
+  "name": "calculo-de-anclajes",
+  "version": "2.0.0",
+  "description": "Software de Cálculo y Dimensionamiento de Anclajes de Trepantes",
+  "type": "module",
+  "scripts": {
+    "test": "node test_engine.js"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
+  }
+}
