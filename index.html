@@ -814,53 +814,42 @@
             </div>
           </div>
 
-          <!-- Global Verdict Box (Same glowing card design as Trepante) -->
+          <!-- Global Verdict Box (M1C Rotura Cono de Hormigón 45º) -->
           <div id="m1cGlobalVerdictCard" class="global-verdict-card verdict-ko">
             <div class="verdict-badge-main">
               <div>
-                <div style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;" data-i18n="interaction_label">Interacción</div>
-                <div id="m1cVerdictPill" class="verdict-pill">FALLO</div>
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
+                  <span style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;" data-i18n="interaction_label">INTERACCIÓN</span>
+                  <span style="font-size: 0.85rem; font-weight: 800; color: #ffffff;" data-i18n="m1c_concrete_breakout_card">Rotura Cono de Hormigón a 45º</span>
+                </div>
+                <div id="m1cVerdictPill" class="verdict-pill">NO OK</div>
+              </div>
+            </div>
+
+            <!-- Central Data Metrics (Tracción Ned y Capacidad Nbc,Rd) -->
+            <div class="m1c-verdict-metrics" style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.85rem; min-width: 230px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                <span style="color: var(--text-muted);" data-i18n="m1c_tension_uls_short">Tracción de Cálculo Ned (ELU)</span>
+                <strong id="m1c_txt_Ned" class="mono" style="color: #ffffff; font-size: 0.95rem;">225.4 kN</strong>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+                <span style="color: var(--text-muted);" data-i18n="m1c_concrete_uls_short">Capacidad Hormigón Nbc,Rd (ELU)</span>
+                <strong id="m1c_txt_NbcRd" class="mono" style="color: #ffffff; font-size: 0.95rem;">185.7 kN</strong>
               </div>
             </div>
 
             <div class="verdict-utilization">
-              <div class="util-label" data-i18n="resistance_verification">Verificación de Resistencia</div>
+              <div class="util-label" data-i18n="resistance_verification">VERIFICACIÓN DE RESISTENCIA</div>
               <div id="m1cVerdictUtilPct" class="util-val">121.4%</div>
             </div>
 
             <div id="m1cVerdictFormulaText" class="verdict-formula" style="width: 100%;">
-              Ned / Nbc,Rd = 225.4 kN / 185.7 kN = 1.214 ≤ 1.0
+              Ned / Nbc,Rd = 225.4 kN / 185.7 kN = 1.214 > 1.0 (Aprovechamiento 121.4% > 100%)
             </div>
           </div>
 
-          <!-- Failure Modes & Components Grid -->
+          <!-- Failure Modes & Components Grid (Vigas y Barras) -->
           <div class="m1c-modes-grid" style="margin-top: 1.25rem;">
-            
-            <!-- 1. Rotura Cono Hormigón 45º -->
-            <div class="mode-card m1c-card-full">
-              <div class="mode-card-header">
-                <div class="mode-icon-box">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 22h20L12 2z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
-                </div>
-                <div class="mode-title-wrap">
-                  <h4 data-i18n="m1c_concrete_breakout_card">Rotura Cono de Hormigón a 45º</h4>
-                  <span id="m1c_badge_concrete" class="status-pill status-ko">FALLO</span>
-                </div>
-              </div>
-              <div class="mode-metrics">
-                <div class="mode-metric-row">
-                  <span data-i18n="m1c_tension_uls">Tracción Ned (ELU):</span>
-                  <span id="m1c_txt_Ned" class="mono font-bold">225.4 kN</span>
-                </div>
-                <div class="mode-metric-row">
-                  <span data-i18n="m1c_concrete_uls">Capacidad Nbc,Rd (ELU):</span>
-                  <span id="m1c_txt_NbcRd" class="mono font-bold">185.7 kN</span>
-                </div>
-                <div class="progress-bar-bg">
-                  <div id="m1c_prog_concrete" class="progress-bar-fill progress-ko" style="width: 100%;"></div>
-                </div>
-              </div>
-            </div>
 
             <!-- 2. Viga Tirante de Anclaje (UPN) -->
             <div class="mode-card m1c-card-full">

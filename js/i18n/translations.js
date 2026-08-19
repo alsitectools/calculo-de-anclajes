@@ -194,7 +194,9 @@ export const translations = {
     "m1c_col_status": "Estat",
     "m1c_chart_title": "Diagrama de Demanda vs Capacitat d'Ancoratge (ELU)",
     "m1c_pesp_label": "P. Específic Formigó",
-    "m1c_hlim_label": "H lím. (Prof. Pmàx)"
+    "m1c_hlim_label": "H lím. (Prof. Pmàx)",
+    "m1c_tension_uls_short": "Tracció de Càlcul Ned (ELU)",
+    "m1c_concrete_uls_short": "Capacitat Formigó Nbc,Rd (ELU)"
   },
   "en": {
     "back_to_portal": "Back to portal",
@@ -341,7 +343,9 @@ export const translations = {
     "m1c_col_status": "Status",
     "m1c_chart_title": "45º Anchor Demand vs Capacity Diagram (ULS)",
     "m1c_pesp_label": "Concrete Unit Wt.",
-    "m1c_hlim_label": "H lim (Max P Depth)"
+    "m1c_hlim_label": "H lim (Max P Depth)",
+    "m1c_tension_uls_short": "Design Tension Ned (ULS)",
+    "m1c_concrete_uls_short": "Concrete Capacity Nbc,Rd (ULS)"
   },
   "es": {
     "back_to_portal": "Back to portal",
@@ -488,7 +492,9 @@ export const translations = {
     "m1c_col_status": "Estado",
     "m1c_chart_title": "Diagrama de Demanda vs Capacidad de Anclaje (ELU)",
     "m1c_pesp_label": "P. Específico Horm.",
-    "m1c_hlim_label": "H lím. (Prof. Pmáx)"
+    "m1c_hlim_label": "H lím. (Prof. Pmáx)",
+    "m1c_tension_uls_short": "Tracción de Cálculo Ned (ELU)",
+    "m1c_concrete_uls_short": "Capacidad Hormigón Nbc,Rd (ELU)"
   },
   "fr": {
     "back_to_portal": "Back to portal",
@@ -635,7 +641,9 @@ export const translations = {
     "m1c_col_status": "État",
     "m1c_chart_title": "Diagramme Demande vs Capacité d'Ancrage (ELU)",
     "m1c_pesp_label": "Poids Spécifique Béton",
-    "m1c_hlim_label": "H lim (Prof. Pmax)"
+    "m1c_hlim_label": "H lim (Prof. Pmax)",
+    "m1c_tension_uls_short": "Traction de Calcul Ned (ELU)",
+    "m1c_concrete_uls_short": "Capacité Béton Nbc,Rd (ELU)"
   },
   "it": {
     "back_to_portal": "Back to portal",
@@ -782,7 +790,9 @@ export const translations = {
     "m1c_col_status": "Stato",
     "m1c_chart_title": "Diagramma di Domanda vs Capacità dell'Ancoraggio (SLU)",
     "m1c_pesp_label": "Peso Specifico Calc.",
-    "m1c_hlim_label": "H lim (Prof. Pmax)"
+    "m1c_hlim_label": "H lim (Prof. Pmax)",
+    "m1c_tension_uls_short": "Trazione di Calcolo Ned (SLU)",
+    "m1c_concrete_uls_short": "Capacità Calcestruzzo Nbc,Rd (SLU)"
   },
   "pl": {
     "back_to_portal": "Back to portal",
@@ -929,7 +939,9 @@ export const translations = {
     "m1c_col_status": "Stan",
     "m1c_chart_title": "Wykres Zapotrzebowania vs Nośności Kotew (SGN)",
     "m1c_pesp_label": "Ciężar Właściwy Betonu",
-    "m1c_hlim_label": "H lim (Głęb. Pmax)"
+    "m1c_hlim_label": "H lim (Głęb. Pmax)",
+    "m1c_tension_uls_short": "Siła Rozciągająca Ned (SGN)",
+    "m1c_concrete_uls_short": "Nośność Betonu Nbc,Rd (SGN)"
   },
   "ro": {
     "back_to_portal": "Back to portal",
@@ -1076,6 +1088,8 @@ export const translations = {
     "m1c_col_status": "Stare",
     "m1c_chart_title": "Diagramă Solicitare vs Capacitate Ancore (ULS)",
     "m1c_pesp_label": "Greutate Spec. Beton",
-    "m1c_hlim_label": "H lim (Adâncime Pmax)"
+    "m1c_hlim_label": "H lim (Adâncime Pmax)",
+    "m1c_tension_uls_short": "Tracțiune de Calcul Ned (SLU)",
+    "m1c_concrete_uls_short": "Capacitate Beton Nbc,Rd (SLU)"
   }
 };
