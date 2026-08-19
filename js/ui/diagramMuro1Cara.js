@@ -1,7 +1,7 @@
 /**
  * Diagrama Interactivo 2D/3D SVG para Muro a 1 Cara (M1C)
  * Divide la visualización en 3 esquemas coordinados:
- * 1. Columna Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache), con cota H a la derecha.
+ * 1. Columna Izquierda: Vista General del Muro (con altura perfectamente alineada con la base de Planta Anclajes).
  * 2. Columna Derecha - Superior: Detalle Anclaje (Sección a 45º) con el suelo en el centro vertical y Badges Interactivos para ca1, ca2 y hef.
  * 3. Columna Derecha - Inferior: Planta Anclajes (Vista en Planta de los Anclajes) con cotas y Badges Interactivos para ca3 y ca4.
  */
@@ -79,16 +79,16 @@ export class DiagramMuro1Cara {
     const toPct = (val, max) => `${((val / max) * 100).toFixed(2)}%`;
 
     // ==========================================
-    // 1. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA IZQUIERDO (VISTA GENERAL)
+    // 1. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA IZQUIERDO (VISTA GENERAL ALINEADA)
     // ==========================================
     const leftW = 340;
-    const leftH = 520;
+    const leftH = 450;
 
-    const leftGroundY = 370;
+    const leftGroundY = 320;
     const leftWallX = 135;
     const leftWallW = 12;
     
-    const leftWallH = Math.min(310, Math.max(190, 180 + (H / 12) * 120));
+    const leftWallH = Math.min(270, Math.max(160, 150 + (H / 12) * 110));
     const leftWallTop = leftGroundY - leftWallH;
 
     const gamma_h = PespecificoHorm > 0 ? PespecificoHorm : 25;
@@ -97,13 +97,13 @@ export class DiagramMuro1Cara {
     const hlimPx = leftWallH * hlimRatio;
     const leftHlimY = leftWallTop + hlimPx;
 
-    const leftPressureW = Math.min(110, Math.max(32, 28 + (PresionMax / 60) * 72));
+    const leftPressureW = Math.min(105, Math.max(32, 28 + (PresionMax / 60) * 70));
 
     // Flechas de empuje en vista general
-    const numArrowsLeft = 7;
+    const numArrowsLeft = 6;
     let arrowsLeftSvg = '';
     for (let i = 0; i < numArrowsLeft; i++) {
-      const arrowY = leftGroundY - 16 - (i * (leftWallH - 32) / (numArrowsLeft - 1));
+      const arrowY = leftGroundY - 14 - (i * (leftWallH - 28) / (numArrowsLeft - 1));
       let curW = leftPressureW;
       if (arrowY < leftHlimY) {
         const triFactor = Math.max(0.06, (arrowY - leftWallTop) / Math.max(1, (leftHlimY - leftWallTop)));
@@ -114,12 +114,12 @@ export class DiagramMuro1Cara {
 
     // Cota H a la derecha del muro y de la escuadra
     const escuadraFootX = leftWallX + leftWallW + leftWallH * 0.45;
-    const cotaXRight = Math.min(318, Math.max(265, escuadraFootX + 22));
+    const cotaXRight = Math.min(318, Math.max(265, escuadraFootX + 20));
 
     // Mini anclaje en vista general
     const miniAnchorStartX = leftWallX + leftWallW;
     const miniAnchorStartY = leftGroundY;
-    const miniAnchorLen = 70;
+    const miniAnchorLen = 65;
     const miniAnchorEndX = miniAnchorStartX - miniAnchorLen * Math.cos(Math.PI / 4);
     const miniAnchorEndY = miniAnchorStartY + miniAnchorLen * Math.sin(Math.PI / 4);
 
@@ -127,13 +127,13 @@ export class DiagramMuro1Cara {
     // 2. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 2 (DETALLE SECCIÓN ANCLAJE)
     // ==========================================
     const secW = 340;
-    const secH = 250;
+    const secH = 220;
 
-    const secGroundY = 125;
+    const secGroundY = 110;
     const secAnchorStartX = 215;
     const secAnchorStartY = secGroundY;
 
-    const secAnchorLen = 125;
+    const secAnchorLen = 115;
     const secAnchorEndX = secAnchorStartX - secAnchorLen * Math.cos(Math.PI / 4);
     const secAnchorEndY = secAnchorStartY + secAnchorLen * Math.sin(Math.PI / 4);
 
@@ -142,10 +142,10 @@ export class DiagramMuro1Cara {
     const secPlateP2 = { x: secAnchorEndX + secPlateHalf, y: secAnchorEndY + secPlateHalf };
 
     const secConeTopLeftX = secPlateP1.x;
-    const secConeBottomRightX = secAnchorStartX + 55;
+    const secConeBottomRightX = secAnchorStartX + 52;
     const secConeBottomRightY = secAnchorEndY - 10;
 
-    const secTopDimY = secGroundY - 24;
+    const secTopDimY = secGroundY - 22;
     const secCa2EndX = secAnchorStartX + 85;
 
     const ca1BadgeX = (secConeTopLeftX + secAnchorStartX) / 2;
@@ -161,14 +161,14 @@ export class DiagramMuro1Cara {
     // 3. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 3 (PLANTA ANCLAJES LIMPIA)
     // ==========================================
     const planW = 340;
-    const planH = 240;
+    const planH = 220;
 
-    const planWallY = 85;
+    const planWallY = 80;
     const group1X = 80;
     const group2X = 225;
     const planRightEdgeX = 310;
 
-    const planDimY = 28;
+    const planDimY = 26;
     const ca3BadgeX = (group2X + planRightEdgeX) / 2;
     const ca3BadgeY = planDimY + 12;
 
@@ -176,18 +176,18 @@ export class DiagramMuro1Cara {
     const ca4BadgeY = planDimY + 12;
 
     const html = `
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; width: 100%;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; width: 100%; align-items: stretch;">
         
-        <!-- 1. COLUMNA IZQUIERDA: VISTA GENERAL MURO Y EMPUJE -->
+        <!-- 1. COLUMNA IZQUIERDA: VISTA GENERAL MURO Y EMPUJE (Alineado con el final de Planta Anclajes) -->
         <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
           
-          <div style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
-            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 6px; padding: 0.35rem 0.9rem; font-size: 0.82rem; font-weight: 700; color: #f8fafc; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+          <div style="display: flex; justify-content: center; margin-bottom: 0.4rem; height: 28px; align-items: center;">
+            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 6px; padding: 0.3rem 0.85rem; font-size: 0.80rem; font-weight: 700; color: #f8fafc; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
               Vista General Muro
             </div>
           </div>
 
-          <div style="position: relative; flex: 1; min-height: 520px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
+          <div style="position: relative; flex: 1; height: calc(100% - 35px); min-height: 480px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
             <svg viewBox="0 0 ${leftW} ${leftH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
               <defs>
                 <linearGradient id="concreteGradM1C_L" x1="0" y1="0" x2="1" y2="1">
@@ -258,17 +258,17 @@ export class DiagramMuro1Cara {
         </div>
 
         <!-- 2. COLUMNA DERECHA: DETALLE SECCIÓN (ARRIBA) Y PLANTA ANCLAJES (ABAJO) -->
-        <div style="display: flex; flex-direction: column; gap: 1.25rem; width: 100%;">
+        <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
           
           <!-- BLOQUE 2: DETALLE ANCLAJE (SECCIÓN A 45º) -->
           <div style="display: flex; flex-direction: column; width: 100%;">
-            <div style="display: flex; justify-content: center; margin-bottom: 0.4rem;">
+            <div style="display: flex; justify-content: center; margin-bottom: 0.4rem; height: 28px; align-items: center;">
               <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 6px; padding: 0.3rem 0.85rem; font-size: 0.80rem; font-weight: 700; color: #fde68a; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
                 Detalle Anclaje
               </div>
             </div>
 
-            <div style="position: relative; height: 250px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
+            <div style="position: relative; height: 220px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
               <svg viewBox="0 0 ${secW} ${secH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <linearGradient id="concreteGradM1C_Sec" x1="0" y1="0" x2="1" y2="1">
@@ -298,8 +298,8 @@ export class DiagramMuro1Cara {
                 <line x1="0" y1="${secGroundY}" x2="${secW}" y2="${secGroundY}" stroke="#64748b" stroke-width="2" />
 
                 <!-- Muro y Escuadra superior -->
-                <rect x="${secAnchorStartX - 13}" y="${secGroundY - 50}" width="13" height="50" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1" />
-                <polygon points="${secAnchorStartX},${secGroundY - 40} ${secAnchorStartX + 46},${secGroundY} ${secAnchorStartX},${secGroundY}" fill="rgba(200,16,46,0.2)" stroke="#c8102e" stroke-width="1.6" />
+                <rect x="${secAnchorStartX - 13}" y="${secGroundY - 45}" width="13" height="45" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1" />
+                <polygon points="${secAnchorStartX},${secGroundY - 36} ${secAnchorStartX + 42},${secGroundY} ${secAnchorStartX},${secGroundY}" fill="rgba(200,16,46,0.2)" stroke="#c8102e" stroke-width="1.6" />
 
                 <!-- Cono de Hormigón -->
                 <polygon points="${secConeTopLeftX},${secGroundY} ${secPlateP1.x},${secPlateP1.y} ${secPlateP2.x},${secPlateP2.y} ${secConeBottomRightX},${secConeBottomRightY} ${secAnchorStartX},${secGroundY}" fill="rgba(239, 68, 68, 0.18)" stroke="none" />
@@ -311,12 +311,12 @@ export class DiagramMuro1Cara {
                 <line x1="${secPlateP1.x}" y1="${secPlateP1.y}" x2="${secPlateP2.x}" y2="${secPlateP2.y}" stroke="#f8fafc" stroke-width="5" />
 
                 <!-- Vector Ned -->
-                <line x1="${secAnchorStartX}" y1="${secAnchorStartY}" x2="${secAnchorStartX + 55}" y2="${secAnchorStartY - 55}" stroke="#f59e0b" stroke-width="2.2" marker-end="url(#arrowNedM1C_Sec)" />
-                <text x="${secAnchorStartX + 60}" y="${secAnchorStartY - 50}" fill="#f59e0b" font-size="10" font-weight="800" font-family="monospace">Ned</text>
+                <line x1="${secAnchorStartX}" y1="${secAnchorStartY}" x2="${secAnchorStartX + 52}" y2="${secAnchorStartY - 52}" stroke="#f59e0b" stroke-width="2.2" marker-end="url(#arrowNedM1C_Sec)" />
+                <text x="${secAnchorStartX + 58}" y="${secAnchorStartY - 47}" fill="#f59e0b" font-size="10" font-weight="800" font-family="monospace">Ned</text>
 
                 <!-- Arco 45º -->
-                <path d="M ${secAnchorStartX - 32} ${secAnchorStartY} A 32 32 0 0 0 ${secAnchorStartX - 23} ${secAnchorStartY + 23}" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,2" />
-                <text x="${secAnchorStartX - 48}" y="${secAnchorStartY + 18}" fill="#f59e0b" font-size="10" font-weight="800">45º</text>
+                <path d="M ${secAnchorStartX - 30} ${secAnchorStartY} A 30 30 0 0 0 ${secAnchorStartX - 21} ${secAnchorStartY + 21}" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,2" />
+                <text x="${secAnchorStartX - 45}" y="${secAnchorStartY + 16}" fill="#f59e0b" font-size="10" font-weight="800">45º</text>
 
                 <!-- Cotas estilo ingeniería ca1 y ca2 -->
                 <line x1="${secConeTopLeftX}" y1="${secGroundY}" x2="${secConeTopLeftX}" y2="${secTopDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
@@ -356,13 +356,13 @@ export class DiagramMuro1Cara {
 
           <!-- BLOQUE 3: DETALLE EN PLANTA (VISTA SUPERIOR LIMPIA) -->
           <div style="display: flex; flex-direction: column; width: 100%;">
-            <div style="display: flex; justify-content: center; margin-bottom: 0.4rem;">
+            <div style="display: flex; justify-content: center; margin-bottom: 0.4rem; height: 28px; align-items: center;">
               <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; padding: 0.3rem 0.85rem; font-size: 0.80rem; font-weight: 700; color: #bae6fd; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
                 Planta Anclajes
               </div>
             </div>
 
-            <div style="position: relative; height: 250px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
+            <div style="position: relative; height: 220px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
               <svg viewBox="0 0 ${planW} ${planH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <linearGradient id="concreteGradM1C_Plan" x1="0" y1="0" x2="1" y2="1">
@@ -395,51 +395,51 @@ export class DiagramMuro1Cara {
 
                 <!-- ================= ESCUADRA IZQUIERDA (GRUPO 1) ================= -->
                 <!-- Canales UPN Rojos Base -->
-                <rect x="${group1X - 16}" y="110" width="10" height="120" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="${group1X + 6}" y="110" width="10" height="120" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group1X - 16}" y="105" width="10" height="115" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group1X + 6}" y="105" width="10" height="115" fill="#c8102e" stroke="#990b22" stroke-width="1" />
                 
                 <!-- Placas Reparto Acero / Madera -->
-                <rect x="${group1X - 32}" y="138" width="64" height="28" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
+                <rect x="${group1X - 32}" y="130" width="64" height="26" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
 
                 <!-- Barras Dywidag Izquierda -->
-                <rect x="${group1X - 22}" y="55" width="4" height="140" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
-                <rect x="${group1X - 22}" y="55" width="4" height="140" fill="url(#threadPattern)" />
-                <circle cx="${group1X - 20}" cy="52" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
+                <rect x="${group1X - 22}" y="50" width="4" height="135" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
+                <rect x="${group1X - 22}" y="50" width="4" height="135" fill="url(#threadPattern)" />
+                <circle cx="${group1X - 20}" cy="48" r="5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
 
-                <rect x="${group1X + 18}" y="55" width="4" height="140" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
-                <rect x="${group1X + 18}" y="55" width="4" height="140" fill="url(#threadPattern)" />
-                <circle cx="${group1X + 20}" cy="52" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
+                <rect x="${group1X + 18}" y="50" width="4" height="135" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
+                <rect x="${group1X + 18}" y="50" width="4" height="135" fill="url(#threadPattern)" />
+                <circle cx="${group1X + 20}" cy="48" r="5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
 
                 <!-- Tuercas hexagonales amarillas -->
-                <polygon points="${group1X - 24},148 ${group1X - 16},144 ${group1X - 16},156 ${group1X - 24},160" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
-                <polygon points="${group1X + 16},148 ${group1X + 24},144 ${group1X + 24},156 ${group1X + 16},160" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <polygon points="${group1X - 24},140 ${group1X - 16},136 ${group1X - 16},148 ${group1X - 24},152" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <polygon points="${group1X + 16},140 ${group1X + 24},136 ${group1X + 24},148 ${group1X + 16},152" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
 
                 <!-- ================= ESCUADRA DERECHA (GRUPO 2) ================= -->
                 <!-- Canales UPN Rojos Base -->
-                <rect x="${group2X - 16}" y="110" width="10" height="120" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="${group2X + 6}" y="110" width="10" height="120" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group2X - 16}" y="105" width="10" height="115" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group2X + 6}" y="105" width="10" height="115" fill="#c8102e" stroke="#990b22" stroke-width="1" />
 
                 <!-- Placas Reparto Acero / Madera -->
-                <rect x="${group2X - 32}" y="138" width="64" height="28" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
+                <rect x="${group2X - 32}" y="130" width="64" height="26" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
 
                 <!-- Barras Dywidag Derecha -->
-                <rect x="${group2X - 22}" y="55" width="4" height="140" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
-                <rect x="${group2X - 22}" y="55" width="4" height="140" fill="url(#threadPattern)" />
-                <circle cx="${group2X - 20}" cy="52" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
+                <rect x="${group2X - 22}" y="50" width="4" height="135" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
+                <rect x="${group2X - 22}" y="50" width="4" height="135" fill="url(#threadPattern)" />
+                <circle cx="${group2X - 20}" cy="48" r="5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
 
-                <rect x="${group2X + 18}" y="55" width="4" height="140" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
-                <rect x="${group2X + 18}" y="55" width="4" height="140" fill="url(#threadPattern)" />
-                <circle cx="${group2X + 20}" cy="52" r="5.5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
+                <rect x="${group2X + 18}" y="50" width="4" height="135" fill="#e2e8f0" stroke="#64748b" stroke-width="0.8" />
+                <rect x="${group2X + 18}" y="50" width="4" height="135" fill="url(#threadPattern)" />
+                <circle cx="${group2X + 20}" cy="48" r="5" fill="#94a3b8" stroke="#475569" stroke-width="1" />
 
                 <!-- Tuercas hexagonales amarillas -->
-                <polygon points="${group2X - 24},148 ${group2X - 16},144 ${group2X - 16},156 ${group2X - 24},160" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
-                <polygon points="${group2X + 16},148 ${group2X + 24},144 ${group2X + 24},156 ${group2X + 16},160" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <polygon points="${group2X - 24},140 ${group2X - 16},136 ${group2X - 16},148 ${group2X - 24},152" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <polygon points="${group2X + 16},140 ${group2X + 24},136 ${group2X + 24},148 ${group2X + 16},152" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
 
                 <!-- ================= COTAS EN PLANTA (ca3 y ca4) ================= -->
                 <!-- Líneas de extensión vertical hacia arriba -->
-                <line x1="${group1X}" y1="52" x2="${group1X}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${group2X}" y1="52" x2="${group2X}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${planRightEdgeX}" y1="52" x2="${planRightEdgeX}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${group1X}" y1="48" x2="${group1X}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${group2X}" y1="48" x2="${group2X}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${planRightEdgeX}" y1="48" x2="${planRightEdgeX}" y2="${planDimY - 6}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
 
                 <!-- Línea de cota ca3 -->
                 <line x1="${group2X + 2}" y1="${planDimY}" x2="${planRightEdgeX - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
