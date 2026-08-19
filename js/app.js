@@ -57,11 +57,110 @@ let hypotheses = [];
 let currentHypothesisId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  initI18n();
+  initThemeAndUnits();
   loadHypothesesFromStorage();
   initUI();
   renderHypothesisSelector();
   updateCalculation();
 });
+
+function initThemeAndUnits() {
+  // Theme initialization (Default is Dark Mode)
+  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  const chkDarkMode = document.getElementById('chkDarkMode');
+  
+  if (savedTheme === 'light') {
+    document.body.classList.add('light-theme');
+    if (chkDarkMode) chkDarkMode.checked = false;
+  } else {
+    document.body.classList.remove('light-theme');
+    if (chkDarkMode) chkDarkMode.checked = true;
+  }
+
+  // Units initialization
+  const savedUnits = localStorage.getItem(UNITS_STORAGE_KEY);
+  isImperial = savedUnits === 'imperial';
+  updateUnitsUI();
+}
+
+function updateUnitsUI() {
+  const lblUnitSystem = document.getElementById('lblUnitSystem');
+  const badgeUnitSystem = document.getElementById('badgeUnitSystem');
+  
+  if (lblUnitSystem) {
+    lblUnitSystem.textContent = isImperial ? t('switch_metric') : t('switch_imperial');
+  }
+  if (badgeUnitSystem) {
+    badgeUnitSystem.textContent = isImperial ? 'in/lb' : 'mm/kN';
+  }
+
+  // Update input unit labels in main card
+  const uLen = isImperial ? 'in' : 'mm';
+  const uForce = isImperial ? 'kips' : 'kN';
+  const uStress = isImperial ? 'psi (lb/in²)' : 'MPa (N/mm²)';
+
+  const unitNsk = document.querySelector('label[for="inp_Nsk"] ~ .input-group .unit');
+  if (unitNsk) unitNsk.textContent = uForce;
+  const unitVsk = document.querySelector('label[for="inp_Vsk"] ~ .input-group .unit');
+  if (unitVsk) unitVsk.textContent = uForce;
+
+  const unitCal = document.querySelector('label[for="inp_cal"] ~ .input-group .unit');
+  if (unitCal) unitCal.textContent = uLen;
+  const unitCar = document.querySelector('label[for="inp_car"] ~ .input-group .unit');
+  if (unitCar) unitCar.textContent = uLen;
+  const unitCau = document.querySelector('label[for="inp_cau"] ~ .input-group .unit');
+  if (unitCau) unitCau.textContent = uLen;
+  const unitCad = document.querySelector('label[for="inp_cad"] ~ .input-group .unit');
+  if (unitCad) unitCad.textContent = uLen;
+  const unitHa = document.querySelector('label[for="inp_ha"] ~ .input-group .unit');
+  if (unitHa) unitHa.textContent = uLen;
+
+  const unitFck = document.querySelector('label[for="inp_fck"] ~ .input-group .unit');
+  if (unitFck) unitFck.textContent = uStress;
+
+  // Update anchor length dropdown
+  const selLength = document.getElementById('sel_anchor_length');
+  if (selLength) {
+    const anchor = ANCHOR_TYPES[state.tipoCono];
+    selLength.innerHTML = '';
+    anchor.longitudesValidas.forEach(len => {
+      const opt = document.createElement('option');
+      opt.value = len;
+      if (isImperial) {
+        opt.textContent = `L = ${(len / 25.4).toFixed(1)} in (${len} mm)`;
+      } else {
+        opt.textContent = `L = ${len} mm`;
+      }
+      if (len === state.longitud) opt.selected = true;
+      selLength.appendChild(opt);
+    });
+    selLength.value = state.longitud;
+  }
+
+  // Update slider min/max
+  const sliderFck = document.getElementById('slider_fck');
+  if (sliderFck) {
+    if (isImperial) {
+      sliderFck.min = 1160;
+      sliderFck.max = 4350;
+      sliderFck.step = 50;
+      sliderFck.value = Math.round(state.fck * 145.0377);
+    } else {
+      sliderFck.min = 8;
+      sliderFck.max = 30;
+      sliderFck.step = 1;
+      sliderFck.value = state.fck;
+    }
+  }
+
+  if (diagramView && typeof diagramView.setUnitSystem === 'function') {
+    diagramView.setUnitSystem(isImperial ? 'imperial' : 'metric');
+  }
+
+  syncInputsFromState();
+  updateCalculation();
+}
 
 function loadHypothesesFromStorage() {
   try {
@@ -261,10 +360,22 @@ function bindInputs() {
     const el = document.getElementById(`inp_${k}`);
     if (el) {
       el.addEventListener('input', () => {
-        state[k] = parseFloat(el.value) || 0;
+        let val = parseFloat(el.value) || 0;
+        if (isImperial) {
+          if (['cal', 'car', 'cau', 'cad', 'ha'].includes(k)) {
+            state[k] = val * 25.4;
+          } else if (['Nsk', 'Vsk'].includes(k)) {
+            state[k] = val * 4.4482216;
+          } else if (k === 'fck') {
+            state.fck = val / 145.0377;
+          }
+        } else {
+          state[k] = val;
+        }
+
         if (k === 'fck') {
           const slider = document.getElementById('slider_fck');
-          if (slider) slider.value = state.fck;
+          if (slider) slider.value = isImperial ? Math.round(state.fck * 145.0377) : state.fck;
         }
         syncDiagramFromState();
         updateCalculation();
@@ -276,9 +387,14 @@ function bindInputs() {
   const fckSlider = document.getElementById('slider_fck');
   if (fckSlider) {
     fckSlider.addEventListener('input', () => {
-      state.fck = parseFloat(fckSlider.value) || 25;
+      let val = parseFloat(fckSlider.value) || 25;
+      if (isImperial) {
+        state.fck = val / 145.0377;
+      } else {
+        state.fck = val;
+      }
       const inpFck = document.getElementById('inp_fck');
-      if (inpFck) inpFck.value = state.fck;
+      if (inpFck) inpFck.value = isImperial ? Math.round(val) : state.fck;
       updateCalculation();
     });
   }
@@ -666,9 +782,28 @@ function syncInputsFromState() {
   boundKeys.forEach(k => {
     const el = document.getElementById(`inp_${k}`);
     if (el && document.activeElement !== el) {
-      el.value = state[k];
+      if (isImperial) {
+        if (['cal', 'car', 'cau', 'cad', 'ha'].includes(k)) {
+          el.value = (state[k] / 25.4).toFixed(1);
+          el.step = '0.5';
+        } else if (['Nsk', 'Vsk'].includes(k)) {
+          el.value = (state[k] / 4.4482216).toFixed(1);
+          el.step = '0.1';
+        } else if (k === 'fck') {
+          el.value = Math.round(state.fck * 145.0377);
+          el.step = '50';
+        }
+      } else {
+        el.value = state[k];
+        el.step = (['Nsk', 'Vsk', 'fck'].includes(k)) ? '1' : '10';
+      }
     }
   });
+
+  const sliderFck = document.getElementById('slider_fck');
+  if (sliderFck && document.activeElement !== sliderFck) {
+    sliderFck.value = isImperial ? Math.round(state.fck * 145.0377) : state.fck;
+  }
 }
 
 function syncAllUIFromState() {
@@ -692,7 +827,11 @@ function syncAllUIFromState() {
     anchor.longitudesValidas.forEach(len => {
       const opt = document.createElement('option');
       opt.value = len;
-      opt.textContent = `L = ${len} mm`;
+      if (isImperial) {
+        opt.textContent = `L = ${(len / 25.4).toFixed(1)} in (${len} mm)`;
+      } else {
+        opt.textContent = `L = ${len} mm`;
+      }
       if (len === state.longitud) opt.selected = true;
       selLength.appendChild(opt);
     });
@@ -703,20 +842,25 @@ function syncAllUIFromState() {
   if (chkHueco) chkHueco.checked = state.afectadoHueco;
 
   const sliderFck = document.getElementById('slider_fck');
-  if (sliderFck) sliderFck.value = state.fck;
+  if (sliderFck) sliderFck.value = isImperial ? Math.round(state.fck * 145.0377) : state.fck;
 }
 
 function updateCalculation() {
-  // Run calculation engine
+  // Run calculation engine (canonical in SI units)
   currentCalcResult = calculateAnchor(state);
   const res = currentCalcResult;
+  const unitSys = isImperial ? 'imperial' : 'metric';
 
   // 1. Thickness Validation Warning
   const warnThickness = document.getElementById('warnThickness');
   if (warnThickness) {
     if (state.longitud > state.ha) {
       warnThickness.style.display = 'flex';
-      warnThickness.textContent = `⚠️ La longitud de anclaje (L = ${state.longitud} mm) no puede ser superior al espesor del muro (ha = ${state.ha} mm).`;
+      if (isImperial) {
+        warnThickness.textContent = `⚠️ La longitud de anclaje (L = ${(state.longitud/25.4).toFixed(1)} in) no puede ser superior al espesor del muro (ha = ${(state.ha/25.4).toFixed(1)} in).`;
+      } else {
+        warnThickness.textContent = `⚠️ La longitud de anclaje (L = ${state.longitud} mm) no puede ser superior al espesor del muro (ha = ${state.ha} mm).`;
+      }
     } else {
       warnThickness.style.display = 'none';
     }
@@ -739,12 +883,17 @@ function updateCalculation() {
     verdictPct.textContent = `${res.global.utilizacionResistencia.toFixed(2)}%`;
   }
   if (verdictFormula) {
-    verdictFormula.textContent = `(Nsd/NRd)^5/3 + (Vsd/VRd)^5/3 = (${res.inputs.Nd.toFixed(1)}/${res.traccion.NRd.toFixed(1)})^1.67 + (${res.inputs.Vd.toFixed(1)}/${res.cortante.VRd.toFixed(1)})^1.67 = ${(res.global.interaccion).toFixed(3)} ≤ 1.0`;
+    const conv = isImperial ? (1 / 4.4482216) : 1;
+    const NdDisp = (res.inputs.Nd * conv).toFixed(1);
+    const NRdDisp = (res.traccion.NRd * conv).toFixed(1);
+    const VdDisp = (res.inputs.Vd * conv).toFixed(1);
+    const VRdDisp = (res.cortante.VRd * conv).toFixed(1);
+    verdictFormula.textContent = `(Nsd/NRd)^5/3 + (Vsd/VRd)^5/3 = (${NdDisp}/${NRdDisp})^1.67 + (${VdDisp}/${VRdDisp})^1.67 = ${(res.global.interaccion).toFixed(3)} ≤ 1.0`;
   }
 
   // 3. Render Canvas Chart
   if (interactionChart) {
-    interactionChart.draw(res);
+    interactionChart.draw(res, unitSys);
   }
 
   // 4. Update 6 Failure Mode Cards
@@ -787,19 +936,25 @@ function updateModeCard(elementId, modeData) {
 }
 
 function updateDetailedTables(res) {
+  const lUnit = isImperial ? 'in' : 'mm';
+  const fUnit = isImperial ? 'kips' : 'kN';
+  const lConv = isImperial ? (1 / 25.4) : 1;
+  const fConv = isImperial ? (1 / 4.4482216) : 1;
+  const lDec = isImperial ? 1 : 0;
+
   // Tracción
-  document.getElementById('dt_hef').textContent = `${res.inputs.longitud} mm`;
-  document.getElementById('dt_hefPrime').textContent = `${res.traccion.hefPrime.toFixed(1)} mm`;
-  document.getElementById('dt_Nsa').textContent = `${res.traccion.Nsa.toFixed(1)} kN`;
-  document.getElementById('dt_Ncb').textContent = `${res.traccion.Ncb.toFixed(1)} kN`;
-  document.getElementById('dt_NRd').textContent = `${res.traccion.NRd.toFixed(1)} kN`;
+  document.getElementById('dt_hef').textContent = `${(res.inputs.longitud * lConv).toFixed(lDec)} ${lUnit}`;
+  document.getElementById('dt_hefPrime').textContent = `${(res.traccion.hefPrime * lConv).toFixed(1)} ${lUnit}`;
+  document.getElementById('dt_Nsa').textContent = `${(res.traccion.Nsa * fConv).toFixed(1)} ${fUnit}`;
+  document.getElementById('dt_Ncb').textContent = `${(res.traccion.Ncb * fConv).toFixed(1)} ${fUnit}`;
+  document.getElementById('dt_NRd').textContent = `${(res.traccion.NRd * fConv).toFixed(1)} ${fUnit}`;
 
   // Cortante
-  document.getElementById('dt_ca2infPrime').textContent = `${res.cortante.ca2infPrime.toFixed(1)} mm`;
-  document.getElementById('dt_Vsa').textContent = `${res.cortante.Vsa.toFixed(1)} kN`;
-  document.getElementById('dt_Vcb').textContent = `${res.cortante.Vcb.toFixed(1)} kN`;
-  document.getElementById('dt_Vcp').textContent = `${res.cortante.Vcp.toFixed(1)} kN`;
-  document.getElementById('dt_VRd').textContent = `${res.cortante.VRd.toFixed(1)} kN`;
+  document.getElementById('dt_ca2infPrime').textContent = `${(res.cortante.ca2infPrime * lConv).toFixed(1)} ${lUnit}`;
+  document.getElementById('dt_Vsa').textContent = `${(res.cortante.Vsa * fConv).toFixed(1)} ${fUnit}`;
+  document.getElementById('dt_Vcb').textContent = `${(res.cortante.Vcb * fConv).toFixed(1)} ${fUnit}`;
+  document.getElementById('dt_Vcp').textContent = `${(res.cortante.Vcp * fConv).toFixed(1)} ${fUnit}`;
+  document.getElementById('dt_VRd').textContent = `${(res.cortante.VRd * fConv).toFixed(1)} ${fUnit}`;
 }
 
 function showToast(message) {

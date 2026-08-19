@@ -168,7 +168,14 @@ export class DiagramView {
     inputs.forEach(inp => {
       inp.addEventListener('input', () => {
         const id = inp.id.replace('diag_', '');
-        const val = parseFloat(inp.value) || 0;
+        let val = parseFloat(inp.value) || 0;
+        if (this.unitSystem === 'imperial') {
+          if (['cal', 'car', 'cau', 'cad', 'ha'].includes(id)) {
+            val = val * 25.4;
+          } else if (['Nsk', 'Vsk'].includes(id)) {
+            val = val * 4.4482216;
+          }
+        }
         this.values[id] = val;
         if (this.onValueChange) {
           this.onValueChange(id, val);
@@ -476,11 +483,22 @@ export class DiagramView {
     // Nsk (Desplazado hacia abajo para despejar completamente la flecha amarilla)
     setBadgePos('Nsk', Math.min(anchorCenter.x + 65, svgW - 50), Math.min(anchorCenter.y + 64, svgH - 18));
 
-    // Sincronizar inputs
+    // Sincronizar inputs con soporte de unidades
     const syncInp = (id, val) => {
       const inp = this.container.querySelector(`#diag_${id}`);
       if (inp && document.activeElement !== inp) {
-        inp.value = val;
+        if (this.unitSystem === 'imperial') {
+          if (['cal', 'car', 'cau', 'cad', 'ha'].includes(id)) {
+            inp.value = (val / 25.4).toFixed(1);
+            inp.step = '0.5';
+          } else if (['Nsk', 'Vsk'].includes(id)) {
+            inp.value = (val / 4.4482216).toFixed(1);
+            inp.step = '0.1';
+          }
+        } else {
+          inp.value = val;
+          inp.step = ['Nsk', 'Vsk'].includes(id) ? '1' : '10';
+        }
       }
     };
 
@@ -491,5 +509,24 @@ export class DiagramView {
     syncInp('ha', ha);
     syncInp('Vsk', Vsk);
     syncInp('Nsk', Nsk);
+  }
+
+  setUnitSystem(unitSystem) {
+    this.unitSystem = unitSystem;
+    const isImperial = unitSystem === 'imperial';
+    const lenUnit = isImperial ? 'in' : 'mm';
+    const forceUnit = isImperial ? 'kips' : 'kN';
+
+    ['cal', 'car', 'cau', 'cad', 'ha'].forEach(id => {
+      const badge = this.container.querySelector(`#badge_${id} .badge-unit`);
+      if (badge) badge.textContent = lenUnit;
+    });
+
+    ['Vsk', 'Nsk'].forEach(id => {
+      const badge = this.container.querySelector(`#badge_${id} .badge-unit`);
+      if (badge) badge.textContent = forceUnit;
+    });
+
+    this.updateGeometry();
   }
 }

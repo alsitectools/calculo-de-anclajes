@@ -24,12 +24,19 @@ export class InteractionChart {
     this.ctx.scale(dpr, dpr);
   }
 
-  draw(data) {
+  draw(data, unitSystem = 'metric') {
     this.lastData = data;
+    this.lastUnitSystem = unitSystem;
+    const isImperial = unitSystem === 'imperial';
+    const forceConv = isImperial ? (1 / 4.4482216) : 1;
+    const forceUnit = isImperial ? 'kips' : 'kN';
+
     const { curva, traccion, cortante, global, inputs } = data;
     const { puntos, puntoOperacion } = curva;
-    const NRd = traccion.NRd;
-    const VRd = cortante.VRd;
+    const NRd = traccion.NRd * forceConv;
+    const VRd = cortante.VRd * forceConv;
+    const opX_val = puntoOperacion.x * forceConv;
+    const opY_val = puntoOperacion.y * forceConv;
     const isOK = global.status === 'OK';
 
     const ctx = this.ctx;
@@ -48,9 +55,9 @@ export class InteractionChart {
     const plotH = h - padTop - padBottom;
 
     // Determine scale max
-    const maxValX = Math.max(VRd * 1.15, puntoOperacion.x * 1.25, 50);
-    const maxValY = Math.max(NRd * 1.15, puntoOperacion.y * 1.25, 50);
-    const maxScale = Math.ceil(Math.max(maxValX, maxValY) / 10) * 10;
+    const maxValX = Math.max(VRd * 1.15, opX_val * 1.25, isImperial ? 10 : 50);
+    const maxValY = Math.max(NRd * 1.15, opY_val * 1.25, isImperial ? 10 : 50);
+    const maxScale = Math.ceil(Math.max(maxValX, maxValY) / (isImperial ? 2 : 10)) * (isImperial ? 2 : 10);
 
     const scaleX = val => padLeft + (val / maxScale) * plotW;
     const scaleY = val => padTop + plotH - (val / maxScale) * plotH;
@@ -65,7 +72,7 @@ export class InteractionChart {
     ctx.strokeStyle = gridColor;
     ctx.lineWidth = 1;
 
-    const step = maxScale <= 60 ? 10 : (maxScale <= 120 ? 20 : 50);
+    const step = isImperial ? (maxScale <= 10 ? 2 : (maxScale <= 30 ? 5 : 10)) : (maxScale <= 60 ? 10 : (maxScale <= 120 ? 20 : 50));
     for (let v = 0; v <= maxScale; v += step) {
       // vertical grid
       const x = scaleX(v);
@@ -104,13 +111,13 @@ export class InteractionChart {
     ctx.fillStyle = titleColor;
     ctx.font = '700 11px Outfit, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('VRd - Cortante (kN)', padLeft + plotW / 2, h - 8);
+    ctx.fillText(`VRd - Cortante (${forceUnit})`, padLeft + plotW / 2, h - 8);
 
     ctx.save();
     ctx.translate(16, padTop + plotH / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
-    ctx.fillText('NRd - Axil de Tracción (kN)', 0, 0);
+    ctx.fillText(`NRd - Axil (${forceUnit})`, 0, 0);
     ctx.restore();
 
     // 2. Draw Theoretical Curve & Shaded Safety Region
@@ -119,7 +126,7 @@ export class InteractionChart {
       ctx.beginPath();
       ctx.moveTo(scaleX(0), scaleY(0));
       for (let i = 0; i < puntos.length; i++) {
-        ctx.lineTo(scaleX(puntos[i].x), scaleY(puntos[i].y));
+        ctx.lineTo(scaleX(puntos[i].x * forceConv), scaleY(puntos[i].y * forceConv));
       }
       ctx.lineTo(scaleX(VRd), scaleY(0));
       ctx.closePath();
@@ -138,8 +145,8 @@ export class InteractionChart {
       // Stroke curve line
       ctx.beginPath();
       for (let i = 0; i < puntos.length; i++) {
-        const px = scaleX(puntos[i].x);
-        const py = scaleY(puntos[i].y);
+        const px = scaleX(puntos[i].x * forceConv);
+        const py = scaleY(puntos[i].y * forceConv);
         if (i === 0) ctx.moveTo(px, py);
         else ctx.lineTo(px, py);
       }
@@ -160,8 +167,8 @@ export class InteractionChart {
     ctx.fill();
 
     // 4. Draw Operating Point (Vsd, Nsd)
-    const opX = scaleX(puntoOperacion.x);
-    const opY = scaleY(puntoOperacion.y);
+    const opPx = scaleX(opX_val);
+    const opPy = scaleY(opY_val);
 
     // Dashed guide lines to axes
     ctx.setLineDash([4, 4]);
@@ -169,25 +176,25 @@ export class InteractionChart {
     ctx.lineWidth = 1.5;
 
     ctx.beginPath();
-    ctx.moveTo(opX, padTop + plotH);
-    ctx.lineTo(opX, opY);
-    ctx.lineTo(padLeft, opY);
+    ctx.moveTo(opPx, padTop + plotH);
+    ctx.lineTo(opPx, opPy);
+    ctx.lineTo(padLeft, opPy);
     ctx.stroke();
     ctx.setLineDash([]);
 
     // Point Marker
-    ctx.fillStyle = isOK ? '#ef4444' : '#dc2626'; // Red marker like original UserForm
+    ctx.fillStyle = isOK ? '#ef4444' : '#dc2626';
     ctx.beginPath();
-    ctx.rect(opX - 5, opY - 5, 10, 10);
+    ctx.rect(opPx - 5, opPy - 5, 10, 10);
     ctx.fill();
     ctx.strokeStyle = '#ffffff';
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
     // Point Label
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = isLight ? '#0f172a' : '#ffffff';
     ctx.font = '700 11px "JetBrains Mono", monospace';
     ctx.textAlign = 'left';
-    ctx.fillText(`■ Nsd,Vsd (${puntoOperacion.y.toFixed(1)}, ${puntoOperacion.x.toFixed(1)})`, opX + 8, opY - 6);
+    ctx.fillText(`■ Nsd,Vsd (${opY_val.toFixed(1)}, ${opX_val.toFixed(1)} ${forceUnit})`, opPx + 8, opPy - 6);
   }
 }
