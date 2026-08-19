@@ -1,6 +1,7 @@
 /**
  * Diagrama Interactivo 2D/3D SVG para Muro a 1 Cara (M1C)
- * Representa el encofrado vertical M1C, la zapata, el empuje hidrostático/constante dinámico y el anclaje a 45º
+ * Representa el encofrado vertical M1C, la zapata, el empuje hidrostático/constante dinámico y el anclaje a 45º.
+ * Escala dinámicamente la altura del muro según H y el ancho de la zona azul según Pmax.
  */
 
 export class DiagramMuro1Cara {
@@ -40,40 +41,47 @@ export class DiagramMuro1Cara {
     const svgWidth = 600;
     const svgHeight = 440;
 
-    // Dimensions for the drawing
+    // Ground position
     const groundY = 320;
     const wallX = 240;
-    const wallW = 12.5; // 1/4 of previous width
-    const wallH = 240; // Represents H
+    const wallW = 12.5; // Panel thickness
+
+    // 1. Altura del muro (wallH) escalada dinámicamente en función de H
+    const wallH = Math.min(265, Math.max(110, (H / 9) * 230));
     const wallTop = groundY - wallH;
 
-    // Dinámica de Profundidad Hidrostática Hlim
+    // 2. Ancho de la zona de presiones (pressureW) escalado dinámicamente según Pmax
+    const pressureW = Math.min(145, Math.max(32, (PresionMax / 25) * 75));
+
+    // 3. Profundidad Hidrostática Hlim y transición geométrica
     const gamma_h = PespecificoHorm > 0 ? PespecificoHorm : 25;
     const Hlim = Math.min(PresionMax / gamma_h, H);
     const hlimRatio = Math.min(1, Math.max(0.04, Hlim / H));
     const hlimPx = wallH * hlimRatio;
     const hlimY = wallTop + hlimPx;
-    const pressureW = 90;
 
-    // 45 deg anchor in footing (pointing down-left)
+    // 4. Anclaje a 45º bajo zapata (hacia abajo a la izquierda)
     const anchorStartX = wallX + wallW;
     const anchorStartY = groundY;
     const anchorLenPx = 110;
     const anchorEndX = anchorStartX - anchorLenPx * Math.cos(Math.PI / 4);
     const anchorEndY = anchorStartY + anchorLenPx * Math.sin(Math.PI / 4);
 
-    // Dynamic pressure arrows
+    // 5. Flechas de empuje azul generadas dinámicamente dentro del polígono
     const numArrows = 6;
     let arrowsSvg = '';
     for (let i = 0; i < numArrows; i++) {
-      const arrowY = groundY - 18 - (i * (wallH - 36) / (numArrows - 1));
+      const arrowY = groundY - 16 - (i * (wallH - 32) / (numArrows - 1));
       let curW = pressureW;
       if (arrowY < hlimY) {
-        const triFactor = Math.max(0.08, (arrowY - wallTop) / Math.max(1, (hlimY - wallTop)));
+        const triFactor = Math.max(0.06, (arrowY - wallTop) / Math.max(1, (hlimY - wallTop)));
         curW = pressureW * triFactor;
       }
       arrowsSvg += `<line x1="${wallX - curW}" y1="${arrowY}" x2="${wallX - 3}" y2="${arrowY}" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrowM1C)" />\n`;
     }
+
+    // Posición cota H a la izquierda del diagrama azul
+    const cotaX = Math.max(45, wallX - pressureW - 35);
 
     const svg = `
       <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
@@ -117,25 +125,25 @@ export class DiagramMuro1Cara {
           <line x1="${anchorEndX - 8}" y1="${groundY}" x2="${anchorEndX - 8}" y2="${anchorEndY - 8}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
           <line x1="${anchorEndX + 8}" y1="${anchorEndY + 8}" x2="${anchorStartX + 42}" y2="${anchorEndY - 10}" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="4,3" />
 
-          <!-- 3. Encofrado Muro a 1 Cara (M1C Vertical Panel & Escuadra) -->
+          <!-- 3. Encofrado Muro a 1 Cara (M1C Vertical Panel & Escuadra escalada) -->
           <rect x="${wallX}" y="${wallTop}" width="${wallW}" height="${wallH}" rx="3" fill="url(#wallGradM1C)" stroke="#ffffff" stroke-width="1.5" />
           
-          <!-- Escuadra M1C (Diagonal Brace Structure) -->
-          <polygon points="${wallX + wallW},${wallTop + 40} ${wallX + wallW + 110},${groundY} ${wallX + wallW},${groundY}" fill="rgba(200,16,46,0.15)" stroke="#c8102e" stroke-width="2.5" />
-          <line x1="${wallX + wallW}" y1="${wallTop + 130}" x2="${wallX + wallW + 65}" y2="${groundY}" stroke="#c8102e" stroke-width="2" stroke-dasharray="2,2" />
+          <!-- Escuadra M1C (Diagonal Brace Structure proporcional a wallH) -->
+          <polygon points="${wallX + wallW},${wallTop + wallH * 0.16} ${wallX + wallW + wallH * 0.46},${groundY} ${wallX + wallW},${groundY}" fill="rgba(200,16,46,0.15)" stroke="#c8102e" stroke-width="2.5" />
+          <line x1="${wallX + wallW}" y1="${wallTop + wallH * 0.54}" x2="${wallX + wallW + wallH * 0.27}" y2="${groundY}" stroke="#c8102e" stroke-width="2" stroke-dasharray="2,2" />
 
-          <!-- 4. Diagrama Dinámico de Presiones (Zona Hidrostática Hlim + Zona Constante Pmax) -->
+          <!-- 4. Diagrama Dinámico de Presiones (Ancho escalado con Pmax + Zona Hidrostática Hlim) -->
           <polygon points="${wallX - pressureW},${groundY} ${wallX - pressureW},${hlimY} ${wallX},${wallTop} ${wallX},${groundY}" fill="url(#pressureGradM1C)" stroke="#38bdf8" stroke-width="1.5" />
           
           <!-- Flechas de fuerza generadas dinámicamente -->
           ${arrowsSvg}
 
           <!-- Línea indicadora y cota Hlim de profundidad hidrostática -->
-          <line x1="${wallX - pressureW - 15}" y1="${hlimY}" x2="${wallX}" y2="${hlimY}" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="3,2" />
-          <text x="${wallX - pressureW - 20}" y="${hlimY + 3.5}" fill="#f59e0b" font-size="9.5" font-weight="700" text-anchor="end">Hlim = ${Hlim.toFixed(2)} m</text>
+          <line x1="${wallX - pressureW - 8}" y1="${hlimY}" x2="${wallX}" y2="${hlimY}" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="3,2" />
+          <text x="${wallX - pressureW - 12}" y="${hlimY + 3.5}" fill="#f59e0b" font-size="9" font-weight="700" text-anchor="end">Hlim = ${Hlim.toFixed(2)} m</text>
 
-          <!-- Rótulo Pmax -->
-          <text x="${wallX - 45}" y="${groundY - 12}" fill="#ffffff" font-size="10" font-weight="800" font-family="monospace" text-anchor="middle">Pmax ${PresionMax} kN/m²</text>
+          <!-- Rótulo Pmax centrado en la zona de presión -->
+          <text x="${wallX - pressureW / 2}" y="${groundY - 12}" fill="#ffffff" font-size="10" font-weight="800" font-family="monospace" text-anchor="middle">Pmax ${PresionMax} kN/m²</text>
 
           <!-- 5. Barra Tirante Anclaje a 45º (Inclinada hacia la izquierda bajo zapata) -->
           <line x1="${anchorStartX}" y1="${anchorStartY}" x2="${anchorEndX}" y2="${anchorEndY}" stroke="#f59e0b" stroke-width="4" stroke-linecap="round" />
@@ -147,11 +155,11 @@ export class DiagramMuro1Cara {
           <text x="${anchorStartX - 46}" y="${anchorStartY + 18}" fill="#f59e0b" font-size="10" font-weight="700">45º</text>
 
           <!-- 6. Cotas de Geometría y Bordes -->
-          <!-- Altura H -->
-          <line x1="${wallX - 130}" y1="${wallTop}" x2="${wallX - 130}" y2="${groundY}" stroke="#94a3b8" stroke-width="1" />
-          <line x1="${wallX - 135}" y1="${wallTop}" x2="${wallX - 125}" y2="${wallTop}" stroke="#94a3b8" stroke-width="1" />
-          <line x1="${wallX - 135}" y1="${groundY}" x2="${wallX - 125}" y2="${groundY}" stroke="#94a3b8" stroke-width="1" />
-          <text x="${wallX - 150}" y="${(wallTop + groundY) / 2}" fill="#f8fafc" font-size="11" font-weight="800" font-family="monospace" text-anchor="middle" transform="rotate(-90 ${wallX - 150} ${(wallTop + groundY) / 2})">H = ${H} m</text>
+          <!-- Altura H dinámica -->
+          <line x1="${cotaX}" y1="${wallTop}" x2="${cotaX}" y2="${groundY}" stroke="#94a3b8" stroke-width="1" />
+          <line x1="${cotaX - 5}" y1="${wallTop}" x2="${cotaX + 5}" y2="${wallTop}" stroke="#94a3b8" stroke-width="1" />
+          <line x1="${cotaX - 5}" y1="${groundY}" x2="${cotaX + 5}" y2="${groundY}" stroke="#94a3b8" stroke-width="1" />
+          <text x="${cotaX - 16}" y="${(wallTop + groundY) / 2}" fill="#f8fafc" font-size="11" font-weight="800" font-family="monospace" text-anchor="middle" transform="rotate(-90 ${cotaX - 16} ${(wallTop + groundY) / 2})">H = ${H} m</text>
 
           <!-- Longitud hef -->
           <text x="${(anchorStartX + anchorEndX) / 2 - 45}" y="${(anchorStartY + anchorEndY) / 2 + 18}" fill="#fde68a" font-size="10" font-weight="800" font-family="monospace">hef = ${hef} mm</text>
