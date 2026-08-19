@@ -3,7 +3,7 @@
  * Divide la visualización en dos diagramas coordinados:
  * 1. Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache).
  * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º, Placa, Cono de Rotura de Hormigón y Cotas (hef, ca1, ca2, ca3, ca4, Ned).
- * Con títulos exteriores fuera de los marcos: "VISTA GENERAL MURO" y "Detalle Anclaje".
+ * Con títulos exteriores en minúsculas homogéneas: "Vista General Muro" y "Detalle Anclaje".
  */
 
 export class DiagramMuro1Cara {
@@ -55,12 +55,12 @@ export class DiagramMuro1Cara {
     // 1. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA IZQUIERDO (VISTA GENERAL)
     // ==========================================
     const leftW = 340;
-    const leftH = 360;
+    const leftH = 400;
 
-    const leftGroundY = 280;
+    const leftGroundY = 275;
     const leftWallX = 150;
     const leftWallW = 10;
-    const leftWallH = Math.min(225, Math.max(85, (H / 9) * 195));
+    const leftWallH = Math.min(215, Math.max(80, (H / 9) * 190));
     const leftWallTop = leftGroundY - leftWallH;
 
     const gamma_h = PespecificoHorm > 0 ? PespecificoHorm : 25;
@@ -89,7 +89,7 @@ export class DiagramMuro1Cara {
     // Mini anclaje en vista general
     const miniAnchorStartX = leftWallX + leftWallW;
     const miniAnchorStartY = leftGroundY;
-    const miniAnchorLen = 55;
+    const miniAnchorLen = 60;
     const miniAnchorEndX = miniAnchorStartX - miniAnchorLen * Math.cos(Math.PI / 4);
     const miniAnchorEndY = miniAnchorStartY + miniAnchorLen * Math.sin(Math.PI / 4);
 
@@ -97,24 +97,24 @@ export class DiagramMuro1Cara {
     // 2. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA DERECHO (DETALLE GRAN ESCALA)
     // ==========================================
     const rightW = 340;
-    const rightH = 360;
+    const rightH = 400;
 
     const detailGroundY = 85;
     const detailAnchorStartX = 215;
     const detailAnchorStartY = detailGroundY;
 
-    const detailAnchorLen = 175; // Gran escala
+    const detailAnchorLen = 165; // Gran escala ajustada para holgura total
     const detailAnchorEndX = detailAnchorStartX - detailAnchorLen * Math.cos(Math.PI / 4);
     const detailAnchorEndY = detailAnchorStartY + detailAnchorLen * Math.sin(Math.PI / 4);
 
-    // Placa de anclaje final (ancho 26px perpendicular a 45º)
+    // Placa de anclaje final (ancho 24px perpendicular a 45º)
     const plateHalf = 11;
     const plateP1 = { x: detailAnchorEndX - plateHalf, y: detailAnchorEndY - plateHalf };
     const plateP2 = { x: detailAnchorEndX + plateHalf, y: detailAnchorEndY + plateHalf };
 
     // Cono de rotura a gran escala
     const coneTopLeftX = plateP1.x;
-    const coneBottomRightX = detailAnchorStartX + 70;
+    const coneBottomRightX = detailAnchorStartX + 65;
     const coneBottomRightY = detailAnchorEndY - 15;
 
     const html = `
@@ -123,15 +123,15 @@ export class DiagramMuro1Cara {
         <!-- 1. BLOQUE IZQUIERDO: VISTA GENERAL MURO Y EMPUJE -->
         <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
           
-          <!-- Cuadro de texto exterior -->
+          <!-- Cuadro de texto exterior (En minúsculas/Title case) -->
           <div style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
-            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 6px; padding: 0.35rem 0.9rem; font-size: 0.82rem; font-weight: 800; color: #f8fafc; letter-spacing: 0.05em; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-              VISTA GENERAL MURO
+            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 6px; padding: 0.35rem 0.9rem; font-size: 0.82rem; font-weight: 700; color: #f8fafc; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+              Vista General Muro
             </div>
           </div>
 
-          <!-- Marco del Dibujo -->
-          <div style="position: relative; flex: 1; min-height: 330px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
+          <!-- Marco del Dibujo con altura completa sin cortes -->
+          <div style="position: relative; flex: 1; min-height: 380px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
             <svg viewBox="0 0 ${leftW} ${leftH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
               <defs>
                 <linearGradient id="concreteGradM1C_L" x1="0" y1="0" x2="1" y2="1">
@@ -158,14 +158,14 @@ export class DiagramMuro1Cara {
                 </marker>
               </defs>
 
-              <!-- Zapata / Terreno -->
-              <polygon points="15,${leftGroundY} 325,${leftGroundY} 325,${leftH - 10} 15,${leftH - 10}" fill="url(#concreteGradM1C_L)" stroke="#64748b" stroke-width="1.5" />
-              <polygon points="15,${leftGroundY} 325,${leftGroundY} 325,${leftH - 10} 15,${leftH - 10}" fill="url(#diagHatchM1C_L)" />
+              <!-- Zapata / Terreno (Con holgura hasta el fondo de 400px) -->
+              <polygon points="15,${leftGroundY} 325,${leftGroundY} 325,${leftH - 15} 15,${leftH - 15}" fill="url(#concreteGradM1C_L)" stroke="#64748b" stroke-width="1.5" />
+              <polygon points="15,${leftGroundY} 325,${leftGroundY} 325,${leftH - 15} 15,${leftH - 15}" fill="url(#diagHatchM1C_L)" />
 
               <!-- Mini Cono y Anclaje -->
-              <polygon points="${miniAnchorEndX - 4},${leftGroundY} ${miniAnchorEndX - 4},${miniAnchorEndY - 4} ${miniAnchorEndX + 4},${miniAnchorEndY + 4} ${miniAnchorStartX + 20},${miniAnchorEndY - 5} ${miniAnchorStartX},${leftGroundY}" fill="rgba(239, 68, 68, 0.2)" stroke="none" />
-              <line x1="${miniAnchorStartX}" y1="${miniAnchorStartY}" x2="${miniAnchorEndX}" y2="${miniAnchorEndY}" stroke="#f59e0b" stroke-width="2.5" />
-              <line x1="${miniAnchorEndX - 4}" y1="${miniAnchorEndY - 4}" x2="${miniAnchorEndX + 4}" y2="${miniAnchorEndY + 4}" stroke="#ffffff" stroke-width="2.5" />
+              <polygon points="${miniAnchorEndX - 5},${leftGroundY} ${miniAnchorEndX - 5},${miniAnchorEndY - 5} ${miniAnchorEndX + 5},${miniAnchorEndY + 5} ${miniAnchorStartX + 25},${miniAnchorEndY - 5} ${miniAnchorStartX},${leftGroundY}" fill="rgba(239, 68, 68, 0.2)" stroke="none" />
+              <line x1="${miniAnchorStartX}" y1="${miniAnchorStartY}" x2="${miniAnchorEndX}" y2="${miniAnchorEndY}" stroke="#f59e0b" stroke-width="3" />
+              <line x1="${miniAnchorEndX - 5}" y1="${miniAnchorEndY - 5}" x2="${miniAnchorEndX + 5}" y2="${miniAnchorEndY + 5}" stroke="#ffffff" stroke-width="3" />
 
               <!-- Encofrado Panel Vertical -->
               <rect x="${leftWallX}" y="${leftWallTop}" width="${leftWallW}" height="${leftWallH}" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1.2" />
@@ -203,15 +203,15 @@ export class DiagramMuro1Cara {
         <!-- 2. BLOQUE DERECHO: DETALLE ANCLAJE -->
         <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
           
-          <!-- Cuadro de texto exterior -->
+          <!-- Cuadro de texto exterior (En minúsculas/Title case) -->
           <div style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
-            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 6px; padding: 0.35rem 0.9rem; font-size: 0.82rem; font-weight: 800; color: #fde68a; letter-spacing: 0.05em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 6px; padding: 0.35rem 0.9rem; font-size: 0.82rem; font-weight: 700; color: #fde68a; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
               Detalle Anclaje
             </div>
           </div>
 
-          <!-- Marco del Dibujo -->
-          <div style="position: relative; flex: 1; min-height: 330px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
+          <!-- Marco del Dibujo con altura completa sin cortes -->
+          <div style="position: relative; flex: 1; min-height: 380px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
             <svg viewBox="0 0 ${rightW} ${rightH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
               <defs>
                 <linearGradient id="concreteGradM1C_R" x1="0" y1="0" x2="1" y2="1">
@@ -228,9 +228,9 @@ export class DiagramMuro1Cara {
                 </marker>
               </defs>
 
-              <!-- Losa de Zapata / Hormigón (Profunda) -->
-              <polygon points="15,${detailGroundY} 325,${detailGroundY} 325,${rightH - 10} 15,${rightH - 10}" fill="url(#concreteGradM1C_R)" stroke="#64748b" stroke-width="1.5" />
-              <polygon points="15,${detailGroundY} 325,${detailGroundY} 325,${rightH - 10} 15,${rightH - 10}" fill="url(#diagHatchM1C_R)" />
+              <!-- Losa de Zapata / Hormigón (Profunda hasta el fondo de 400px) -->
+              <polygon points="15,${detailGroundY} 325,${detailGroundY} 325,${rightH - 15} 15,${rightH - 15}" fill="url(#concreteGradM1C_R)" stroke="#64748b" stroke-width="1.5" />
+              <polygon points="15,${detailGroundY} 325,${detailGroundY} 325,${rightH - 15} 15,${rightH - 15}" fill="url(#diagHatchM1C_R)" />
 
               <!-- Tramo inferior del muro / escuadra en superficie -->
               <rect x="${detailAnchorStartX - 14}" y="${detailGroundY - 45}" width="14" height="45" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1" />
@@ -271,12 +271,12 @@ export class DiagramMuro1Cara {
               <line x1="${detailAnchorStartX + 95}" y1="${detailGroundY + 14}" x2="${detailAnchorStartX + 95}" y2="${detailGroundY + 22}" stroke="#94a3b8" stroke-width="1.2" />
               <text x="${detailAnchorStartX + 48}" y="${detailGroundY + 32}" fill="#94a3b8" font-size="10.5" font-weight="700" text-anchor="middle">ca2 = ${ca2} mm</text>
 
-              <!-- Badges ca3 y ca4 laterales inferiores -->
-              <rect x="25" y="${rightH - 45}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
-              <text x="92" y="${rightH - 27}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca3 (izq) = ${ca3} mm</text>
+              <!-- Badges ca3 y ca4 laterales inferiores con holgura vertical completa -->
+              <rect x="25" y="${rightH - 52}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
+              <text x="92" y="${rightH - 34}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca3 (izq) = ${ca3} mm</text>
 
-              <rect x="180" y="${rightH - 45}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
-              <text x="247" y="${rightH - 27}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca4 (der) = ${ca4} mm</text>
+              <rect x="180" y="${rightH - 52}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
+              <text x="247" y="${rightH - 34}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca4 (der) = ${ca4} mm</text>
             </svg>
           </div>
         </div>
