@@ -71,39 +71,26 @@ body {
 }
 
 .alsina-navbar-inner {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: 0.45rem 1.25rem;
   gap: 1rem;
   width: 100%;
-  position: relative;
 }
 
 .alsina-nav-left {
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  flex-shrink: 0;
+  justify-content: flex-start;
+  min-width: 0;
 }
 
 .alsina-nav-center {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
-}
-
-@media (max-width: 1380px) {
-  .alsina-nav-center {
-    position: static;
-    transform: none;
-    margin: 0;
-  }
 }
 
 .alsina-brand-link {
@@ -111,6 +98,7 @@ body {
   align-items: center;
   text-decoration: none;
   transition: opacity 0.2s ease;
+  flex-shrink: 0;
 }
 
 .alsina-brand-link:hover {
@@ -128,8 +116,16 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-wrap: wrap;
   justify-content: flex-end;
+  min-width: 0;
+}
+
+@media (max-width: 1100px) {
+  .alsina-navbar-inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 }
 
 .alsina-btn-nav {
