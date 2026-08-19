@@ -1690,36 +1690,21 @@ body.light-theme .alsina-calc-tab.active {
 
 /* M1C Modes Grid */
 .m1c-modes-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1.25rem;
   width: 100%;
 }
 
-.m1c-card-half {
-  grid-column: span 1;
-  width: 100%;
-}
-
 .m1c-card-full {
-  grid-column: 1 / -1;
   width: 100%;
-}
-
-@media (max-width: 900px) {
-  .m1c-modes-grid {
-    grid-template-columns: 1fr;
-  }
-  .m1c-card-half, .m1c-card-full {
-    grid-column: 1 / -1;
-  }
 }
 
 /* M1C Tables */
 .m1c-table-wrap {
-  margin-top: 0.6rem;
+  margin-top: 0.75rem;
   overflow-x: auto;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid rgba(148, 163, 184, 0.15);
   width: 100%;
 }
@@ -1727,7 +1712,7 @@ body.light-theme .alsina-calc-tab.active {
 .m1c-compact-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   background: rgba(15, 23, 42, 0.3);
 }
 
@@ -1737,11 +1722,11 @@ body.light-theme .m1c-compact-table {
 
 .m1c-compact-table th {
   text-align: left;
-  padding: 0.6rem 0.85rem;
+  padding: 0.7rem 1.1rem;
   font-weight: 700;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border-color);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   background: rgba(15, 23, 42, 0.5);
@@ -1752,7 +1737,7 @@ body.light-theme .m1c-compact-table th {
 }
 
 .m1c-compact-table td {
-  padding: 0.65rem 0.85rem;
+  padding: 0.75rem 1.1rem;
   border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   color: var(--text-main);
   vertical-align: middle;

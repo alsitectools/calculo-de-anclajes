@@ -149,7 +149,14 @@ export const translations = {
     "m1c_concrete_sls": "Capacitat Hormigó Nbc,Rd,ser (ELS)",
     "m1c_check_empujes": "Empenyiment del Formigó i Batatxe",
     "m1c_check_demanda": "Esforços de Demanda en Ancoratges a 45º",
-    "m1c_check_cono": "Comprovació Trencament Con de Formigó (45º)"
+    "m1c_check_cono": "Comprovació Trencament Con de Formigó (45º)",
+    "m1c_col_profile": "Perfil",
+    "m1c_col_melrd": "Mel,Rd",
+    "m1c_col_rho": "(1 - ρ)",
+    "m1c_col_bar_type": "Tipus Barra",
+    "m1c_col_nrd_ser": "NRd,ser (ELS)",
+    "m1c_col_utilization": "Aprofitament",
+    "m1c_col_status": "Estat"
   },
   "en": {
     "back_to_portal": "Back to portal",
@@ -286,7 +293,14 @@ export const translations = {
     "m1c_concrete_sls": "Concrete Capacity Nbc,Rd,ser (SLS)",
     "m1c_check_empujes": "Fresh Concrete Pressure & Section Forces",
     "m1c_check_demanda": "45º Anchor Demand Forces",
-    "m1c_check_cono": "45º Concrete Cone Breakout Verification"
+    "m1c_check_cono": "45º Concrete Cone Breakout Verification",
+    "m1c_col_profile": "Profile",
+    "m1c_col_melrd": "Mel,Rd",
+    "m1c_col_rho": "(1 - ρ)",
+    "m1c_col_bar_type": "Tie Rod Type",
+    "m1c_col_nrd_ser": "NRd,ser (SLS)",
+    "m1c_col_utilization": "Utilization",
+    "m1c_col_status": "Status"
   },
   "es": {
     "back_to_portal": "Back to portal",
@@ -423,7 +437,14 @@ export const translations = {
     "m1c_concrete_sls": "Capacidad Hormigón Nbc,Rd,ser (ELS)",
     "m1c_check_empujes": "Empuje del Hormigón y Batache",
     "m1c_check_demanda": "Esfuerzos de Demanda en Anclajes a 45º",
-    "m1c_check_cono": "Comprobación Arrancamiento Cono de Hormigón (45º)"
+    "m1c_check_cono": "Comprobación Arrancamiento Cono de Hormigón (45º)",
+    "m1c_col_profile": "Perfil",
+    "m1c_col_melrd": "Mel,Rd",
+    "m1c_col_rho": "(1 - ρ)",
+    "m1c_col_bar_type": "Tipo Barra",
+    "m1c_col_nrd_ser": "NRd,ser (ELS)",
+    "m1c_col_utilization": "Aprovechamiento",
+    "m1c_col_status": "Estado"
   },
   "fr": {
     "back_to_portal": "Back to portal",
@@ -560,7 +581,14 @@ export const translations = {
     "m1c_concrete_sls": "Capacité Béton Nbc,Rd,ser (ELS)",
     "m1c_check_empujes": "Poussée du Béton et Plot",
     "m1c_check_demanda": "Efforts de Demande sur Ancrages à 45º",
-    "m1c_check_cono": "Vérification Rupture Cône de Béton (45º)"
+    "m1c_check_cono": "Vérification Rupture Cône de Béton (45º)",
+    "m1c_col_profile": "Profil",
+    "m1c_col_melrd": "Mel,Rd",
+    "m1c_col_rho": "(1 - ρ)",
+    "m1c_col_bar_type": "Type de Barre",
+    "m1c_col_nrd_ser": "NRd,ser (ELS)",
+    "m1c_col_utilization": "Taux de Travail",
+    "m1c_col_status": "État"
   },
   "it": {
     "back_to_portal": "Back to portal",
@@ -697,7 +725,14 @@ export const translations = {
     "m1c_concrete_sls": "Capacità Calcestruzzo Nbc,Rd,ser (SLE)",
     "m1c_check_empujes": "Spinta del Calcestruzzo e Sezione",
     "m1c_check_demanda": "Sollecitazioni di Progetto su Ancoraggi a 45º",
-    "m1c_check_cono": "Verifica Rottura Cono Calcestruzzo (45º)"
+    "m1c_check_cono": "Verifica Rottura Cono Calcestruzzo (45º)",
+    "m1c_col_profile": "Profilo",
+    "m1c_col_melrd": "Mel,Rd",
+    "m1c_col_rho": "(1 - ρ)",
+    "m1c_col_bar_type": "Tipo Tirante",
+    "m1c_col_nrd_ser": "NRd,ser (SLE)",
+    "m1c_col_utilization": "Sfruttamento",
+    "m1c_col_status": "Stato"
   },
   "pl": {
     "back_to_portal": "Back to portal",
@@ -834,7 +869,14 @@ export const translations = {
     "m1c_concrete_sls": "Nośność Betonu Nbc,Rd,ser (SGU)",
     "m1c_check_empujes": "Parcie Betonu i Siły na Sekcję",
     "m1c_check_demanda": "Siły Wymagane w Kotwach pod kątem 45º",
-    "m1c_check_cono": "Weryfikacja Zniszczenia Stożka Betonu (45º)"
+    "m1c_check_cono": "Weryfikacja Zniszczenia Stożka Betonu (45º)",
+    "m1c_col_profile": "Profil",
+    "m1c_col_melrd": "Mel,Rd",
+    "m1c_col_rho": "(1 - ρ)",
+    "m1c_col_bar_type": "Typ Ściągu",
+    "m1c_col_nrd_ser": "NRd,ser (SGN)",
+    "m1c_col_utilization": "Wytężenie",
+    "m1c_col_status": "Stan"
   },
   "ro": {
     "back_to_portal": "Back to portal",
@@ -971,6 +1013,13 @@ export const translations = {
     "m1c_concrete_sls": "Capacitate Beton Nbc,Rd,ser (SLS)",
     "m1c_check_empujes": "Împingerea Betonului și Tronson",
     "m1c_check_demanda": "Eforturi de Solicitare pe Ancore la 45º",
-    "m1c_check_cono": "Verificare Rupere Con de Beton (45º)"
+    "m1c_check_cono": "Verificare Rupere Con de Beton (45º)",
+    "m1c_col_profile": "Profil",
+    "m1c_col_melrd": "Mel,Rd",
+    "m1c_col_rho": "(1 - ρ)",
+    "m1c_col_bar_type": "Tip Tirant",
+    "m1c_col_nrd_ser": "NRd,ser (SLS)",
+    "m1c_col_utilization": "Grad de Utilizare",
+    "m1c_col_status": "Stare"
   }
 };
