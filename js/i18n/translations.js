@@ -4,13 +4,48 @@
  */
 
 export const SUPPORTED_LANGUAGES = [
-  { code: 'ca', name: 'Catalan', nativeName: 'Català', flag: '🏴󠁥󠁳󠁣󠁴󠁿' },
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇬🇧' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
-  { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷' },
-  { code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹' },
-  { code: 'pl', name: 'Polish', nativeName: 'Polski', flag: '🇵🇱' },
-  { code: 'ro', name: 'Romanian', nativeName: 'Română', flag: '🇷🇴' }
+  {
+    "code": "ca",
+    "name": "Catalan",
+    "nativeName": "Català",
+    "flag": "🏴󠁥󠁳󠁣󠁴󠁿"
+  },
+  {
+    "code": "en",
+    "name": "English",
+    "nativeName": "English",
+    "flag": "🇬🇧"
+  },
+  {
+    "code": "es",
+    "name": "Spanish",
+    "nativeName": "Español",
+    "flag": "🇪🇸"
+  },
+  {
+    "code": "fr",
+    "name": "French",
+    "nativeName": "Français",
+    "flag": "🇫🇷"
+  },
+  {
+    "code": "it",
+    "name": "Italian",
+    "nativeName": "Italiano",
+    "flag": "🇮🇹"
+  },
+  {
+    "code": "pl",
+    "name": "Polish",
+    "nativeName": "Polski",
+    "flag": "🇵🇱"
+  },
+  {
+    "code": "ro",
+    "name": "Romanian",
+    "nativeName": "Română",
+    "flag": "🇷🇴"
+  }
 ];
 
 export const translations = {
@@ -19,7 +54,7 @@ export const translations = {
     "hypothesis_label": "Hipòtesi:",
     "save_btn": "Guardar",
     "delete_btn": "Eliminar",
-    "word_report": "Word Informe",
+    "word_report": "Word",
     "pdf_print": "PDF",
     "dark_mode": "Mode fosc",
     "switch_imperial": "Canviar a Imperial (in/lb)",
@@ -166,7 +201,7 @@ export const translations = {
     "hypothesis_label": "Hypothesis:",
     "save_btn": "Save",
     "delete_btn": "Delete",
-    "word_report": "Word Report",
+    "word_report": "Word",
     "pdf_print": "PDF",
     "dark_mode": "Dark mode",
     "switch_imperial": "Switch to Imperial (in/lb)",
@@ -313,7 +348,7 @@ export const translations = {
     "hypothesis_label": "Hipótesis:",
     "save_btn": "Guardar",
     "delete_btn": "Eliminar",
-    "word_report": "Word Informe",
+    "word_report": "Word",
     "pdf_print": "PDF",
     "dark_mode": "Modo oscuro",
     "switch_imperial": "Cambiar a Imperial (in/lb)",
@@ -460,7 +495,7 @@ export const translations = {
     "hypothesis_label": "Hypothèse:",
     "save_btn": "Enregistrer",
     "delete_btn": "Supprimer",
-    "word_report": "Rapport Word",
+    "word_report": "Word",
     "pdf_print": "PDF",
     "dark_mode": "Mode sombre",
     "switch_imperial": "Passer en Impérial (in/lb)",
@@ -607,7 +642,7 @@ export const translations = {
     "hypothesis_label": "Ipotesi:",
     "save_btn": "Salva",
     "delete_btn": "Elimina",
-    "word_report": "Word Relazione",
+    "word_report": "Word",
     "pdf_print": "PDF",
     "dark_mode": "Modalità scura",
     "switch_imperial": "Passa a Imperiale (in/lb)",
@@ -754,7 +789,7 @@ export const translations = {
     "hypothesis_label": "Wariant:",
     "save_btn": "Zapisz",
     "delete_btn": "Usuń",
-    "word_report": "Raport Word",
+    "word_report": "Word",
     "pdf_print": "PDF",
     "dark_mode": "Tryb ciemny",
     "switch_imperial": "Przełącz na imperialny (in/lb)",
@@ -901,7 +936,7 @@ export const translations = {
     "hypothesis_label": "Ipoteză:",
     "save_btn": "Salvează",
     "delete_btn": "Șterge",
-    "word_report": "Raport Word",
+    "word_report": "Word",
     "pdf_print": "PDF",
     "dark_mode": "Mod întunecat",
     "switch_imperial": "Comutare la Imperial (in/lb)",
