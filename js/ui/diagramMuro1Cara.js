@@ -3,7 +3,7 @@
  * Divide la visualización en 3 esquemas coordinados:
  * 1. Columna Izquierda: Vista General del Muro (con altura perfectamente alineada con la base de Planta Anclajes).
  * 2. Columna Derecha - Superior: Detalle Anclaje (Sección a 45º) con el suelo en el centro vertical y Badges Interactivos para ca1, ca2 y hef.
- * 3. Columna Derecha - Inferior: Planta Anclajes de lado a lado con las puntas de las flechas de cota tocando exactamente las líneas discontinuas de referencia.
+ * 3. Columna Derecha - Inferior: Planta Anclajes con líneas blancas de junta en los extremos del batache, encofrado rojo, anclajes y cotas calibradas al milímetro.
  */
 
 import { globalUnits } from '../engine/units.js';
@@ -375,7 +375,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- BLOQUE 3: DETALLE EN PLANTA (CON FLECHAS TOCANDO EXACTAMENTE LAS LÍNEAS DISCONTINUAS) -->
+          <!-- BLOQUE 3: DETALLE EN PLANTA (CON LÍNEAS BLANCAS DE JUNTA EN EL ENCOFRADO) -->
           <div style="display: flex; flex-direction: column; width: 100%;">
             <div style="display: flex; justify-content: center; margin-bottom: 0.4rem; height: 28px; align-items: center;">
               <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; padding: 0.3rem 0.85rem; font-size: 0.80rem; font-weight: 700; color: #bae6fd; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
@@ -433,6 +433,10 @@ export class DiagramMuro1Cara {
                 <!-- ================= ENCOFRADO HORIZONTAL ROJO (DE LADO A LADO) ================= -->
                 <rect x="0" y="${planWallY}" width="${planW}" height="14" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1.2" />
 
+                <!-- Líneas Blancas de Junta en los Extremos del Batache -->
+                <line x1="${batacheLeftX}" y1="${planWallY - 1}" x2="${batacheLeftX}" y2="${planWallY + 15}" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
+                <line x1="${batacheRightX}" y1="${planWallY - 1}" x2="${batacheRightX}" y2="${planWallY + 15}" stroke="#ffffff" stroke-width="3" stroke-linecap="round" />
+
                 <!-- ================= ESCUADRA BASE (UPN ROJOS Y PLACAS REPARTO) ================= -->
                 <!-- Grupo 1 -->
                 <rect x="${group1Center - 10}" y="122" width="8" height="85" fill="#c8102e" stroke="#990b22" stroke-width="1" />
@@ -464,9 +468,9 @@ export class DiagramMuro1Cara {
                 <text x="${ca3BadgeX}" y="${planDimY + 14}" fill="#94a3b8" font-size="8.5" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
 
                 <!-- ================= COTA INFERIOR ANCHO DE BATACHE (b) ================= -->
-                <!-- Líneas de extensión vertical hacia abajo (Sobrepasan 10px la línea de cota) -->
-                <line x1="${batacheLeftX}" y1="120" x2="${batacheLeftX}" y2="${planBatacheY + 10}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
-                <line x1="${batacheRightX}" y1="120" x2="${batacheRightX}" y2="${planBatacheY + 10}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <!-- Líneas de extensión vertical hacia abajo (Desde la línea blanca de junta hasta la cota) -->
+                <line x1="${batacheLeftX}" y1="${planWallY + 15}" x2="${batacheLeftX}" y2="${planBatacheY + 10}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${batacheRightX}" y1="${planWallY + 15}" x2="${batacheRightX}" y2="${planBatacheY + 10}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
 
                 <!-- Línea de cota b (Puntas tocan exactamente batacheLeftX y batacheRightX) -->
                 <line x1="${batacheLeftX}" y1="${planBatacheY}" x2="${batacheRightX}" y2="${planBatacheY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
