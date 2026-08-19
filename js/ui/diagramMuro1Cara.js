@@ -3,6 +3,7 @@
  * Divide la visualización en dos diagramas coordinados:
  * 1. Izquierda: Vista General del Muro, Escuadra y Diagrama Dinámico de Presiones (H, Pmax, Hlim, Batache).
  * 2. Derecha: Detalle a Gran Escala del Anclaje a 45º, Placa, Cono de Rotura de Hormigón y Cotas (hef, ca1, ca2, ca3, ca4, Ned).
+ * Con títulos exteriores fuera de los marcos: "VISTA GENERAL MURO" y "Detalle Anclaje".
  */
 
 export class DiagramMuro1Cara {
@@ -54,12 +55,12 @@ export class DiagramMuro1Cara {
     // 1. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA IZQUIERDO (VISTA GENERAL)
     // ==========================================
     const leftW = 340;
-    const leftH = 380;
+    const leftH = 360;
 
-    const leftGroundY = 295;
+    const leftGroundY = 280;
     const leftWallX = 150;
     const leftWallW = 10;
-    const leftWallH = Math.min(235, Math.max(90, (H / 9) * 205));
+    const leftWallH = Math.min(225, Math.max(85, (H / 9) * 195));
     const leftWallTop = leftGroundY - leftWallH;
 
     const gamma_h = PespecificoHorm > 0 ? PespecificoHorm : 25;
@@ -96,9 +97,9 @@ export class DiagramMuro1Cara {
     // 2. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA DERECHO (DETALLE GRAN ESCALA)
     // ==========================================
     const rightW = 340;
-    const rightH = 380;
+    const rightH = 360;
 
-    const detailGroundY = 100;
+    const detailGroundY = 85;
     const detailAnchorStartX = 215;
     const detailAnchorStartY = detailGroundY;
 
@@ -117,153 +118,167 @@ export class DiagramMuro1Cara {
     const coneBottomRightY = detailAnchorEndY - 15;
 
     const html = `
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; width: 100%; height: 100%;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; width: 100%; height: 100%;">
         
-        <!-- 1. DIAGRAMA IZQUIERDO: VISTA GENERAL MURO Y EMPUJE -->
-        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
-          <svg viewBox="0 0 ${leftW} ${leftH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <linearGradient id="concreteGradM1C_L" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#3b485d" />
-                <stop offset="100%" stop-color="#1e2736" />
-              </linearGradient>
+        <!-- 1. BLOQUE IZQUIERDO: VISTA GENERAL MURO Y EMPUJE -->
+        <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
+          
+          <!-- Cuadro de texto exterior -->
+          <div style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
+            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 6px; padding: 0.35rem 0.9rem; font-size: 0.82rem; font-weight: 800; color: #f8fafc; letter-spacing: 0.05em; text-transform: uppercase; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+              VISTA GENERAL MURO
+            </div>
+          </div>
 
-              <linearGradient id="wallGradM1C_L" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#c8102e" stop-opacity="0.85" />
-                <stop offset="100%" stop-color="#990b22" stop-opacity="0.95" />
-              </linearGradient>
+          <!-- Marco del Dibujo -->
+          <div style="position: relative; flex: 1; min-height: 330px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
+            <svg viewBox="0 0 ${leftW} ${leftH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <linearGradient id="concreteGradM1C_L" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#3b485d" />
+                  <stop offset="100%" stop-color="#1e2736" />
+                </linearGradient>
 
-              <linearGradient id="pressureGradM1C_L" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35" />
-                <stop offset="100%" stop-color="#0284c7" stop-opacity="0.7" />
-              </linearGradient>
+                <linearGradient id="wallGradM1C_L" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#c8102e" stop-opacity="0.85" />
+                  <stop offset="100%" stop-color="#990b22" stop-opacity="0.95" />
+                </linearGradient>
 
-              <pattern id="diagHatchM1C_L" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0" x2="0" y2="10" stroke="#475569" stroke-width="1.5" opacity="0.4" />
-              </pattern>
+                <linearGradient id="pressureGradM1C_L" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.35" />
+                  <stop offset="100%" stop-color="#0284c7" stop-opacity="0.7" />
+                </linearGradient>
 
-              <marker id="arrowM1C" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8" />
-              </marker>
-            </defs>
+                <pattern id="diagHatchM1C_L" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                  <line x1="0" y1="0" x2="0" y2="10" stroke="#475569" stroke-width="1.5" opacity="0.4" />
+                </pattern>
 
-            <!-- Título Badge Vista General -->
-            <rect x="15" y="12" width="165" height="24" rx="5" fill="rgba(15,23,42,0.85)" stroke="rgba(148,163,184,0.3)" />
-            <text x="97" y="28" fill="#e2e8f0" font-size="10" font-weight="700" text-anchor="middle">VISTA GENERAL MURO</text>
+                <marker id="arrowM1C" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38bdf8" />
+                </marker>
+              </defs>
 
-            <!-- Zapata / Terreno -->
-            <polygon points="15,${leftGroundY} 325,${leftGroundY} 325,${leftH - 12} 15,${leftH - 12}" fill="url(#concreteGradM1C_L)" stroke="#64748b" stroke-width="1.5" />
-            <polygon points="15,${leftGroundY} 325,${leftGroundY} 325,${leftH - 12} 15,${leftH - 12}" fill="url(#diagHatchM1C_L)" />
+              <!-- Zapata / Terreno -->
+              <polygon points="15,${leftGroundY} 325,${leftGroundY} 325,${leftH - 10} 15,${leftH - 10}" fill="url(#concreteGradM1C_L)" stroke="#64748b" stroke-width="1.5" />
+              <polygon points="15,${leftGroundY} 325,${leftGroundY} 325,${leftH - 10} 15,${leftH - 10}" fill="url(#diagHatchM1C_L)" />
 
-            <!-- Mini Cono y Anclaje -->
-            <polygon points="${miniAnchorEndX - 4},${leftGroundY} ${miniAnchorEndX - 4},${miniAnchorEndY - 4} ${miniAnchorEndX + 4},${miniAnchorEndY + 4} ${miniAnchorStartX + 20},${miniAnchorEndY - 5} ${miniAnchorStartX},${leftGroundY}" fill="rgba(239, 68, 68, 0.2)" stroke="none" />
-            <line x1="${miniAnchorStartX}" y1="${miniAnchorStartY}" x2="${miniAnchorEndX}" y2="${miniAnchorEndY}" stroke="#f59e0b" stroke-width="2.5" />
-            <line x1="${miniAnchorEndX - 4}" y1="${miniAnchorEndY - 4}" x2="${miniAnchorEndX + 4}" y2="${miniAnchorEndY + 4}" stroke="#ffffff" stroke-width="2.5" />
+              <!-- Mini Cono y Anclaje -->
+              <polygon points="${miniAnchorEndX - 4},${leftGroundY} ${miniAnchorEndX - 4},${miniAnchorEndY - 4} ${miniAnchorEndX + 4},${miniAnchorEndY + 4} ${miniAnchorStartX + 20},${miniAnchorEndY - 5} ${miniAnchorStartX},${leftGroundY}" fill="rgba(239, 68, 68, 0.2)" stroke="none" />
+              <line x1="${miniAnchorStartX}" y1="${miniAnchorStartY}" x2="${miniAnchorEndX}" y2="${miniAnchorEndY}" stroke="#f59e0b" stroke-width="2.5" />
+              <line x1="${miniAnchorEndX - 4}" y1="${miniAnchorEndY - 4}" x2="${miniAnchorEndX + 4}" y2="${miniAnchorEndY + 4}" stroke="#ffffff" stroke-width="2.5" />
 
-            <!-- Encofrado Panel Vertical -->
-            <rect x="${leftWallX}" y="${leftWallTop}" width="${leftWallW}" height="${leftWallH}" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1.2" />
+              <!-- Encofrado Panel Vertical -->
+              <rect x="${leftWallX}" y="${leftWallTop}" width="${leftWallW}" height="${leftWallH}" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1.2" />
 
-            <!-- Escuadra M1C -->
-            <polygon points="${leftWallX + leftWallW},${leftWallTop + leftWallH * 0.16} ${leftWallX + leftWallW + leftWallH * 0.48},${leftGroundY} ${leftWallX + leftWallW},${leftGroundY}" fill="rgba(200,16,46,0.15)" stroke="#c8102e" stroke-width="2" />
-            <line x1="${leftWallX + leftWallW}" y1="${leftWallTop + leftWallH * 0.55}" x2="${leftWallX + leftWallW + leftWallH * 0.28}" y2="${leftGroundY}" stroke="#c8102e" stroke-width="1.5" stroke-dasharray="2,2" />
+              <!-- Escuadra M1C -->
+              <polygon points="${leftWallX + leftWallW},${leftWallTop + leftWallH * 0.16} ${leftWallX + leftWallW + leftWallH * 0.48},${leftGroundY} ${leftWallX + leftWallW},${leftGroundY}" fill="rgba(200,16,46,0.15)" stroke="#c8102e" stroke-width="2" />
+              <line x1="${leftWallX + leftWallW}" y1="${leftWallTop + leftWallH * 0.55}" x2="${leftWallX + leftWallW + leftWallH * 0.28}" y2="${leftGroundY}" stroke="#c8102e" stroke-width="1.5" stroke-dasharray="2,2" />
 
-            <!-- Polígono de Presiones Dinámico -->
-            <polygon points="${leftWallX - leftPressureW},${leftGroundY} ${leftWallX - leftPressureW},${leftHlimY} ${leftWallX},${leftWallTop} ${leftWallX},${leftGroundY}" fill="url(#pressureGradM1C_L)" stroke="#38bdf8" stroke-width="1.5" />
-            
-            ${arrowsLeftSvg}
+              <!-- Polígono de Presiones Dinámico -->
+              <polygon points="${leftWallX - leftPressureW},${leftGroundY} ${leftWallX - leftPressureW},${leftHlimY} ${leftWallX},${leftWallTop} ${leftWallX},${leftGroundY}" fill="url(#pressureGradM1C_L)" stroke="#38bdf8" stroke-width="1.5" />
+              
+              ${arrowsLeftSvg}
 
-            <!-- Indicador Hlim -->
-            <line x1="${leftWallX - leftPressureW - 6}" y1="${leftHlimY}" x2="${leftWallX}" y2="${leftHlimY}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,2" />
-            <text x="${leftWallX - leftPressureW - 10}" y="${leftHlimY + 3.5}" fill="#f59e0b" font-size="8.5" font-weight="700" text-anchor="end">Hlim ${Hlim.toFixed(2)}m</text>
+              <!-- Indicador Hlim -->
+              <line x1="${leftWallX - leftPressureW - 6}" y1="${leftHlimY}" x2="${leftWallX}" y2="${leftHlimY}" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,2" />
+              <text x="${leftWallX - leftPressureW - 10}" y="${leftHlimY + 3.5}" fill="#f59e0b" font-size="8.5" font-weight="700" text-anchor="end">Hlim ${Hlim.toFixed(2)}m</text>
 
-            <!-- Rótulo Pmax -->
-            <text x="${leftWallX - leftPressureW / 2}" y="${leftGroundY - 10}" fill="#ffffff" font-size="9" font-weight="800" font-family="monospace" text-anchor="middle">Pmax ${PresionMax}k</text>
+              <!-- Rótulo Pmax -->
+              <text x="${leftWallX - leftPressureW / 2}" y="${leftGroundY - 10}" fill="#ffffff" font-size="9" font-weight="800" font-family="monospace" text-anchor="middle">Pmax ${PresionMax}k</text>
 
-            <!-- Cota H -->
-            <line x1="${cotaXLeft}" y1="${leftWallTop}" x2="${cotaXLeft}" y2="${leftGroundY}" stroke="#94a3b8" stroke-width="1" />
-            <line x1="${cotaXLeft - 4}" y1="${leftWallTop}" x2="${cotaXLeft + 4}" y2="${leftWallTop}" stroke="#94a3b8" stroke-width="1" />
-            <line x1="${cotaXLeft - 4}" y1="${leftGroundY}" x2="${cotaXLeft + 4}" y2="${leftGroundY}" stroke="#94a3b8" stroke-width="1" />
-            <text x="${cotaXLeft - 12}" y="${(leftWallTop + leftGroundY) / 2}" fill="#f8fafc" font-size="10" font-weight="800" font-family="monospace" text-anchor="middle" transform="rotate(-90 ${cotaXLeft - 12} ${(leftWallTop + leftGroundY) / 2})">H = ${H} m</text>
+              <!-- Cota H -->
+              <line x1="${cotaXLeft}" y1="${leftWallTop}" x2="${cotaXLeft}" y2="${leftGroundY}" stroke="#94a3b8" stroke-width="1" />
+              <line x1="${cotaXLeft - 4}" y1="${leftWallTop}" x2="${cotaXLeft + 4}" y2="${leftWallTop}" stroke="#94a3b8" stroke-width="1" />
+              <line x1="${cotaXLeft - 4}" y1="${leftGroundY}" x2="${cotaXLeft + 4}" y2="${leftGroundY}" stroke="#94a3b8" stroke-width="1" />
+              <text x="${cotaXLeft - 12}" y="${(leftWallTop + leftGroundY) / 2}" fill="#f8fafc" font-size="10" font-weight="800" font-family="monospace" text-anchor="middle" transform="rotate(-90 ${cotaXLeft - 12} ${(leftWallTop + leftGroundY) / 2})">H = ${H} m</text>
 
-            <!-- Ancho Batache Badge -->
-            <rect x="200" y="12" width="125" height="36" rx="5" fill="rgba(15,23,42,0.85)" stroke="rgba(56,189,248,0.3)" />
-            <text x="262" y="27" fill="#94a3b8" font-size="8.5" font-weight="700" text-anchor="middle">BATACHE</text>
-            <text x="262" y="41" fill="#38bdf8" font-size="11" font-weight="800" font-family="monospace" text-anchor="middle">b=${AnchoBatache}m (${NumAnclajes}u)</text>
-          </svg>
+              <!-- Ancho Batache Badge -->
+              <rect x="200" y="10" width="125" height="36" rx="5" fill="rgba(15,23,42,0.85)" stroke="rgba(56,189,248,0.3)" />
+              <text x="262" y="25" fill="#94a3b8" font-size="8.5" font-weight="700" text-anchor="middle">BATACHE</text>
+              <text x="262" y="39" fill="#38bdf8" font-size="11" font-weight="800" font-family="monospace" text-anchor="middle">b=${AnchoBatache}m (${NumAnclajes}u)</text>
+            </svg>
+          </div>
         </div>
 
-        <!-- 2. DIAGRAMA DERECHO: DETALLE DEL ANCLAJE A GRAN ESCALA -->
-        <div style="position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
-          <svg viewBox="0 0 ${rightW} ${rightH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
-            <defs>
-              <linearGradient id="concreteGradM1C_R" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#3b485d" />
-                <stop offset="100%" stop-color="#1e2736" />
-              </linearGradient>
+        <!-- 2. BLOQUE DERECHO: DETALLE ANCLAJE -->
+        <div style="display: flex; flex-direction: column; width: 100%; height: 100%;">
+          
+          <!-- Cuadro de texto exterior -->
+          <div style="display: flex; justify-content: center; margin-bottom: 0.5rem;">
+            <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 6px; padding: 0.35rem 0.9rem; font-size: 0.82rem; font-weight: 800; color: #fde68a; letter-spacing: 0.05em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+              Detalle Anclaje
+            </div>
+          </div>
 
-              <pattern id="diagHatchM1C_R" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0" x2="0" y2="10" stroke="#475569" stroke-width="1.5" opacity="0.4" />
-              </pattern>
+          <!-- Marco del Dibujo -->
+          <div style="position: relative; flex: 1; min-height: 330px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
+            <svg viewBox="0 0 ${rightW} ${rightH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <linearGradient id="concreteGradM1C_R" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#3b485d" />
+                  <stop offset="100%" stop-color="#1e2736" />
+                </linearGradient>
 
-              <marker id="arrowNedM1C" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
-              </marker>
-            </defs>
+                <pattern id="diagHatchM1C_R" width="10" height="10" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                  <line x1="0" y1="0" x2="0" y2="10" stroke="#475569" stroke-width="1.5" opacity="0.4" />
+                </pattern>
 
-            <!-- Título Badge Detalle -->
-            <rect x="15" y="12" width="200" height="24" rx="5" fill="rgba(15,23,42,0.85)" stroke="rgba(245,158,11,0.4)" />
-            <text x="115" y="28" fill="#fde68a" font-size="10.5" font-weight="800" text-anchor="middle">DETALLE ANCLAJE 45º (ZOOM)</text>
+                <marker id="arrowNedM1C" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
+                </marker>
+              </defs>
 
-            <!-- Losa de Zapata / Hormigón (Profunda) -->
-            <polygon points="15,${detailGroundY} 325,${detailGroundY} 325,${rightH - 12} 15,${rightH - 12}" fill="url(#concreteGradM1C_R)" stroke="#64748b" stroke-width="1.5" />
-            <polygon points="15,${detailGroundY} 325,${detailGroundY} 325,${rightH - 12} 15,${rightH - 12}" fill="url(#diagHatchM1C_R)" />
+              <!-- Losa de Zapata / Hormigón (Profunda) -->
+              <polygon points="15,${detailGroundY} 325,${detailGroundY} 325,${rightH - 10} 15,${rightH - 10}" fill="url(#concreteGradM1C_R)" stroke="#64748b" stroke-width="1.5" />
+              <polygon points="15,${detailGroundY} 325,${detailGroundY} 325,${rightH - 10} 15,${rightH - 10}" fill="url(#diagHatchM1C_R)" />
 
-            <!-- Tramo inferior del muro / escuadra en superficie -->
-            <rect x="${detailAnchorStartX - 14}" y="${detailGroundY - 45}" width="14" height="45" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1" />
-            <polygon points="${detailAnchorStartX},${detailGroundY - 35} ${detailAnchorStartX + 45},${detailGroundY} ${detailAnchorStartX},${detailGroundY}" fill="rgba(200,16,46,0.2)" stroke="#c8102e" stroke-width="1.5" />
+              <!-- Tramo inferior del muro / escuadra en superficie -->
+              <rect x="${detailAnchorStartX - 14}" y="${detailGroundY - 45}" width="14" height="45" rx="2" fill="url(#wallGradM1C_L)" stroke="#ffffff" stroke-width="1" />
+              <polygon points="${detailAnchorStartX},${detailGroundY - 35} ${detailAnchorStartX + 45},${detailGroundY} ${detailAnchorStartX},${detailGroundY}" fill="rgba(200,16,46,0.2)" stroke="#c8102e" stroke-width="1.5" />
 
-            <!-- Cono de Hormigón a Gran Escala -->
-            <polygon points="${coneTopLeftX},${detailGroundY} ${plateP1.x},${plateP1.y} ${plateP2.x},${plateP2.y} ${coneBottomRightX},${coneBottomRightY} ${detailAnchorStartX},${detailGroundY}" fill="rgba(239, 68, 68, 0.18)" stroke="none" />
-            
-            <!-- Líneas punteadas roja en cara vertical izquierda y base inferior -->
-            <line x1="${coneTopLeftX}" y1="${detailGroundY}" x2="${plateP1.x}" y2="${plateP1.y}" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,4" />
-            <line x1="${plateP2.x}" y1="${plateP2.y}" x2="${coneBottomRightX}" y2="${coneBottomRightY}" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,4" />
+              <!-- Cono de Hormigón a Gran Escala -->
+              <polygon points="${coneTopLeftX},${detailGroundY} ${plateP1.x},${plateP1.y} ${plateP2.x},${plateP2.y} ${coneBottomRightX},${coneBottomRightY} ${detailAnchorStartX},${detailGroundY}" fill="rgba(239, 68, 68, 0.18)" stroke="none" />
+              
+              <!-- Líneas punteadas roja en cara vertical izquierda y base inferior -->
+              <line x1="${coneTopLeftX}" y1="${detailGroundY}" x2="${plateP1.x}" y2="${plateP1.y}" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,4" />
+              <line x1="${plateP2.x}" y1="${plateP2.y}" x2="${coneBottomRightX}" y2="${coneBottomRightY}" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,4" />
 
-            <!-- Barra Tirante Anclaje a 45º (Dorada gruesa) -->
-            <line x1="${detailAnchorStartX}" y1="${detailAnchorStartY}" x2="${detailAnchorEndX}" y2="${detailAnchorEndY}" stroke="#f59e0b" stroke-width="5.5" stroke-linecap="round" />
-            
-            <!-- Placa de anclaje final blanca -->
-            <line x1="${plateP1.x}" y1="${plateP1.y}" x2="${plateP2.x}" y2="${plateP2.y}" stroke="#f8fafc" stroke-width="5.5" />
+              <!-- Barra Tirante Anclaje a 45º (Dorada gruesa) -->
+              <line x1="${detailAnchorStartX}" y1="${detailAnchorStartY}" x2="${detailAnchorEndX}" y2="${detailAnchorEndY}" stroke="#f59e0b" stroke-width="5.5" stroke-linecap="round" />
+              
+              <!-- Placa de anclaje final blanca -->
+              <line x1="${plateP1.x}" y1="${plateP1.y}" x2="${plateP2.x}" y2="${plateP2.y}" stroke="#f8fafc" stroke-width="5.5" />
 
-            <!-- Vector de Tracción Ned saliendo de la barra -->
-            <line x1="${detailAnchorStartX}" y1="${detailAnchorStartY}" x2="${detailAnchorStartX + 50}" y2="${detailAnchorStartY - 50}" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrowNedM1C)" />
-            <text x="${detailAnchorStartX + 56}" y="${detailAnchorStartY - 46}" fill="#f59e0b" font-size="10" font-weight="800" font-family="monospace">Ned</text>
+              <!-- Vector de Tracción Ned saliendo de la barra -->
+              <line x1="${detailAnchorStartX}" y1="${detailAnchorStartY}" x2="${detailAnchorStartX + 50}" y2="${detailAnchorStartY - 50}" stroke="#f59e0b" stroke-width="2.5" marker-end="url(#arrowNedM1C)" />
+              <text x="${detailAnchorStartX + 56}" y="${detailAnchorStartY - 46}" fill="#f59e0b" font-size="10" font-weight="800" font-family="monospace">Ned</text>
 
-            <!-- Arco de ángulo 45º -->
-            <path d="M ${detailAnchorStartX - 38} ${detailAnchorStartY} A 38 38 0 0 0 ${detailAnchorStartX - 27} ${detailAnchorStartY + 27}" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="3,2" />
-            <text x="${detailAnchorStartX - 55}" y="${detailAnchorStartY + 22}" fill="#f59e0b" font-size="11" font-weight="800">45º</text>
+              <!-- Arco de ángulo 45º -->
+              <path d="M ${detailAnchorStartX - 38} ${detailAnchorStartY} A 38 38 0 0 0 ${detailAnchorStartX - 27} ${detailAnchorStartY + 27}" fill="none" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="3,2" />
+              <text x="${detailAnchorStartX - 55}" y="${detailAnchorStartY + 22}" fill="#f59e0b" font-size="11" font-weight="800">45º</text>
 
-            <!-- Cota hef a lo largo de la barra -->
-            <text x="${(detailAnchorStartX + detailAnchorEndX) / 2 - 58}" y="${(detailAnchorStartY + detailAnchorEndY) / 2 + 25}" fill="#fde68a" font-size="11.5" font-weight="800" font-family="monospace">hef = ${hef} mm</text>
+              <!-- Cota hef a lo largo de la barra -->
+              <text x="${(detailAnchorStartX + detailAnchorEndX) / 2 - 58}" y="${(detailAnchorStartY + detailAnchorEndY) / 2 + 25}" fill="#fde68a" font-size="11.5" font-weight="800" font-family="monospace">hef = ${hef} mm</text>
 
-            <!-- Cota ca1 frontal en superficie -->
-            <line x1="${detailAnchorStartX}" y1="${detailGroundY + 18}" x2="${coneTopLeftX}" y2="${detailGroundY + 18}" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,2" />
-            <line x1="${detailAnchorStartX}" y1="${detailGroundY + 14}" x2="${detailAnchorStartX}" y2="${detailGroundY + 22}" stroke="#38bdf8" stroke-width="1.2" />
-            <line x1="${coneTopLeftX}" y1="${detailGroundY + 14}" x2="${coneTopLeftX}" y2="${detailGroundY + 22}" stroke="#38bdf8" stroke-width="1.2" />
-            <text x="${(detailAnchorStartX + coneTopLeftX) / 2}" y="${detailGroundY + 32}" fill="#38bdf8" font-size="10.5" font-weight="700" text-anchor="middle">ca1 = ${ca1} mm</text>
+              <!-- Cota ca1 frontal en superficie -->
+              <line x1="${detailAnchorStartX}" y1="${detailGroundY + 18}" x2="${coneTopLeftX}" y2="${detailGroundY + 18}" stroke="#38bdf8" stroke-width="1.2" stroke-dasharray="3,2" />
+              <line x1="${detailAnchorStartX}" y1="${detailGroundY + 14}" x2="${detailAnchorStartX}" y2="${detailGroundY + 22}" stroke="#38bdf8" stroke-width="1.2" />
+              <line x1="${coneTopLeftX}" y1="${detailGroundY + 14}" x2="${coneTopLeftX}" y2="${detailGroundY + 22}" stroke="#38bdf8" stroke-width="1.2" />
+              <text x="${(detailAnchorStartX + coneTopLeftX) / 2}" y="${detailGroundY + 32}" fill="#38bdf8" font-size="10.5" font-weight="700" text-anchor="middle">ca1 = ${ca1} mm</text>
 
-            <!-- Cota ca2 posterior en superficie -->
-            <line x1="${detailAnchorStartX}" y1="${detailGroundY + 18}" x2="${detailAnchorStartX + 95}" y2="${detailGroundY + 18}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,2" />
-            <line x1="${detailAnchorStartX + 95}" y1="${detailGroundY + 14}" x2="${detailAnchorStartX + 95}" y2="${detailGroundY + 22}" stroke="#94a3b8" stroke-width="1.2" />
-            <text x="${detailAnchorStartX + 48}" y="${detailGroundY + 32}" fill="#94a3b8" font-size="10.5" font-weight="700" text-anchor="middle">ca2 = ${ca2} mm</text>
+              <!-- Cota ca2 posterior en superficie -->
+              <line x1="${detailAnchorStartX}" y1="${detailGroundY + 18}" x2="${detailAnchorStartX + 95}" y2="${detailGroundY + 18}" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="3,2" />
+              <line x1="${detailAnchorStartX + 95}" y1="${detailGroundY + 14}" x2="${detailAnchorStartX + 95}" y2="${detailGroundY + 22}" stroke="#94a3b8" stroke-width="1.2" />
+              <text x="${detailAnchorStartX + 48}" y="${detailGroundY + 32}" fill="#94a3b8" font-size="10.5" font-weight="700" text-anchor="middle">ca2 = ${ca2} mm</text>
 
-            <!-- Badges ca3 y ca4 laterales inferiores -->
-            <rect x="25" y="${rightH - 45}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
-            <text x="92" y="${rightH - 27}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca3 (izq) = ${ca3} mm</text>
+              <!-- Badges ca3 y ca4 laterales inferiores -->
+              <rect x="25" y="${rightH - 45}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
+              <text x="92" y="${rightH - 27}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca3 (izq) = ${ca3} mm</text>
 
-            <rect x="180" y="${rightH - 45}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
-            <text x="247" y="${rightH - 27}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca4 (der) = ${ca4} mm</text>
-          </svg>
+              <rect x="180" y="${rightH - 45}" width="135" height="28" rx="5" fill="rgba(15,23,42,0.88)" stroke="rgba(148,163,184,0.3)" />
+              <text x="247" y="${rightH - 27}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">ca4 (der) = ${ca4} mm</text>
+            </svg>
+          </div>
         </div>
 
       </div>
