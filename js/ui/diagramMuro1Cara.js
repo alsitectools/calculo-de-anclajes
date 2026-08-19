@@ -3,7 +3,7 @@
  * Divide la visualización en 3 esquemas coordinados:
  * 1. Columna Izquierda: Vista General del Muro (con altura perfectamente alineada con la base de Planta Anclajes).
  * 2. Columna Derecha - Superior: Detalle Anclaje (Sección a 45º) con el suelo en el centro vertical y Badges Interactivos para ca1, ca2 y hef.
- * 3. Columna Derecha - Inferior: Planta Anclajes con encofrado rojo, anclajes amarillos y blancos, y cotas e inputs perfectamente espaciados y legibles.
+ * 3. Columna Derecha - Inferior: Planta Anclajes con encofrado rojo, anclajes amarillos/blancos, cotas ca3 y ca4 arriba, y cota interactiva de Ancho de Batache (b) en la base.
  */
 
 import { globalUnits } from '../engine/units.js';
@@ -46,6 +46,10 @@ export class DiagramMuro1Cara {
           inp.value = globalUnits.toDisplayLength(this.values[k]);
         }
       });
+      const inpB = this.container.querySelector('#diag_m1c_AnchoBatache');
+      if (inpB && inpB !== activeEl) {
+        inpB.value = this.values.AnchoBatache;
+      }
       return;
     }
 
@@ -82,9 +86,9 @@ export class DiagramMuro1Cara {
     // 1. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA IZQUIERDO (VISTA GENERAL ALINEADA)
     // ==========================================
     const leftW = 340;
-    const leftH = 450;
+    const leftH = 460;
 
-    const leftGroundY = 320;
+    const leftGroundY = 325;
     const leftWallX = 135;
     const leftWallW = 12;
     
@@ -158,12 +162,12 @@ export class DiagramMuro1Cara {
     const hefBadgeY = (secAnchorStartY + secAnchorEndY) / 2 + 8;
 
     // ==========================================
-    // 3. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 3 (PLANTA ANCLAJES ESPACIADA)
+    // 3. CÁLCULOS GEOMÉTRICOS PARA DIAGRAMA 3 (PLANTA ANCLAJES CON COTA BATACHE)
     // ==========================================
     const planW = 340;
-    const planH = 240;
+    const planH = 250;
 
-    const planWallY = 112;
+    const planWallY = 108;
     const group1Center = 70;
     const group2Center = 215;
 
@@ -172,18 +176,25 @@ export class DiagramMuro1Cara {
     const rod2L = 195;
     const rod2R = 240;
 
-    // Inputs colocados en la fila superior (y = 18)
+    // Inputs superiores ca4 y ca3 (y = 18)
     const ca4BadgeX = (rod1R + rod2L) / 2; // 141.5
     const ca4BadgeY = 18;
 
     const ca3BadgeX = (group2Center + rod2R) / 2 + 15; // 242.5
     const ca3BadgeY = 18;
 
-    // Cotas colocadas inmediatamente debajo de los inputs (y = 38)
+    // Cotas superiores (y = 38)
     const planDimY = 38;
 
-    const plateY = 72;
-    const anchorEndY = 192;
+    const plateY = 70;
+    const anchorEndY = 186;
+
+    // Cota inferior para Ancho de Batache (y = 222)
+    const planBatacheY = 222;
+    const batacheLeftX = 25;
+    const batacheRightX = 315;
+    const batacheBadgeX = (batacheLeftX + batacheRightX) / 2;
+    const batacheBadgeY = 222;
 
     const html = `
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem; width: 100%; align-items: stretch;">
@@ -197,7 +208,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <div style="position: relative; flex: 1; height: calc(100% - 35px); min-height: 480px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
+          <div style="position: relative; flex: 1; height: calc(100% - 35px); min-height: 490px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
             <svg viewBox="0 0 ${leftW} ${leftH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
               <defs>
                 <linearGradient id="concreteGradM1C_L" x1="0" y1="0" x2="1" y2="1">
@@ -364,7 +375,7 @@ export class DiagramMuro1Cara {
             </div>
           </div>
 
-          <!-- BLOQUE 3: DETALLE EN PLANTA (VISTA SUPERIOR LIMPIA Y ESPACIADA) -->
+          <!-- BLOQUE 3: DETALLE EN PLANTA (CON COTAS SUPERIORES E INFERIOR DE BATACHE) -->
           <div style="display: flex; flex-direction: column; width: 100%;">
             <div style="display: flex; justify-content: center; margin-bottom: 0.4rem; height: 28px; align-items: center;">
               <div style="background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(56, 189, 248, 0.4); border-radius: 6px; padding: 0.3rem 0.85rem; font-size: 0.80rem; font-weight: 700; color: #bae6fd; letter-spacing: 0.02em; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
@@ -372,7 +383,7 @@ export class DiagramMuro1Cara {
               </div>
             </div>
 
-            <div style="position: relative; height: 240px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
+            <div style="position: relative; height: 250px; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1a2234 0%, #0d121d 100%); border-radius: 12px; overflow: hidden; border: 1px solid rgba(148, 163, 184, 0.15);">
               <svg viewBox="0 0 ${planW} ${planH}" style="width: 100%; height: 100%;" preserveAspectRatio="xMidYMid meet">
                 <defs>
                   <linearGradient id="concreteGradM1C_Plan" x1="0" y1="0" x2="1" y2="1">
@@ -397,7 +408,7 @@ export class DiagramMuro1Cara {
                 <polygon points="0,0 ${planW},0 ${planW},${planH} 0,${planH}" fill="url(#diagHatchM1C_Plan)" />
 
                 <!-- Eje Central del Grupo Derecho (Dashed Axis Line) -->
-                <line x1="${group2Center}" y1="28" x2="${group2Center}" y2="230" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="8,4,2,4" opacity="0.85" />
+                <line x1="${group2Center}" y1="28" x2="${group2Center}" y2="200" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="8,4,2,4" opacity="0.85" />
 
                 <!-- ================= ANCLAJES (BARRAS AMARILLAS Y PLACAS BLANCAS) ================= -->
                 <!-- Grupo 1 Izquierda: 2 barras de anclaje amarillas con placa blanca -->
@@ -423,36 +434,44 @@ export class DiagramMuro1Cara {
 
                 <!-- ================= ESCUADRA BASE (UPN ROJOS Y PLACAS REPARTO) ================= -->
                 <!-- Grupo 1 -->
-                <rect x="${group1Center - 10}" y="126" width="8" height="105" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="${group1Center + 2}" y="126" width="8" height="105" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="${group1Center - 28}" y="152" width="56" height="26" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
-                <polygon points="${rod1L - 4},160 ${rod1L + 4},156 ${rod1L + 4},168 ${rod1L - 4},172" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
-                <polygon points="${rod1R - 4},160 ${rod1R + 4},156 ${rod1R + 4},168 ${rod1R - 4},172" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <rect x="${group1Center - 10}" y="122" width="8" height="85" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group1Center + 2}" y="122" width="8" height="85" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group1Center - 28}" y="146" width="56" height="24" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
+                <polygon points="${rod1L - 4},154 ${rod1L + 4},150 ${rod1L + 4},162 ${rod1L - 4},166" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <polygon points="${rod1R - 4},154 ${rod1R + 4},150 ${rod1R + 4},162 ${rod1R - 4},166" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
 
                 <!-- Grupo 2 -->
-                <rect x="${group2Center - 10}" y="126" width="8" height="105" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="${group2Center + 2}" y="126" width="8" height="105" fill="#c8102e" stroke="#990b22" stroke-width="1" />
-                <rect x="${group2Center - 28}" y="152" width="56" height="26" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
-                <polygon points="${rod2L - 4},160 ${rod2L + 4},156 ${rod2L + 4},168 ${rod2L - 4},172" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
-                <polygon points="${rod2R - 4},160 ${rod2R + 4},156 ${rod2R + 4},168 ${rod2R - 4},172" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <rect x="${group2Center - 10}" y="122" width="8" height="85" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group2Center + 2}" y="122" width="8" height="85" fill="#c8102e" stroke="#990b22" stroke-width="1" />
+                <rect x="${group2Center - 28}" y="146" width="56" height="24" rx="2" fill="#451a03" stroke="#78350f" stroke-width="1.2" />
+                <polygon points="${rod2L - 4},154 ${rod2L + 4},150 ${rod2L + 4},162 ${rod2L - 4},166" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
+                <polygon points="${rod2R - 4},154 ${rod2R + 4},150 ${rod2R + 4},162 ${rod2R - 4},166" fill="#facc15" stroke="#ca8a04" stroke-width="1" />
 
-                <!-- ================= COTAS EN PLANTA (ca3 y ca4) ================= -->
+                <!-- ================= COTAS SUPERIORES EN PLANTA (ca3 y ca4) ================= -->
                 <!-- Líneas de extensión vertical hacia arriba -->
                 <line x1="${rod1R}" y1="${plateY - 4}" x2="${rod1R}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
                 <line x1="${rod2L}" y1="${plateY - 4}" x2="${rod2L}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
                 <line x1="${group2Center}" y1="28" x2="${group2Center}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" />
                 <line x1="${rod2R}" y1="${plateY - 4}" x2="${rod2R}" y2="${planDimY - 4}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
 
-                <!-- Línea de cota ca3 (Desde el eje central entre anclajes 215 hasta el anclaje derecho 240) -->
+                <!-- Línea de cota ca3 -->
                 <line x1="${group2Center + 2}" y1="${planDimY}" x2="${rod2R - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
                 <text x="${(group2Center + rod2R) / 2 + 18}" y="${planDimY + 14}" fill="#94a3b8" font-size="8" font-weight="700" font-family="monospace" text-anchor="middle">ca3 ≤ 1.5 hef</text>
 
-                <!-- Línea de cota ca4 (Entre el anclaje rod1R y rod2L) -->
+                <!-- Línea de cota ca4 -->
                 <line x1="${rod1R + 2}" y1="${planDimY}" x2="${rod2L - 2}" y2="${planDimY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
                 <text x="${ca4BadgeX}" y="${planDimY + 14}" fill="#94a3b8" font-size="8" font-weight="700" font-family="monospace" text-anchor="middle">ca4 ≤ 1.5 hef</text>
+
+                <!-- ================= COTA INFERIOR ANCHO DE BATACHE (b) ================= -->
+                <!-- Líneas de extensión vertical hacia abajo -->
+                <line x1="${batacheLeftX}" y1="135" x2="${batacheLeftX}" y2="${planBatacheY + 8}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+                <line x1="${batacheRightX}" y1="135" x2="${batacheRightX}" y2="${planBatacheY + 8}" stroke="rgba(148, 163, 184, 0.45)" stroke-width="1" stroke-dasharray="3,2" />
+
+                <!-- Línea de cota b -->
+                <line x1="${batacheLeftX + 2}" y1="${planBatacheY}" x2="${batacheRightX - 2}" y2="${planBatacheY}" stroke="#38bdf8" stroke-width="1.4" marker-start="url(#dimArrowStartM1C_Plan)" marker-end="url(#dimArrowEndM1C_Plan)" />
               </svg>
 
-              <!-- Badges Interactivos Planta (Colocados directamente SOBRE las cotas) -->
+              <!-- Badges Interactivos Planta (ca4 y ca3 arriba) -->
               <div id="badge_m1c_ca4" class="param-badge-overlay" style="position: absolute; left: ${toPct(ca4BadgeX, planW)}; top: ${toPct(ca4BadgeY, planH)}; transform: translate(-50%, -50%);">
                 <div class="mini-input-badge">
                   <span class="badge-lbl">ca,4</span>
@@ -468,6 +487,16 @@ export class DiagramMuro1Cara {
                   <span class="badge-unit">${unitLen}</span>
                 </div>
               </div>
+
+              <!-- Badge Interactivo Inferior: Ancho de Batache b -->
+              <div id="badge_m1c_b" class="param-badge-overlay" style="position: absolute; left: ${toPct(batacheBadgeX, planW)}; top: ${toPct(batacheBadgeY, planH)}; transform: translate(-50%, -50%);">
+                <div class="mini-input-badge highlight-ha">
+                  <span class="badge-lbl">b</span>
+                  <input type="number" id="diag_m1c_AnchoBatache" class="diag-inp" min="0.5" max="10" step="0.1" value="${AnchoBatache}" />
+                  <span class="badge-unit">m</span>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -486,7 +515,10 @@ export class DiagramMuro1Cara {
       inp.addEventListener('input', () => {
         const id = inp.id.replace('diag_m1c_', '');
         const raw = parseFloat(inp.value) || 0;
-        const valSI = globalUnits.fromDisplayLength(raw);
+        let valSI = raw;
+        if (id !== 'AnchoBatache') {
+          valSI = globalUnits.fromDisplayLength(raw);
+        }
         this.values[id] = valSI;
         if (this.onValueChange) {
           this.onValueChange(id, valSI);
